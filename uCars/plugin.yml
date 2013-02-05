@@ -1,6 +1,6 @@
 name: uCars
 main: com.useful.ucars.ucars
-version: 1
+version: 2
 commands:
    ucars:
         description: This gives ucars info

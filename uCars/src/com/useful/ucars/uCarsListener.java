@@ -45,7 +45,6 @@ public void ResetCarBoost(String playername, Minecart car, double defaultSpeed){
 	ucars.carBoosts.put(p, defaultSpeed);
 	return;
 }
-@SuppressWarnings("deprecation")
 public boolean carBoost(String playerName, final double power, final long lengthMillis, double defaultSpeed){
 	final String p = playerName;
 	final double defMult = defaultSpeed;
@@ -61,7 +60,7 @@ public boolean carBoost(String playerName, final double power, final long length
 		plugin.getLogger().log(Level.SEVERE , "Error in ucars: Caused by: plugin = null? Report on bukkitdev immediately!");
 	}
 //PLUGIN IS NULL??? //TODO
-	plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
+	plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable(){
 		public void run(){
 			World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
 			w.playSound(plugin.getServer().getPlayer(p).getLocation(), Sound.FIZZ, 10, -2);
@@ -259,8 +258,14 @@ void interact(PlayerInteractEvent event){
 			return;
 		}
 		Location loc = block.getLocation().add(0, 1, 0);
-		event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
-		event.getPlayer().sendMessage(ucars.colors.getInfo() + "You placed a car! Cars can be driven with similar controls to a boat!");
+		Entity ent = event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
+	    Minecart car = (Minecart) ent;
+	    Location carloc = car.getLocation();
+	    carloc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
+	    car.setVelocity(new Vector(0,0,0));
+	    car.teleport(carloc);
+	    car.setVelocity(new Vector(0,0,0));
+		event.getPlayer().sendMessage(plugin.colors.getInfo() + "You placed a car! Cars can be driven with similar controls to a boat!");
 		if(event.getPlayer().getGameMode() != GameMode.CREATIVE){
 			event.getPlayer().getInventory().removeItem(new ItemStack(328));
 		}
