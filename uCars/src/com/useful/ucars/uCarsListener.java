@@ -180,11 +180,11 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		}
     		}
     		if(normalblock.getTypeId() != 0 && normalblock.getTypeId() != 8 && normalblock.getTypeId() != 9 && normalblock.getTypeId() != 44 && normalblock.getTypeId() != 43 && normalblock.getTypeId() != 70 && normalblock.getTypeId() != 72 && normalblock.getTypeId() != 31){
-    			car.setVelocity(new Vector(-0.5, 0, -0.5));
+    			car.setVelocity(new Vector(0, 1, 0));
     	    	//player.getWorld().createExplosion(loc, 0);
     	    }
     		if(up.getTypeId() != 0 && up.getTypeId() != 8 && up.getTypeId() != 9 && up.getTypeId() != 44 && up.getTypeId() != 43){
-    			car.setVelocity(new Vector(-0.5, 0, -0.5));
+    			car.setVelocity(new Vector(0, 1, 0));
     	    	//player.getWorld().createExplosion(loc, 0);
     	    }
     		if(playerVelocity.getX() == 0 && playerVelocity.getZ() == 0){
@@ -203,6 +203,14 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		//Block block = normalblock.getRelative(modX, modY, modZ);
     		//Block block = player.getTargetBlock(null, 1);
     		int bid = block.getTypeId();
+    		int jumpBlock = ucars.config.getInt("general.cars.jumpBlock");
+    		if(tid == jumpBlock){
+    				double jumpAmount = ucars.config.getDouble("general.cars.jumpAmount");
+    				double y = Velocity.getY() + jumpAmount;
+       		     Velocity.setY(y);
+       		     car.setVelocity(Velocity);
+    			
+    		}
     		if(block.getY() == under.getBlockY() || block.getY() > normalblock.getY()){
     			//On the floor or too high to jump
     			if(bid == 0 || bid == 10 || bid == 11 || bid == 8 || bid == 9 || bid == 139 || bid == 85 || bid == 107 || bid == 113 || bid == 70 || bid == 72){
@@ -225,7 +233,10 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    	if(bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8 || bidU == 9 || bidU == 44 || bidU == 43){
 		    		//if(block.getTypeId() == 44 || block.getTypeId() == 43){
 		    theNewLoc.add(0, 1.5d, 0);
-		    	car.teleport(theNewLoc);
+		    double y = Velocity.getY() + 13;
+		     Velocity.setY(y);
+		     car.setVelocity(Velocity);
+		    	//car.teleport(theNewLoc);
 		    	}
 		    }
 		    else {

@@ -96,6 +96,12 @@ public void onEnable(){
 		if(!config.contains("general.cars.ResetblockBoost")) {
 			config.set("general.cars.ResetblockBoost", 133);
 			}
+		if(!config.contains("general.cars.jumpBlock")) {
+			config.set("general.cars.jumpBlock", 42);
+			}
+		if(!config.contains("general.cars.jumpAmount")) {
+			config.set("general.cars.jumpAmount", 60);
+			}
 		if(!config.contains("colorScheme.success")) {
 			config.set("colorScheme.success", "&a");
 			}
