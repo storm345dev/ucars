@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -16,8 +17,10 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
@@ -29,6 +32,31 @@ public class uCarsListener implements Listener {
 private ucars plugin;
 	public uCarsListener(ucars plugin){
 		this.plugin = ucars.plugin;
+	}
+	public boolean inACar(String playername){
+		Player p = plugin.getServer().getPlayer(playername);
+		if(p == null){
+			//Should NEVER happen(It means they r offline)
+			return false;
+		}
+	    if(!p.isInsideVehicle()){
+	    	return false;
+	    }
+	    Entity ent = p.getVehicle();
+		if(!(ent instanceof Vehicle)){
+			return false;
+		}
+		Vehicle veh = (Vehicle) ent;
+		if(!(veh instanceof Minecart)){
+			return false;
+		}
+		Minecart cart = (Minecart) veh;
+		Location loc = cart.getLocation();
+		float id = loc.getBlock().getTypeId();
+		if(id == 27 || id == 66 || id == 28){
+			return false;
+		}
+		return true;
 	}
 public boolean isACar(Minecart cart){
 	Location loc = cart.getLocation();
@@ -233,7 +261,11 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    	if(bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8 || bidU == 9 || bidU == 44 || bidU == 43){
 		    		//if(block.getTypeId() == 44 || block.getTypeId() == 43){
 		    theNewLoc.add(0, 1.5d, 0);
-		    double y = Velocity.getY() + 13;
+		    double y = 13;
+            if(block.getType() == Material.STEP || block.getType() == Material.DOUBLE_STEP){
+           	 y = 7;
+            }
+		     
 		     Velocity.setY(y);
 		     car.setVelocity(Velocity);
 		    	//car.teleport(theNewLoc);
@@ -250,7 +282,17 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     	return;
 }
 
-
+@EventHandler(priority = EventPriority.HIGHEST)
+void safeFly(EntityDamageEvent event){
+	if(!(event.getEntity() instanceof Player)){
+		return;
+	}
+	Player p = (Player) event.getEntity();
+	if(inACar(p.getName())){
+		event.setCancelled(true);
+	}
+	return;
+}
 
 
 @EventHandler
