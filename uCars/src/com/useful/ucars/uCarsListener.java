@@ -1,8 +1,11 @@
 package com.useful.ucars;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -163,6 +166,47 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		}
     		Minecart car = (Minecart) vehicle;
     		// It is a valid car!
+    		if(ucars.config.getBoolean("general.cars.roadBlocks.enable")){
+    			Location loc = car.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation();
+    			int id = loc.getBlock().getTypeId();
+    			Boolean valid = false;
+    			String idsRaw = ucars.config.getString("general.cars.roadBlocks.ids");
+    			String[] array = idsRaw.split(",");
+    			List<String> ids = new ArrayList<String>();
+    			for(String tid:array){
+    				ids.add(tid);
+    			}
+    			ids.add(ucars.config.getString("general.cars.blockBoost"));
+    			ids.add(ucars.config.getString("general.cars.HighblockBoost"));
+    			ids.add(ucars.config.getString("general.cars.ResetblockBoost"));
+    			ids.add(ucars.config.getString("general.cars.jumpBlock"));
+    			ids.add("0");
+    			ids.add("10");
+    			ids.add("11");
+    			ids.add("8");
+    			ids.add("9");
+    			for(String tid:ids){
+    				String[] parts = tid.split(":");
+    				if(parts.length > 1){
+    					if(Integer.parseInt(parts[0]) == id){
+    						//is same block type
+    						int data = Integer.parseInt(parts[1]);
+    						int tdata = loc.getBlock().getData();
+    						if(data == tdata){
+    							valid = true;
+    						}
+    					}
+    				}
+    				else if(parts.length > 0){
+    					if(Integer.parseInt(parts[0]) == id){
+    						valid = true;
+    					}
+    				}
+    			}
+    			if(!valid){
+    				return;
+    			}
+    		}
     		int blockBoostId = ucars.config.getInt("general.cars.blockBoost");
     		int tid = underblock.getTypeId();
     		if(tid == blockBoostId){
@@ -217,6 +261,19 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     	    }
     		if(playerVelocity.getX() == 0 && playerVelocity.getZ() == 0){
     			return;
+    		}
+    		if(ucars.config.getBoolean("general.cars.fuel.enable")){
+    			double fuel = ucars.fuel.get(player.getName());
+    			if(fuel < 0.1){
+    				player.sendMessage(ucars.colors.getError() + "You don't have any fuel left!");
+    				return;
+    			}
+    			int amount = 0 + (int)(Math.random()*250);
+    			if(amount == 10){
+    				fuel = fuel - 0.1;
+    				fuel = (double)Math.round(fuel*10)/10; 
+    				ucars.fuel.put(player.getName(), fuel);
+    			}
     		}
     		car.setMaxSpeed(maxSpeed);
     		Location before = car.getLocation();

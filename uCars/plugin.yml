@@ -1,10 +1,17 @@
 name: uCars
 main: com.useful.ucars.ucars
-version: 4
+version: 5
+softdepend: [Vault]
 commands:
    ucars:
         description: This gives ucars info
         usage: /<command>
+        permission: ucars.ucars
+        permission-message: You don't have access to this command
+        default: true
+   ufuel:
+        description: This buys the specified amount of ufuel
+        usage: /<command> [Buy <Amount>], [View]
         permission: ucars.ucars
         permission-message: You don't have access to this command
         default: true

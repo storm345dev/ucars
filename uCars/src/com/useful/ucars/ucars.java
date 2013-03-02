@@ -1,25 +1,35 @@
 package com.useful.ucars;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.useful.ucars.Colors;
 
 public class ucars extends JavaPlugin {
 	//added to github so users can see source code! :D
 	public static HashMap<String, Double> carBoosts = new HashMap<String, Double>();
+	public static HashMap<String, Double> fuel = new HashMap<String, Double>();
 	public static ucars plugin;
 	public static FileConfiguration config;
+	public static Boolean vault = false;
+	public static Economy economy = null;
 	public static Colors colors;
 	public static String  colorise(String prefix){
 		prefix = prefix.replace("&0", "" + ChatColor.BLACK);
@@ -58,6 +68,47 @@ public class ucars extends JavaPlugin {
 	        e.printStackTrace();
 	    }
 	}
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, Double> loadHashMapDouble(String path)
+	{
+		try
+		{
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+			Object result = ois.readObject();
+			ois.close();
+			//you can feel free to cast result to HashMap<String, Integer> if you know there's that HashMap in the file
+			return (HashMap<String, Double>) result;
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public static void saveHashMap(HashMap<String, Double> map, String path)
+	{
+		try
+		{
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
+			oos.writeObject(map);
+			oos.flush();
+			oos.close();
+			//Handle I/O exceptions
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	private boolean setupEconomy()
+    {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+        }
+
+        return (economy != null);
+    }
 public void onEnable(){
 	plugin = this;
 	if(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").exists() == false){
@@ -102,6 +153,18 @@ public void onEnable(){
 		if(!config.contains("general.cars.jumpAmount")) {
 			config.set("general.cars.jumpAmount", 60);
 			}
+		if(!config.contains("general.cars.roadBlocks.enable")) {
+			config.set("general.cars.roadBlocks.enable", false);
+			}
+		if(!config.contains("general.cars.roadBlocks.ids")) {
+			config.set("general.cars.roadBlocks.ids", "35:15,35:8,35:0,35:7");
+			}
+		if(!config.contains("general.cars.fuel.enable")) {
+			config.set("general.cars.fuel.enable", false);
+			}
+		if(!config.contains("general.cars.fuel.price")) {
+			config.set("general.cars.fuel.price", (double)2);
+			}
 		if(!config.contains("colorScheme.success")) {
 			config.set("colorScheme.success", "&a");
 			}
@@ -117,6 +180,27 @@ public void onEnable(){
         if(!config.contains("colorScheme.tp")) {
 			config.set("colorScheme.tp", "&5");
 			}
+        
+        if(config.getBoolean("general.cars.fuel.enable")){
+        	try {
+				if(!setupEconomy()){
+					plugin.getLogger().warning("Attempted to enable fuel but vault NOT found. Please install vault to use fuel!");
+					plugin.getLogger().warning("Disabling fuel system...");
+					config.set("general.cars.fuel.enable", false);
+				}
+				else{
+					vault = true;
+      File fuels = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
+      if(fuels.exists() && fuels.length() > 1){
+				fuel = loadHashMapDouble(plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
+      }
+				}
+			} catch (Exception e) {
+				plugin.getLogger().warning("Attempted to enable fuel but vault NOT found. Please install vault to use fuel!");
+				plugin.getLogger().warning("Disabling fuel system...");
+				config.set("general.cars.fuel.enable", false);
+			}
+	}
 	}
 	catch (Exception e){
 		//error
@@ -139,6 +223,7 @@ public void onEnable(){
 	return;
 }
 public void onDisable(){
+	saveHashMap(fuel, plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
 	getLogger().info("uCars has been disabled!");
 	return;
 }
