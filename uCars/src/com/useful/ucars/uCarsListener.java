@@ -263,7 +263,10 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     			return;
     		}
     		if(ucars.config.getBoolean("general.cars.fuel.enable")){
-    			double fuel = ucars.fuel.get(player.getName());
+    			double fuel = 0;
+    			if(ucars.fuel.containsKey(player.getName())){
+    			fuel = ucars.fuel.get(player.getName());
+    			}
     			if(fuel < 0.1){
     				player.sendMessage(ucars.colors.getError() + "You don't have any fuel left!");
     				return;
