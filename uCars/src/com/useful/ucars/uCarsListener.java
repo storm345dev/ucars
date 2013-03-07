@@ -24,7 +24,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.ItemStack;
@@ -349,11 +352,57 @@ void safeFly(EntityDamageEvent event){
 	}
 	Player p = (Player) event.getEntity();
 	if(inACar(p.getName())){
-		event.setCancelled(true);
+		Vehicle veh = (Vehicle) p.getVehicle();
+		Vector vel = veh.getVelocity();
+		if(vel.getY() != (double)0){
+			event.setCancelled(true);
+		}
+		
 	}
 	return;
 }
-
+@EventHandler
+void hitByCar(VehicleEntityCollisionEvent event){
+	if(!ucars.config.getBoolean("general.cars.hitBy")){
+		return;
+	}
+	Vehicle veh = event.getVehicle();
+	if(!(veh instanceof Minecart)){
+		return;
+	}
+	Minecart cart = (Minecart) veh;
+	if(!isACar(cart)){
+		return;
+	}
+	Entity ent = event.getEntity();
+	if(!(ent instanceof Player)){
+		return;
+	}
+	Player p = (Player) ent;
+	if(cart.getPassenger() == null){
+		return;
+	}
+	double x = cart.getVelocity().getX();
+	double y = cart.getVelocity().getY();
+    double z = cart.getVelocity().getZ();
+    if(x < 0){
+    	x = -x;
+    }
+    if(y < 0){
+    	y = -y;
+    }
+    if(z < 0){
+    	z = -z;
+    }
+	if(x < 0.3 && y <0.3 && z < 0.3){
+		return;
+	}
+	double speed = (x*z)/2;
+	p.setVelocity(cart.getVelocity().setY(0.5));
+	p.sendMessage(ucars.colors.getInfo()+"You were hit by a car!");
+	p.damage((int) (1.5*speed));
+	return;
+}
 
 @EventHandler
 void interact(PlayerInteractEvent event){

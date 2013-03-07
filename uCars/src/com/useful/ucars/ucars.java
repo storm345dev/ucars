@@ -153,6 +153,9 @@ public void onEnable(){
 		if(!config.contains("general.cars.jumpAmount")) {
 			config.set("general.cars.jumpAmount", 60);
 			}
+		if(!config.contains("general.cars.hitBy")) {
+			config.set("general.cars.hitBy", false);
+			}
 		if(!config.contains("general.cars.roadBlocks.enable")) {
 			config.set("general.cars.roadBlocks.enable", false);
 			}
