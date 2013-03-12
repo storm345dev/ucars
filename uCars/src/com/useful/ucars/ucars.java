@@ -183,6 +183,12 @@ public void onEnable(){
 		if(!config.contains("general.cars.speedMods")) {
 			config.set("general.cars.speedMods", "88:0-10,19:0-20");
 			}
+		if(!config.contains("general.cars.placePerm.enable")) {
+			config.set("general.cars.placePerm.enable", false);
+			}
+		if(!config.contains("general.cars.placePerm.perm")) {
+			config.set("general.cars.placePerm.perm", "ucars.place");
+			}
 		if(!config.contains("colorScheme.success")) {
 			config.set("colorScheme.success", "&a");
 			}

@@ -450,6 +450,13 @@ void interact(PlayerInteractEvent event){
 		if(!ucars.config.getBoolean("general.cars.enable")){
 			return;
 		}
+		if(ucars.config.getBoolean("general.cars.placePerm.enable")){
+		    String perm = ucars.config.getString("general.cars.placePerm.perm");
+		    if(!event.getPlayer().hasPermission(perm)){
+		    	event.getPlayer().sendMessage(ucars.colors.getError() + "You do not have the "+perm+" permission needed to place cars!");
+		    	return;
+		    }
+		}
 		Location loc = block.getLocation().add(0, 1, 0);
 		Entity ent = event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
 	    Minecart car = (Minecart) ent;
@@ -458,7 +465,7 @@ void interact(PlayerInteractEvent event){
 	    car.setVelocity(new Vector(0,0,0));
 	    car.teleport(carloc);
 	    car.setVelocity(new Vector(0,0,0));
-		event.getPlayer().sendMessage(plugin.colors.getInfo() + "You placed a car! Cars can be driven with similar controls to a boat!");
+		event.getPlayer().sendMessage(ucars.colors.getInfo() + "You placed a car! Cars can be driven with similar controls to a boat!");
 		if(event.getPlayer().getGameMode() != GameMode.CREATIVE){
 			event.getPlayer().getInventory().removeItem(new ItemStack(328));
 		}

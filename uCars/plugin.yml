@@ -1,6 +1,6 @@
 name: uCars
 main: com.useful.ucars.ucars
-version: 7
+version: 8
 softdepend: [Vault]
 commands:
    ucars:
@@ -9,6 +9,12 @@ commands:
         permission: ucars.ucars
         permission-message: You don't have access to this command
         default: true
+   reloaducars:
+        description: This reloads the config
+        usage: /<command>
+        permission: ucars.reloaducars
+        permission-message: You don't have access to this command
+        default: op
    ufuel:
         description: This buys the specified amount of ufuel
         usage: /<command> [Buy <Amount>], [View]

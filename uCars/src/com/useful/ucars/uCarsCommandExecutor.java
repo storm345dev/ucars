@@ -94,6 +94,13 @@ return true;
 			return false;
 		}
 	}
+	else if(cmd.getName().equalsIgnoreCase("reloaducars")){
+		plugin.onDisable();
+		plugin.onEnable();
+		plugin.onLoad();
+		sender.sendMessage(ucars.colors.getInfo() + "The config has been reloaded!");
+		return true;
+	}
 	return false;
 }
 }
