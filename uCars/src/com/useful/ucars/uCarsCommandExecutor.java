@@ -27,6 +27,7 @@ public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
 		sender.sendMessage(ucars.colors.getTitle() + "[Medium block Boost:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.blockBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[High block Boost:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.HighblockBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Reset block Boost:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.ResetblockBoost")).getType().name());
+		sender.sendMessage(ucars.colors.getTitle() + "[Jump block:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.jumpBlock")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]" + ucars.colors.getInfo() + ucars.config.getDouble("general.cars.defSpeed"));
 		if(ucars.config.getBoolean("general.cars.fuel.enable")){
 			sender.sendMessage(ucars.colors.getTitle() + "[Fuel cost (Per litre):]" + ucars.colors.getInfo() + ucars.config.getDouble("general.cars.fuel.price"));

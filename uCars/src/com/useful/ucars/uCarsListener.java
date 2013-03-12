@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
@@ -76,20 +77,23 @@ public void ResetCarBoost(String playername, Minecart car, double defaultSpeed){
 	String p = playername;
 	World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
 	w.playSound(plugin.getServer().getPlayer(p).getLocation(), Sound.BAT_TAKEOFF, 10, -2);
-	ucars.carBoosts.put(p, defaultSpeed);
+	if(ucars.carBoosts.containsKey(p)){
+	ucars.carBoosts.remove(p);
+	}
 	return;
 }
 public boolean carBoost(String playerName, final double power, final long lengthMillis, double defaultSpeed){
 	final String p = playerName;
 	final double defMult = defaultSpeed;
-	if(!ucars.carBoosts.containsKey(p)){
-		ucars.carBoosts.put(p, (double)30);
+	double Cur = defMult;
+	if(ucars.carBoosts.containsKey(p)){
+	Cur = ucars.carBoosts.get(p);
 	}
-	final double Cur = ucars.carBoosts.get(p);
 	if(Cur > defMult){
 		//Already boosting!
 		return false;
 	}
+	final double current = Cur;
 	if(plugin == null){
 		plugin.getLogger().log(Level.SEVERE , "Error in ucars: Caused by: plugin = null? Report on bukkitdev immediately!");
 	}
@@ -98,17 +102,17 @@ public boolean carBoost(String playerName, final double power, final long length
 		public void run(){
 			World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
 			w.playSound(plugin.getServer().getPlayer(p).getLocation(), Sound.FIZZ, 10, -2);
-			double speed = Cur + power;
+			double speed = current + power;
 			ucars.carBoosts.put(p, speed);
 			//Boosting!
 			try {
 				Thread.sleep(lengthMillis);
 			} catch (InterruptedException e) {
-				ucars.carBoosts.put(p, defMult);
+				ucars.carBoosts.remove(p);
 				return;
 			}
 			//paused for set time!
-			ucars.carBoosts.put(p, defMult);
+			ucars.carBoosts.remove(p);
 			//resumed normal speed!
 			return;
 		}
@@ -233,10 +237,21 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		Vector playerVelocity = car.getPassenger().getVelocity();
     		double defMultiplier = ucars.config.getDouble("general.cars.defSpeed");
     		double multiplier = 30;
-    		if(!ucars.carBoosts.containsKey(player.getName())){
-    			ucars.carBoosts.put(player.getName(), defMultiplier);
+    		String speedMods = ucars.config.getString("general.cars.speedMods");
+    		String[] units = speedMods.split(",");
+    		int underid = under.getBlock().getTypeId();
+    		int underdata = under.getBlock().getData();
+    		for(String unit:units){
+    			String[] sections = unit.split("-");
+    			String rawid = sections[0];
+    			double mult = Double.parseDouble(sections[1]);
+    			if(ItemStackFromId.equals(rawid, underid, underdata)){
+    				multiplier = mult;
+    			}
     		}
+    		if(ucars.carBoosts.containsKey(player.getName())){
     		multiplier = ucars.carBoosts.get(player.getName());
+    		}
     		double maxSpeed = 5;
     		Vector Velocity = playerVelocity.multiply(multiplier);
     		if(loc.getBlock().getTypeId() == 27 || loc.getBlock().getTypeId() == 27 || loc.getBlock().getTypeId() == 66){
@@ -294,6 +309,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		//Block block = normalblock.getRelative(modX, modY, modZ);
     		//Block block = player.getTargetBlock(null, 1);
     		int bid = block.getTypeId();
+    		int bidData = block.getData();
     		int jumpBlock = ucars.config.getInt("general.cars.jumpBlock");
     		if(tid == jumpBlock){
     				double jumpAmount = ucars.config.getDouble("general.cars.jumpAmount");
@@ -320,17 +336,30 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    Location theNewLoc = block.getLocation();
 		    Location bidUpLoc = block.getLocation().add(0, 1, 0);
 		    int bidU = bidUpLoc.getBlock().getTypeId();
-		    if(bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9 && bid != 139 && bid != 85 && bid != 107 && bid != 113 && bid != 70 && bid != 72){
+		    Boolean cont = true;
+		    String[] rawids = ucars.config.getString("general.cars.barriers").split(",");
+		    for(String raw:rawids){
+		    	if(ItemStackFromId.equals(raw, bid, bidData)){
+		    		cont = false;
+		    	}
+		    }
+		    if(bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9 && bid != 139 && bid != 85 && bid != 107 && bid != 113 && bid != 70 && bid != 72 && cont){
 		    	if(bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8 || bidU == 9 || bidU == 44 || bidU == 43){
 		    		//if(block.getTypeId() == 44 || block.getTypeId() == 43){
 		    theNewLoc.add(0, 1.5d, 0);
-		    double y = 13;
+		    double y = 10;
             if(block.getType() == Material.STEP || block.getType() == Material.DOUBLE_STEP){
-           	 y = 7;
+           	 y = 5;
             }
-		     
+            Boolean ignore = false;
+		     if(car.getVelocity().getY() > 0){
+		    	 ignore = true;
+		     }
+		     if(!ignore){
 		     Velocity.setY(y);
+		     }
 		     car.setVelocity(Velocity);
+		     
 		    	//car.teleport(theNewLoc);
 		    	}
 		    }
@@ -363,7 +392,7 @@ void safeFly(EntityDamageEvent event){
 }
 @EventHandler
 void hitByCar(VehicleEntityCollisionEvent event){
-	if(!ucars.config.getBoolean("general.cars.hitBy")){
+	if(!ucars.config.getBoolean("general.cars.hitBy.enable")){
 		return;
 	}
 	Vehicle veh = event.getVehicle();
@@ -398,9 +427,11 @@ void hitByCar(VehicleEntityCollisionEvent event){
 		return;
 	}
 	double speed = (x*z)/2;
-	p.setVelocity(cart.getVelocity().setY(0.5));
+	double mult = ucars.config.getDouble("general.cars.hitBy.power")/5;
+	p.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
 	p.sendMessage(ucars.colors.getInfo()+"You were hit by a car!");
-	p.damage((int) (1.5*speed));
+	double damage = ucars.config.getDouble("general.cars.hitBy.damage");
+	p.damage((int) (damage*speed));
 	return;
 }
 
@@ -431,6 +462,30 @@ void interact(PlayerInteractEvent event){
 		if(event.getPlayer().getGameMode() != GameMode.CREATIVE){
 			event.getPlayer().getInventory().removeItem(new ItemStack(328));
 		}
+	}
+	if(inACar(event.getPlayer())){
+	if(ucars.config.getBoolean("general.cars.fuel.enable")){
+		String[] parts = ucars.config.getString("general.cars.fuel.check").split(":");
+		int id = Integer.parseInt(parts[0]);
+		int data = 0;
+		Boolean hasdata = false;
+		if(parts.length > 1){
+			hasdata = true;
+			data = Integer.parseInt(parts[1]);
+		}
+		if(event.getPlayer().getItemInHand().getTypeId() == id){
+			Boolean valid = true;
+			if(hasdata){
+				int tdata = ((int)event.getPlayer().getItemInHand().getData().getData());
+				if(!(tdata == data)){
+					valid = false;
+				}
+			}
+			if(valid){
+	            event.getPlayer().performCommand("ufuel view");
+			}
+		}
+	}
 	}
 	int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
 	int MedBoostId = ucars.config.getInt("general.cars.medBoost");

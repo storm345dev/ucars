@@ -153,8 +153,14 @@ public void onEnable(){
 		if(!config.contains("general.cars.jumpAmount")) {
 			config.set("general.cars.jumpAmount", 60);
 			}
-		if(!config.contains("general.cars.hitBy")) {
-			config.set("general.cars.hitBy", false);
+		if(!config.contains("general.cars.hitBy.enable")) {
+			config.set("general.cars.hitBy.enable", false);
+			}
+		if(!config.contains("general.cars.hitBy.power")) {
+			config.set("general.cars.hitBy.power", (double) 5);
+			}
+		if(!config.contains("general.cars.hitBy.damage")) {
+			config.set("general.cars.hitBy.damage", (double) 1.5);
 			}
 		if(!config.contains("general.cars.roadBlocks.enable")) {
 			config.set("general.cars.roadBlocks.enable", false);
@@ -167,6 +173,15 @@ public void onEnable(){
 			}
 		if(!config.contains("general.cars.fuel.price")) {
 			config.set("general.cars.fuel.price", (double)2);
+			}
+		if(!config.contains("general.cars.fuel.check")) {
+			config.set("general.cars.fuel.check", "288:0");
+			}
+		if(!config.contains("general.cars.barriers")) {
+			config.set("general.cars.barriers", "139,85,107,113");
+			}
+		if(!config.contains("general.cars.speedMods")) {
+			config.set("general.cars.speedMods", "88:0-10,19:0-20");
 			}
 		if(!config.contains("colorScheme.success")) {
 			config.set("colorScheme.success", "&a");
