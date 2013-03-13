@@ -3,6 +3,7 @@ package com.useful.ucars;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,6 +18,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -111,8 +113,14 @@ public class ucars extends JavaPlugin {
     }
 public void onEnable(){
 	plugin = this;
-	if(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").exists() == false){
-		copy(getResource("config.yml"), new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml"));
+	if(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").exists() == false || new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").length() < 1){
+		YamlConfiguration newC = new YamlConfiguration();
+		newC.set("time.created", System.currentTimeMillis());
+		try {
+			new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").createNewFile();
+			newC.save(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml"));
+		} catch (IOException e) {
+		}
 	}
 	config = getConfig();
 	try{
