@@ -236,7 +236,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		Location loc = car.getLocation();
     		Vector playerVelocity = car.getPassenger().getVelocity();
     		double defMultiplier = ucars.config.getDouble("general.cars.defSpeed");
-    		double multiplier = 30;
+    		double multiplier = defMultiplier;
     		String speedMods = ucars.config.getString("general.cars.speedMods");
     		String[] units = speedMods.split(",");
     		int underid = under.getBlock().getTypeId();
@@ -295,6 +295,10 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     				fuel = (double)Math.round(fuel*10)/10; 
     				ucars.fuel.put(player.getName(), fuel);
     			}
+    		}
+    		if(Velocity.getY() < 0){
+    			double newy = Velocity.getY() + 1d;
+    			Velocity.setY(newy);
     		}
     		car.setMaxSpeed(maxSpeed);
     		Location before = car.getLocation();
