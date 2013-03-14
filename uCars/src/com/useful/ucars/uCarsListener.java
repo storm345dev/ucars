@@ -347,6 +347,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    		cont = false;
 		    	}
 		    }
+		    //TODO have a list for grass, etc... so stop cars jumping
 		    if(bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9 && bid != 139 && bid != 85 && bid != 107 && bid != 113 && bid != 70 && bid != 72 && cont){
 		    	if(bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8 || bidU == 9 || bidU == 44 || bidU == 43){
 		    		//if(block.getTypeId() == 44 || block.getTypeId() == 43){
