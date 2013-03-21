@@ -60,7 +60,7 @@ private ucars plugin;
 		Minecart cart = (Minecart) veh;
 		Location loc = cart.getLocation();
 		float id = loc.getBlock().getTypeId();
-		if(id == 27 || id == 66 || id == 28){
+		if(id == 27 || id == 66 || id == 28 || id == 157){
 			return false;
 		}
 		return true;
@@ -68,7 +68,7 @@ private ucars plugin;
 public boolean isACar(Minecart cart){
 	Location loc = cart.getLocation();
 	float id = loc.getBlock().getTypeId();
-	if(id == 27 || id == 66 || id == 28){
+	if(id == 27 || id == 66 || id == 28 || id == 157){
 		return false;
 	}
 	return true;
@@ -343,6 +343,30 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    Boolean cont = true;
 		    String[] rawids = ucars.config.getString("general.cars.barriers").split(",");
 		    for(String raw:rawids){
+		    	if(ItemStackFromId.equals(raw, bid, bidData)){
+		    		cont = false;
+		    	}
+		    }
+		    List<String> ignoreJump = new ArrayList<String>();
+		    ignoreJump.add("132"); //tripwires
+		    ignoreJump.add("50"); //torches
+		    ignoreJump.add("76"); //redstone torches
+		    ignoreJump.add("75"); //redstone off torches
+		    ignoreJump.add("93"); //repeater off
+		    ignoreJump.add("94"); //repeater on
+		    ignoreJump.add("149"); //comparator off
+		    ignoreJump.add("106"); //vines
+		    ignoreJump.add("31"); //Tall grass
+		    ignoreJump.add("77"); //stone button
+		    ignoreJump.add("143"); //wood button
+		    ignoreJump.add("107"); //fence gate
+		    ignoreJump.add("69"); //lever
+		    ignoreJump.add("157"); //activator rail
+		    ignoreJump.add("78"); //snow
+		    ignoreJump.add("151"); //daylight detector
+		    ignoreJump.add("63"); //sign
+		    ignoreJump.add("68"); //sign on the side of a block
+		    for(String raw:ignoreJump){
 		    	if(ItemStackFromId.equals(raw, bid, bidData)){
 		    		cont = false;
 		    	}
