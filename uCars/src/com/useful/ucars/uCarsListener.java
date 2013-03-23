@@ -437,6 +437,9 @@ void hitByCar(VehicleEntityCollisionEvent event){
 		return;
 	}
 	Player p = (Player) ent;
+	if(inACar(p)){
+		return;
+	}
 	if(cart.getPassenger() == null){
 		return;
 	}
