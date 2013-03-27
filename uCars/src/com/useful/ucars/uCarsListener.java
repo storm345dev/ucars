@@ -33,6 +33,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public class uCarsListener implements Listener {
@@ -490,13 +491,14 @@ void interact(PlayerInteractEvent event){
 		    }
 		}
 		Location loc = block.getLocation().add(0, 1, 0);
-		Entity ent = event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
-	    Minecart car = (Minecart) ent;
+		event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
+	    /*
 	    Location carloc = car.getLocation();
 	    carloc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 	    car.setVelocity(new Vector(0,0,0));
 	    car.teleport(carloc);
 	    car.setVelocity(new Vector(0,0,0));
+	    */
 		event.getPlayer().sendMessage(ucars.colors.getInfo() + "You placed a car! Cars can be driven with similar controls to a boat!");
 		if(event.getPlayer().getGameMode() != GameMode.CREATIVE){
 			event.getPlayer().getInventory().removeItem(new ItemStack(328));
