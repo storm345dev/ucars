@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,15 +21,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 public class uCarsListener implements Listener {
@@ -153,7 +144,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     Location under = vehicle.getLocation();
     		under.setY(vehicle.getLocation().getY() - 1);
     Block underblock = under.getBlock();
-    Block underunderblock = underblock.getRelative(BlockFace.DOWN);
+    //Block underunderblock = underblock.getRelative(BlockFace.DOWN);
     Block normalblock = vehicle.getLocation().getBlock();
     Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
     /*
@@ -174,6 +165,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		}
     		Minecart car = (Minecart) vehicle;
     		// It is a valid car!
+    		
     		if(ucars.config.getBoolean("general.cars.roadBlocks.enable")){
     			Location loc = car.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation();
     			int id = loc.getBlock().getTypeId();
@@ -236,6 +228,8 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		}
     		Location loc = car.getLocation();
     		Vector playerVelocity = car.getPassenger().getVelocity();
+    		Vector cur = car.getVelocity();
+    		//playerVelocity = playerVelocity.multiply(cur); //TODO velocity preservation
     		double defMultiplier = ucars.config.getDouble("general.cars.defSpeed");
     		double multiplier = defMultiplier;
     		String speedMods = ucars.config.getString("general.cars.speedMods");
@@ -491,6 +485,7 @@ void interact(PlayerInteractEvent event){
 		    }
 		}
 		Location loc = block.getLocation().add(0, 1, 0);
+		loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 		event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
 	    /*
 	    Location carloc = car.getLocation();
