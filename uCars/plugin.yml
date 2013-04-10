@@ -1,6 +1,6 @@
 name: uCars
 main: com.useful.ucars.ucars
-version: 9
+version: 10
 softdepend: [Vault]
 commands:
    ucars:

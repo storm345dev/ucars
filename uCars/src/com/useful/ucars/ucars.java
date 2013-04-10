@@ -185,6 +185,12 @@ public void onEnable(){
 		if(!config.contains("general.cars.fuel.check")) {
 			config.set("general.cars.fuel.check", "288:0");
 			}
+		if(!config.contains("general.cars.fuel.items.enable")) {
+			config.set("general.cars.fuel.items.enable", false);
+			}
+		if(!config.contains("general.cars.fuel.items.ids")) {
+			config.set("general.cars.fuel.items.ids", "5,263:0,263:1");
+			}
 		if(!config.contains("general.cars.barriers")) {
 			config.set("general.cars.barriers", "139,85,107,113");
 			}
@@ -213,7 +219,7 @@ public void onEnable(){
 			config.set("colorScheme.tp", "&5");
 			}
         
-        if(config.getBoolean("general.cars.fuel.enable")){
+        if(config.getBoolean("general.cars.fuel.enable") && !config.getBoolean("general.cars.fuel.items.enable")){
         	try {
 				if(!setupEconomy()){
 					plugin.getLogger().warning("Attempted to enable fuel but vault NOT found. Please install vault to use fuel!");

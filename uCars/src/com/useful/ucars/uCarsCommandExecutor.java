@@ -20,7 +20,7 @@ public uCarsCommandExecutor(ucars instance){
 public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
 		String[] args) {
 	if(cmd.getName().equalsIgnoreCase("ucars")){
-		sender.sendMessage(ucars.colors.getInfo() + "Ucars -by storm345- is working!");
+		sender.sendMessage(ucars.colors.getInfo() + "Ucars v+"+plugin.getDescription().getVersion()+" -by storm345- is working!");
 		sender.sendMessage(ucars.colors.getTitle() + "[Low Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.lowBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Medium Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.medBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[High Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.highBoost")).getType().name());
@@ -29,8 +29,11 @@ public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
 		sender.sendMessage(ucars.colors.getTitle() + "[Reset block Boost:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.ResetblockBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Jump block:]" + ucars.colors.getInfo() + "Drive over " + new ItemStack(ucars.config.getInt("general.cars.jumpBlock")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]" + ucars.colors.getInfo() + ucars.config.getDouble("general.cars.defSpeed"));
-		if(ucars.config.getBoolean("general.cars.fuel.enable")){
+		if(ucars.config.getBoolean("general.cars.fuel.enable") && !ucars.config.getBoolean("general.cars.fuel.items.enable")){
 			sender.sendMessage(ucars.colors.getTitle() + "[Fuel cost (Per litre):]" + ucars.colors.getInfo() + ucars.config.getDouble("general.cars.fuel.price"));
+		}
+		if(ucars.config.getBoolean("general.cars.fuel.enable") && ucars.config.getBoolean("general.cars.fuel.items.enable")){
+			sender.sendMessage(ucars.colors.getTitle() + "[Fuel items:]" + ucars.colors.getInfo() + ucars.config.getDouble("general.cars.fuel.items.ids"));
 		}
 		return true;
 	}
@@ -54,6 +57,9 @@ public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
 				fuel = ucars.fuel.get(sender.getName());
 			}
 			sender.sendMessage(ucars.colors.getTitle() + "[Your fuel:]" + ucars.colors.getInfo() + fuel +" litres");
+			if(ucars.config.getBoolean("general.cars.fuel.items.enable")){
+				sender.sendMessage(ucars.colors.getTitle() + "[Important:]" + ucars.colors.getInfo() + "Item fuel is enabled-The above is irrelevant!");
+			}
 			return true;
 		}
 		else if(action.equalsIgnoreCase("buy")){

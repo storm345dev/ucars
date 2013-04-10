@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +25,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -275,7 +277,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		if(playerVelocity.getX() == 0 && playerVelocity.getZ() == 0){
     			return;
     		}
-    		if(ucars.config.getBoolean("general.cars.fuel.enable")){
+    		if(ucars.config.getBoolean("general.cars.fuel.enable") && !ucars.config.getBoolean("general.cars.fuel.items.enable")){
     			double fuel = 0;
     			if(ucars.fuel.containsKey(player.getName())){
     			fuel = ucars.fuel.get(player.getName());
@@ -289,6 +291,62 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     				fuel = fuel - 0.1;
     				fuel = (double)Math.round(fuel*10)/10; 
     				ucars.fuel.put(player.getName(), fuel);
+    			}
+    		}
+    		if(ucars.config.getBoolean("general.cars.fuel.enable") && ucars.config.getBoolean("general.cars.fuel.items.enable")){
+    			//item fuel
+    			double fuel = 0;
+    			String idsraw = ucars.config.getString("general.cars.fuel.items.ids");
+    			String[] ids = idsraw.split(",");
+    			List<ItemStack> items = new ArrayList<ItemStack>();
+    			for(String raw:ids){
+    				ItemStack stack = ItemStackFromId.get(raw);
+    				if(stack != null){
+    					items.add(stack);
+    				}
+    			}
+    			Inventory inv = player.getInventory();
+    			for(ItemStack item:items){
+    				if(inv.contains(item.getType(), 1)){
+    					fuel = fuel + 0.1;
+    				}
+    			}
+    			if(fuel < 0.1){
+    				player.sendMessage(ucars.colors.getError() + "You don't have any fuel left!");
+    				return;
+    			}
+    			int amount = 0 + (int)(Math.random()*150);
+    			if(amount == 10){
+    				//remove item
+    				Boolean taken = false;
+    				Boolean last = false;
+    				int toUse = 0;
+    				for(int i=0;i<inv.getContents().length;i++){
+    					ItemStack item = inv.getItem(i);
+    					Boolean ignore = false;
+    					try {
+							item.getTypeId();
+						} catch (Exception e) {
+							ignore = true;
+						}
+    					if(!ignore){
+    					if(!taken){
+    						for(ItemStack titem:items){
+    							if(titem.getTypeId() == item.getTypeId()){
+    								taken = true;
+    								if(item.getAmount() < 2){
+    									last = true;
+    									toUse = i;
+    								}
+    								item.setAmount((item.getAmount()-1));
+    							}
+    						}
+    					}
+    					}
+    				}
+    				if(last){
+    				inv.setItem(toUse, new ItemStack(Material.AIR));
+    				}
     			}
     		}
     		if(Velocity.getY() < 0){

@@ -8,7 +8,7 @@ public class ItemStackFromId {
 		int id = Integer.parseInt(parts[0]);
 		short data = 0;
 		Boolean hasdata = false;
-		if(parts.length > 0){
+		if(parts.length > 1){
 			hasdata = true;
 			data = Short.parseShort(parts[1]);
 		}
