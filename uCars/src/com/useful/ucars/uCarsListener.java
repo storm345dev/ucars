@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -21,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
@@ -33,6 +36,45 @@ public class uCarsListener implements Listener {
 private ucars plugin;
 	public uCarsListener(ucars plugin){
 		this.plugin = ucars.plugin;
+	}
+	public boolean trafficlightSignOn(Block block){
+		if(block.getRelative(BlockFace.NORTH).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.NORTH).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		else if(block.getRelative(BlockFace.EAST).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.EAST).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		else if(block.getRelative(BlockFace.SOUTH).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.SOUTH).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		else if(block.getRelative(BlockFace.WEST).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.WEST).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		else if(block.getRelative(BlockFace.DOWN).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.DOWN).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		else if(block.getRelative(BlockFace.UP).getState() instanceof Sign){
+			Sign sign = (Sign) block.getRelative(BlockFace.UP).getState();
+			if(ChatColor.stripColor(sign.getLine(1)).equalsIgnoreCase(ChatColor.stripColor("[TrafficLight]"))){
+				return true;
+			}
+		}
+		return false;
 	}
 	public boolean inACar(String playername){
 		Player p = plugin.getServer().getPlayer(playername);
@@ -139,13 +181,21 @@ public boolean inACar(Player p){
 	return true;
 }
 
-
+@EventHandler
+public void signWriter(SignChangeEvent event){
+	String[] lines = event.getLines();
+	if(ChatColor.stripColor(lines[1]).equalsIgnoreCase("[TrafficLight]")){
+		lines[1] =ChatColor.YELLOW+"[TrafficLight]";
+		}
+	return;
+}
 @EventHandler
 public void onVehicleUpdate(VehicleUpdateEvent event){
     Vehicle vehicle = event.getVehicle();
     Location under = vehicle.getLocation();
     		under.setY(vehicle.getLocation().getY() - 1);
     Block underblock = under.getBlock();
+    Block underunderblock = underblock.getRelative(BlockFace.DOWN);
     //Block underunderblock = underblock.getRelative(BlockFace.DOWN);
     Block normalblock = vehicle.getLocation().getBlock();
     Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
@@ -209,26 +259,66 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     				return;
     			}
     		}
+    		Location loc = car.getLocation();
     		int blockBoostId = ucars.config.getInt("general.cars.blockBoost");
     		int tid = underblock.getTypeId();
-    		if(tid == blockBoostId){
+    		int uid = underunderblock.getTypeId();
+    		if(ucars.config.getBoolean("general.cars.trafficLights.enable")){
+    			int id = ucars.config.getInt("general.cars.trafficLights.waitingBlock");
+    			if(tid == id || uid == id){
+    				//check if need to wait!
+    				//TODO
+    				Boolean found = false;
+    				Boolean on= false;
+    				int radius = 3;
+    				int radiusSquared = radius * radius;
+    				for(int x = -radius; x <= radius &&!found; x++) {
+    				    for(int z = -radius; z <= radius && !found; z++) {
+    				        if( (x*x) + (z*z) <= radiusSquared) {
+    				            double locX = loc.getX() + x;
+    				            double locZ = loc.getZ() + z;
+    				            for(int y=(int) Math.round((loc.getY()-3));y<(loc.getY()+4)&&!found;y++){
+    				            Location light = new Location(loc.getWorld(), locX, y, locZ);
+    				            if(light.getBlock().getType() == Material.REDSTONE_LAMP_OFF){
+    				            	if(trafficlightSignOn(light.getBlock())){
+    				            	found = true;
+    				            	on = false;
+    				            	}
+    				            }
+    				            else if(light.getBlock().getType() == Material.REDSTONE_TORCH_ON){
+    				            	if(trafficlightSignOn(light.getBlock())){
+    				            	found = true;
+    				            	on = true;
+    				            	}
+    				            }
+    				            }
+    				        }
+    				    }
+    				}
+    				if(found){
+    					if(!on){
+    						return;
+    					}
+    				}
+    			}
+    		}
+    		if(tid == blockBoostId || uid == blockBoostId){
     			if(inACar(player)){
     				carBoost(player.getName(), 20, 6000, ucars.config.getDouble("general.cars.defSpeed"));
     			}
     		}
     		int HighblockBoostId = ucars.config.getInt("general.cars.HighblockBoost");
-    		if(tid == HighblockBoostId){
+    		if(tid == HighblockBoostId || uid == HighblockBoostId){
     			if(inACar(player)){
     				carBoost(player.getName(), 50, 8000, ucars.config.getDouble("general.cars.defSpeed"));
     			}
     		}
     		int ResetblockBoostId = ucars.config.getInt("general.cars.ResetblockBoost");
-    		if(tid == ResetblockBoostId){
+    		if(tid == ResetblockBoostId || uid == ResetblockBoostId){
     			if(inACar(player)){
     				ResetCarBoost(player.getName(), car, ucars.config.getDouble("general.cars.defSpeed"));
     			}
     		}
-    		Location loc = car.getLocation();
     		Vector playerVelocity = car.getPassenger().getVelocity();
     		Vector cur = car.getVelocity();
     		//playerVelocity = playerVelocity.multiply(cur); //TODO velocity preservation
@@ -368,13 +458,14 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		int bid = block.getTypeId();
     		int bidData = block.getData();
     		int jumpBlock = ucars.config.getInt("general.cars.jumpBlock");
-    		if(tid == jumpBlock){
+    		if(tid == jumpBlock || uid == jumpBlock){
     				double jumpAmount = ucars.config.getDouble("general.cars.jumpAmount");
     				double y = Velocity.getY() + jumpAmount;
        		     Velocity.setY(y);
        		     car.setVelocity(Velocity);
     			
     		}
+    		
     		if(block.getY() == under.getBlockY() || block.getY() > normalblock.getY()){
     			//On the floor or too high to jump
     			if(bid == 0 || bid == 10 || bid == 11 || bid == 8 || bid == 9 || bid == 139 || bid == 85 || bid == 107 || bid == 113 || bid == 70 || bid == 72){

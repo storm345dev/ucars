@@ -158,8 +158,11 @@ public void onEnable(){
 		if(!config.contains("general.cars.jumpBlock")) {
 			config.set("general.cars.jumpBlock", 42);
 			}
-		if(!config.contains("general.cars.jumpAmount")) {
-			config.set("general.cars.jumpAmount", 60);
+		if(!config.contains("general.cars.trafficLights.enable")) {
+			config.set("general.cars.trafficLights.enable", true);
+			}
+		if(!config.contains("general.cars.trafficLights.waitingBlock")) {
+			config.set("general.cars.trafficLights.waitingBlock", 155);
 			}
 		if(!config.contains("general.cars.hitBy.enable")) {
 			config.set("general.cars.hitBy.enable", false);
