@@ -185,7 +185,7 @@ public boolean inACar(Player p){
 public void signWriter(SignChangeEvent event){
 	String[] lines = event.getLines();
 	if(ChatColor.stripColor(lines[1]).equalsIgnoreCase("[TrafficLight]")){
-		lines[1] =ChatColor.YELLOW+"[TrafficLight]";
+		lines[1] ="[TrafficLight]";
 		}
 	return;
 }

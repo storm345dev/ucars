@@ -20,7 +20,7 @@ public uCarsCommandExecutor(ucars instance){
 public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,
 		String[] args) {
 	if(cmd.getName().equalsIgnoreCase("ucars")){
-		sender.sendMessage(ucars.colors.getInfo() + "Ucars v+"+plugin.getDescription().getVersion()+" -by storm345- is working!");
+		sender.sendMessage(ucars.colors.getInfo() + "Ucars v"+plugin.getDescription().getVersion()+" -by storm345- is working!");
 		sender.sendMessage(ucars.colors.getTitle() + "[Low Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.lowBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[Medium Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.medBoost")).getType().name());
 		sender.sendMessage(ucars.colors.getTitle() + "[High Boost:]" + ucars.colors.getInfo() + "Right click with " + new ItemStack(ucars.config.getInt("general.cars.highBoost")).getType().name());
