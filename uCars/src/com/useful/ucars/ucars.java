@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -55,6 +56,30 @@ public class ucars extends JavaPlugin {
 		prefix = prefix.replace("&i", "" + ChatColor.ITALIC);
 		prefix = prefix.replace("&m", "" + ChatColor.MAGIC);
 		return prefix;
+	}
+	public Boolean isBlockEqualToConfigIds(String configPath, Block block){
+		//split by , then split by : then compare!
+		String ids = config.getString(configPath);
+		String[] rawids = ids.split(",");
+		for(String raw:rawids){
+			String[] parts = raw.split(":");
+			if(parts.length < 1){}
+			else if(parts.length < 2){
+				int id = Integer.parseInt(parts[0]);
+				if(id == block.getTypeId()){
+					return true;
+				}
+			}
+			else{
+				int id = Integer.parseInt(parts[0]);
+				int data = Integer.parseInt(parts[1]);
+				int bdata = block.getData();
+				if(id == block.getTypeId() && bdata == data){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	private void copy(InputStream in, File file) {
 	    try {

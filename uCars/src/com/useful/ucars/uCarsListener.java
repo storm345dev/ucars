@@ -260,14 +260,8 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     			}
     		}
     		Location loc = car.getLocation();
-    		int blockBoostId = ucars.config.getInt("general.cars.blockBoost");
-    		int tid = underblock.getTypeId();
-    		int uid = underunderblock.getTypeId();
     		if(ucars.config.getBoolean("general.cars.trafficLights.enable")){
-    			int id = ucars.config.getInt("general.cars.trafficLights.waitingBlock");
-    			if(tid == id || uid == id){
-    				//check if need to wait!
-    				//TODO
+    			if(plugin.isBlockEqualToConfigIds("general.cars.trafficLights.waitingBlock", underblock) || plugin.isBlockEqualToConfigIds("general.cars.trafficLights.waitingBlock", underunderblock)){
     				Boolean found = false;
     				Boolean on= false;
     				int radius = 3;
@@ -302,19 +296,17 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     				}
     			}
     		}
-    		if(tid == blockBoostId || uid == blockBoostId){
+    		if(plugin.isBlockEqualToConfigIds("general.cars.blockBoost", underblock) || plugin.isBlockEqualToConfigIds("general.cars.blockBoost", underunderblock)){
     			if(inACar(player)){
     				carBoost(player.getName(), 20, 6000, ucars.config.getDouble("general.cars.defSpeed"));
     			}
     		}
-    		int HighblockBoostId = ucars.config.getInt("general.cars.HighblockBoost");
-    		if(tid == HighblockBoostId || uid == HighblockBoostId){
+    		if(plugin.isBlockEqualToConfigIds("general.cars.HighblockBoost", underblock) || plugin.isBlockEqualToConfigIds("general.cars.HighblockBoost", underunderblock)){
     			if(inACar(player)){
     				carBoost(player.getName(), 50, 8000, ucars.config.getDouble("general.cars.defSpeed"));
     			}
     		}
-    		int ResetblockBoostId = ucars.config.getInt("general.cars.ResetblockBoost");
-    		if(tid == ResetblockBoostId || uid == ResetblockBoostId){
+    		if(plugin.isBlockEqualToConfigIds("general.cars.ResetblockBoost", underblock) || plugin.isBlockEqualToConfigIds("general.cars.ResetblockBoost", underunderblock)){
     			if(inACar(player)){
     				ResetCarBoost(player.getName(), car, ucars.config.getDouble("general.cars.defSpeed"));
     			}
@@ -457,8 +449,7 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
     		//Block block = player.getTargetBlock(null, 1);
     		int bid = block.getTypeId();
     		int bidData = block.getData();
-    		int jumpBlock = ucars.config.getInt("general.cars.jumpBlock");
-    		if(tid == jumpBlock || uid == jumpBlock){
+    		if(plugin.isBlockEqualToConfigIds("general.cars.jumpBlock", underblock) || plugin.isBlockEqualToConfigIds("general.cars.jumpBlock", underunderblock)){
     				double jumpAmount = ucars.config.getDouble("general.cars.jumpAmount");
     				double y = Velocity.getY() + jumpAmount;
        		     Velocity.setY(y);
