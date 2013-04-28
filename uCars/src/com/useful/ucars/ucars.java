@@ -64,6 +64,7 @@ public class ucars extends JavaPlugin {
 	        int len;
 	        while((len=in.read(buf))>0){
 	            out.write(buf,0,len);
+	            //System.out.write(buf, 0, len);
 	        }
 	        out.close();
 	        in.close();
@@ -114,18 +115,22 @@ public class ucars extends JavaPlugin {
     }
 public void onEnable(){
 	plugin = this;
+	
 	if(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").exists() == false || new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").length() < 1){
-		YamlConfiguration newC = new YamlConfiguration();
-		newC.set("time.created", System.currentTimeMillis());
+		//YamlConfiguration newC = new YamlConfiguration();
+		//newC.set("time.created", System.currentTimeMillis());
+		File configFile = new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml");
 		try {
-			new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml").createNewFile();
-			newC.save(new File(getDataFolder().getAbsolutePath() + File.separator + "config.yml"));
+			configFile.createNewFile();
+			//newC.save(configFile);
 		} catch (IOException e) {
 		}
+		copy(getResource("ucarsConfigHeader.yml"), configFile);
 	}
+	
 	config = getConfig();
 	try{
-		config.load(this.getDataFolder().getAbsolutePath() + File.separator + "config.yml");
+		//config.load(this.getDataFolder().getAbsolutePath() + File.separator + "config.yml");
 		if(!config.contains("general.cars.# description")) {
 			config.set("general.cars.# description", "If enabled this will allow for drivable cars(Minecarts not on rails)");
 			}
