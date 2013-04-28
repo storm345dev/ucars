@@ -57,30 +57,6 @@ public class ucars extends JavaPlugin {
 		prefix = prefix.replace("&m", "" + ChatColor.MAGIC);
 		return prefix;
 	}
-	public Boolean isBlockEqualToConfigIds(String configPath, Block block){
-		//split by , then split by : then compare!
-		String ids = config.getString(configPath);
-		String[] rawids = ids.split(",");
-		for(String raw:rawids){
-			String[] parts = raw.split(":");
-			if(parts.length < 1){}
-			else if(parts.length < 2){
-				int id = Integer.parseInt(parts[0]);
-				if(id == block.getTypeId()){
-					return true;
-				}
-			}
-			else{
-				int id = Integer.parseInt(parts[0]);
-				int data = Integer.parseInt(parts[1]);
-				int bdata = block.getData();
-				if(id == block.getTypeId() && bdata == data){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 	private void copy(InputStream in, File file) {
 	    try {
 	        OutputStream out = new FileOutputStream(file);
@@ -163,31 +139,31 @@ public void onEnable(){
 			config.set("general.cars.defSpeed", (double)30);
 			}
 		if(!config.contains("general.cars.lowBoost")) {
-			config.set("general.cars.lowBoost", 263);
+			config.set("general.cars.lowBoost", "263");
 			}
 		if(!config.contains("general.cars.medBoost")) {
-			config.set("general.cars.medBoost", 265);
+			config.set("general.cars.medBoost", "265");
 			}
 		if(!config.contains("general.cars.highBoost")) {
-			config.set("general.cars.highBoost", 264);
+			config.set("general.cars.highBoost", "264");
 			}
 		if(!config.contains("general.cars.blockBoost")) {
-			config.set("general.cars.blockBoost", 41);
+			config.set("general.cars.blockBoost", "41");
 			}
 		if(!config.contains("general.cars.HighblockBoost")) {
-			config.set("general.cars.HighblockBoost", 57);
+			config.set("general.cars.HighblockBoost", "57");
 			}
 		if(!config.contains("general.cars.ResetblockBoost")) {
-			config.set("general.cars.ResetblockBoost", 133);
+			config.set("general.cars.ResetblockBoost", "133");
 			}
 		if(!config.contains("general.cars.jumpBlock")) {
-			config.set("general.cars.jumpBlock", 42);
+			config.set("general.cars.jumpBlock", "42");
 			}
 		if(!config.contains("general.cars.trafficLights.enable")) {
 			config.set("general.cars.trafficLights.enable", true);
 			}
 		if(!config.contains("general.cars.trafficLights.waitingBlock")) {
-			config.set("general.cars.trafficLights.waitingBlock", 155);
+			config.set("general.cars.trafficLights.waitingBlock", "155");
 			}
 		if(!config.contains("general.cars.hitBy.enable")) {
 			config.set("general.cars.hitBy.enable", false);
@@ -256,9 +232,13 @@ public void onEnable(){
 				}
 				else{
 					vault = true;
+					fuel = new HashMap<String, Double>();
       File fuels = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
       if(fuels.exists() && fuels.length() > 1){
 				fuel = loadHashMapDouble(plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
+                if(fuel == null){
+                fuel = new HashMap<String, Double>();	
+                }
       }
 				}
 			} catch (Exception e) {
@@ -292,5 +272,29 @@ public void onDisable(){
 	saveHashMap(fuel, plugin.getDataFolder().getAbsolutePath() + File.separator + "fuel.bin");
 	getLogger().info("uCars has been disabled!");
 	return;
+}
+public Boolean isBlockEqualToConfigIds(String configPath, Block block){
+	//split by , then split by : then compare!
+	String ids = config.getString(configPath);
+	String[] rawids = ids.split(",");
+	for(String raw:rawids){
+		String[] parts = raw.split(":");
+		if(parts.length < 1){}
+		else if(parts.length < 2){
+			int id = Integer.parseInt(parts[0]);
+			if(id == block.getTypeId()){
+				return true;
+			}
+		}
+		else{
+			int id = Integer.parseInt(parts[0]);
+			int data = Integer.parseInt(parts[1]);
+			int bdata = block.getData();
+			if(id == block.getTypeId() && bdata == data){
+				return true;
+			}
+		}
+	}
+	return false;
 }
 }
