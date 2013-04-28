@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.minecraft.server.v1_5_R2.EntityMinecartRideable;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -514,6 +516,10 @@ public void onVehicleUpdate(VehicleUpdateEvent event){
 		    double y = 10;
             if(block.getType() == Material.STEP || block.getType() == Material.DOUBLE_STEP){
            	 y = 5;
+            }
+            Material carBlock = car.getLocation().getBlock().getType();
+            if(carBlock == Material.WOOD_STAIRS || carBlock == Material.COBBLESTONE_STAIRS || carBlock == Material.BRICK_STAIRS || carBlock == Material.SMOOTH_STAIRS || carBlock == Material.NETHER_BRICK_STAIRS || carBlock == Material.SANDSTONE_STAIRS || carBlock == Material.SPRUCE_WOOD_STAIRS || carBlock == Material.BIRCH_WOOD_STAIRS || carBlock == Material.JUNGLE_WOOD_STAIRS || carBlock == Material.QUARTZ_STAIRS){
+            	y=0.2;
             }
             Boolean ignore = false;
 		     if(car.getVelocity().getY() > 0){
