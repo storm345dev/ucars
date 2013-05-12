@@ -34,6 +34,7 @@ public class ucars extends JavaPlugin {
 	public static Colors colors;
 
 	public static String colorise(String prefix) {
+                /*
 		prefix = prefix.replace("&0", "" + ChatColor.BLACK);
 		prefix = prefix.replace("&1", "" + ChatColor.DARK_BLUE);
 		prefix = prefix.replace("&2", "" + ChatColor.DARK_GREEN);
@@ -55,8 +56,8 @@ public class ucars extends JavaPlugin {
 		prefix = prefix.replace("&i", "" + ChatColor.ITALIC);
 		prefix = prefix.replace("&m", "" + ChatColor.MAGIC);
 		return prefix;
-		// return ChatColor.translateAlternateColorCodes('&', prefix); - no
-		// bold, magic or italic and different to above entirely.
+                */
+		 return ChatColor.translateAlternateColorCodes('&', prefix);
 	}
 
 	private void copy(InputStream in, File file) {
