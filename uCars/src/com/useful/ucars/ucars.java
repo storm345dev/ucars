@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.useful.ucars.Colors;
 
 public class ucars extends JavaPlugin {
-	// added to github so users can see source code! :D
+	// The main file
 	public static HashMap<String, Double> carBoosts = new HashMap<String, Double>();
 	public static HashMap<String, Double> fuel = new HashMap<String, Double>();
 	public static ucars plugin;
