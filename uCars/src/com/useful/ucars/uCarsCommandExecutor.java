@@ -29,47 +29,38 @@ public class uCarsCommandExecutor implements CommandExecutor {
 					+ "[Low Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Right click with "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.lowBoost")).getType().name());
+					+ ucars.config.getString("general.cars.lowBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Medium Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Right click with "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.medBoost")).getType().name());
+					+ ucars.config.getString("general.cars.medBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[High Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Right click with "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.highBoost")).getType().name());
+					+ ucars.config.getString("general.cars.highBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Medium block Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Drive over "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.blockBoost")).getType()
-							.name());
+					+ ucars.config.getString("general.cars.blockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[High block Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Drive over "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.HighblockBoost")).getType()
-							.name());
+					+ ucars.config.getString("general.cars.HighblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Reset block Boost:]"
 					+ ucars.colors.getInfo()
 					+ "Drive over "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.ResetblockBoost")).getType()
-							.name());
+					+ ucars.config
+							.getString("general.cars.ResetblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Jump block:]"
 					+ ucars.colors.getInfo()
 					+ "Drive over "
-					+ new ItemStack(ucars.config
-							.getInt("general.cars.jumpBlock")).getType().name());
+					+ ucars.config.getString("general.cars.jumpBlock"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]"
 					+ ucars.colors.getInfo()
 					+ ucars.config.getDouble("general.cars.defSpeed"));

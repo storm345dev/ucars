@@ -757,11 +757,15 @@ public class uCarsListener implements Listener {
 				}
 			}
 		}
-		int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
-		int MedBoostId = ucars.config.getInt("general.cars.medBoost");
-		int HighBoostId = ucars.config.getInt("general.cars.highBoost");
-		float bid = event.getPlayer().getItemInHand().getTypeId(); // booster id
-		if (bid == LowBoostId) {
+		String LowBoostRaw = ucars.config.getString("general.cars.lowBoost");
+		String MedBoostRaw = ucars.config.getString("general.cars.medBoost");
+		String HighBoostRaw= ucars.config.getString("general.cars.highBoost");
+		//int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
+		//int MedBoostId = ucars.config.getInt("general.cars.medBoost");
+		//int HighBoostId = ucars.config.getInt("general.cars.highBoost");
+		int bid = event.getPlayer().getItemInHand().getTypeId(); // booster id
+		int bdata = event.getPlayer().getItemInHand().getDurability();
+		if (ItemStackFromId.equals(LowBoostRaw, bid, bdata)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 10,
 						3000, ucars.config.getDouble("general.cars.defSpeed"));
@@ -769,7 +773,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(new ItemStack(LowBoostId));
+								.removeItem(ItemStackFromId.get(LowBoostRaw));
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
@@ -782,7 +786,7 @@ public class uCarsListener implements Listener {
 				return;
 			}
 		}
-		if (bid == MedBoostId) {
+		if (ItemStackFromId.equals(MedBoostRaw, bid, bdata)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 20,
 						6000, ucars.config.getDouble("general.cars.defSpeed"));
@@ -790,7 +794,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(new ItemStack(MedBoostId));
+								.removeItem(ItemStackFromId.get(MedBoostRaw));
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
@@ -803,7 +807,7 @@ public class uCarsListener implements Listener {
 				return;
 			}
 		}
-		if (bid == HighBoostId) {
+		if (ItemStackFromId.equals(HighBoostRaw, bid, bdata)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 50,
 						10000, ucars.config.getDouble("general.cars.defSpeed"));
@@ -811,7 +815,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(new ItemStack(HighBoostId));
+								.removeItem(ItemStackFromId.get(HighBoostRaw));
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
