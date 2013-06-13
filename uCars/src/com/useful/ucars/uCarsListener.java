@@ -111,6 +111,14 @@ public class uCarsListener implements Listener {
 		if (id == 27 || id == 66 || id == 28 || id == 157) {
 			return false;
 		}
+		id = loc.getBlock().getRelative(BlockFace.DOWN).getTypeId();
+		if (id == 27 || id == 66 || id == 28 || id == 157) {
+			return false;
+		}
+		id = loc.getBlock().getRelative(BlockFace.DOWN, 2).getTypeId();
+		if (id == 27 || id == 66 || id == 28 || id == 157) {
+			return false;
+		}
 		return true;
 	}
 
