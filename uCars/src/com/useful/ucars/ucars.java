@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -21,6 +23,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,6 +39,7 @@ public class ucars extends JavaPlugin {
 	public static Boolean vault = false;
 	public static Economy economy = null;
 	public static Colors colors;
+	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
 
 	public static String colorise(String prefix) {
                 /*
@@ -364,6 +368,16 @@ public class ucars extends JavaPlugin {
 			lang.save(langFile);
 		} catch (IOException e1) {
 			getLogger().info("Error parsing lang file!");
+		}
+		String idsraw = ucars.config
+				.getString("general.cars.fuel.items.ids");
+		String[] ids = idsraw.split(",");
+		ufuelitems = new ArrayList<ItemStack>();
+		for (String raw : ids) {
+			ItemStack stack = ItemStackFromId.get(raw);
+			if (stack != null) {
+				ufuelitems.add(stack);
+			}
 		}
 		colors = new Colors(config.getString("colorScheme.success"),
 				config.getString("colorScheme.error"),

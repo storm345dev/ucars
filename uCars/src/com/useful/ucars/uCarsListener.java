@@ -441,16 +441,7 @@ public class uCarsListener implements Listener {
 							.getBoolean("general.cars.fuel.items.enable")) {
 				// item fuel
 				double fuel = 0;
-				String idsraw = ucars.config
-						.getString("general.cars.fuel.items.ids");
-				String[] ids = idsraw.split(",");
-				List<ItemStack> items = new ArrayList<ItemStack>();
-				for (String raw : ids) {
-					ItemStack stack = ItemStackFromId.get(raw);
-					if (stack != null) {
-						items.add(stack);
-					}
-				}
+				List<ItemStack> items = plugin.ufuelitems;
 				Inventory inv = player.getInventory();
 				for (ItemStack item : items) {
 					if (inv.contains(item.getType(), 1)) {
