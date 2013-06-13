@@ -183,6 +183,9 @@ public class ucars extends JavaPlugin {
 			if(!lang.contains("lang.messages.hitByCar")){
 				lang.set("lang.messages.hitByCar", "You were hit by a car!");
 			}
+			if(!lang.contains("lang.cars.remove")){
+				lang.set("lang.cars.remove", "&e%amount%&a cars in world &e%world%&a were removed!");
+			}
 			if(!lang.contains("lang.boosts.already")){
 				lang.set("lang.boosts.already", "&4Already boosting!");
 			}

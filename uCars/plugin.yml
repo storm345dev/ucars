@@ -21,3 +21,9 @@ commands:
         permission: ucars.ucars
         permission-message: You don't have access to this command
         default: true
+   cars:
+        description: This allows for car management (remove etc...)
+        usage: /<command> [Remove]
+        permission: ucars.cars
+        permission-message: You don't have access to this command
+        default: op

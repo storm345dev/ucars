@@ -1,12 +1,16 @@
 package com.useful.ucars;
 
 import java.io.File;
+import java.util.List;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -165,6 +169,41 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			sender.sendMessage(ucars.colors.getInfo()
 					+ Lang.get("lang.messages.reload"));
 			return true;
+		}
+		else if(cmd.getName().equalsIgnoreCase("cars")){
+			if(args.length < 1){
+				return false;
+			}
+			String action = args[0];
+			if(action.equalsIgnoreCase("remove")){
+				if(!(sender instanceof Player)){
+					sender.sendMessage(ucars.colors.getError() + Lang.get("lang.messages.playersOnly"));
+					return true;
+				}
+				Player player = (Player) sender;
+				World world = player.getWorld();
+				List<Entity> ents = world.getEntities();
+				int removed = 0;
+				for(Entity ent:ents){
+					if(ent instanceof Minecart){
+						Minecart cart = (Minecart) ent;
+						if(new uCarsListener(ucars.plugin).isACar(cart)){
+							ent.eject();
+							if(ent.getPassenger() != null){
+								ent.getPassenger().eject();
+							}
+							ent.remove();
+							removed++;
+						}
+					}
+				}
+				String success = Lang.get("lang.cars.remove");
+				success = success.replaceAll("%world%", world.getName());
+				success = success.replaceAll("%amount%", ""+removed);
+				sender.sendMessage(ucars.colors.getSuccess() + success);
+				return true;
+			}
+			return false;
 		}
 		return false;
 	}
