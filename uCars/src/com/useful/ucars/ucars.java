@@ -2,6 +2,7 @@ package com.useful.ucars;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,9 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +30,7 @@ public class ucars extends JavaPlugin {
 	// The main file
 	public static HashMap<String, Double> carBoosts = new HashMap<String, Double>();
 	public static HashMap<String, Double> fuel = new HashMap<String, Double>();
+	public static YamlConfiguration lang = new YamlConfiguration();
 	public static ucars plugin;
 	public static FileConfiguration config;
 	public static Boolean vault = false;
@@ -117,7 +121,22 @@ public class ucars extends JavaPlugin {
 
 	public void onEnable() {
 		plugin = this;
-
+		File langFile = new File(getDataFolder().getAbsolutePath()
+				+ File.separator + "lang.yml");
+		if (langFile.exists() == false
+				|| langFile.length() < 1) {
+			try {
+				langFile.createNewFile();
+				// newC.save(configFile);
+			} catch (IOException e) {
+			}
+			
+		}
+		try {
+			lang.load(langFile);
+		} catch (Exception e1) {
+			getLogger().info("Error creating/loading lang file!");
+		}
 		if (new File(getDataFolder().getAbsolutePath() + File.separator
 				+ "config.yml").exists() == false
 				|| new File(getDataFolder().getAbsolutePath() + File.separator
@@ -141,6 +160,72 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.# description")) {
 				config.set("general.cars.# description",
 						"If enabled this will allow for drivable cars(Minecarts not on rails)");
+			}
+			if(!lang.contains("lang.messages.place")){
+				lang.set("lang.messages.place", "&eYou placed a car! Cars can be driven with similar controls to a boat!");
+			}
+			if(!lang.contains("lang.error.pluginNull")){
+				lang.set("lang.error.pluginNull", "&4Error in ucars: Caused by: plugin = null? Report on bukkitdev immediately!");
+			}
+			if(!lang.contains("lang.messages.noDrivePerm")){
+				lang.set("lang.messages.noDrivePerm", "You don't have the permission ucars.cars required to drive a car!");
+			}
+			if(!lang.contains("lang.messages.noPlacePerm")){
+				lang.set("lang.messages.noPlacePerm", "You don't have the permission %perm% required to place a car!");
+			}
+			if(!lang.contains("lang.messages.noPlaceHere")){
+				lang.set("lang.messages.noPlaceHere", "&4You are not allowed to place a car here!");
+			}
+			if(!lang.contains("lang.messages.hitByCar")){
+				lang.set("lang.messages.hitByCar", "You were hit by a car!");
+			}
+			if(!lang.contains("lang.boosts.already")){
+				lang.set("lang.boosts.already", "&4Already boosting!");
+			}
+			if(!lang.contains("lang.boosts.low")){
+				lang.set("lang.boosts.low", "Initiated low level boost!");
+			}
+			if(!lang.contains("lang.boosts.med")){
+				lang.set("lang.boosts.med", "Initiated medium level boost!");
+			}
+			if(!lang.contains("lang.boosts.high")){
+				lang.set("lang.boosts.high", "Initiated high level boost!");
+			}
+			if(!lang.contains("lang.fuel.empty")){
+				lang.set("lang.fuel.empty", "You don't have any fuel left!");
+			}
+			if(!lang.contains("lang.fuel.disabled")){
+				lang.set("lang.fuel.disabled", "Fuel is not enabled!");
+			}
+			if(!lang.contains("lang.fuel.unit")){
+				lang.set("lang.fuel.unit", "litres");
+			}
+			if(!lang.contains("lang.fuel.isItem")){
+				lang.set("lang.fuel.isItem", "&9[Important:]&eItem fuel is enabled-The above is irrelevant!");
+			}
+			if(!lang.contains("lang.fuel.invalidAmount")){
+				lang.set("lang.fuel.invalidAmount", "Amount invalid!");
+			}
+			if(!lang.contains("lang.fuel.noMoney")){
+				lang.set("lang.fuel.noMoney", "You have no money!");
+			}
+			if(!lang.contains("lang.fuel.notEnoughMoney")){
+				lang.set("lang.fuel.notEnoughMoney", "That purchase costs %amount% %unit%! You only have %balance% %unit%!");
+			}
+			if(!lang.contains("lang.fuel.success")){
+				lang.set("lang.fuel.success", "Successfully purchased %quantity% of fuel for %amount% %unit%! You now have %balance% %unit% left!");
+			}
+			if(!lang.contains("lang.messages.rightClickWith")){
+				lang.set("lang.messages.rightClickWith", "Right click with ");
+			}
+			if(!lang.contains("lang.messages.driveOver")){
+				lang.set("lang.messages.driveOver", "Drive over ");
+			}
+			if(!lang.contains("lang.messages.playersOnly")){
+				lang.set("lang.messages.playersOnly", "Players only!");
+			}
+			if(!lang.contains("lang.messages.reload")){
+				lang.set("lang.messages.reload", "The config has been reloaded!");
 			}
 			if (!config.contains("general.cars.enable")) {
 				config.set("general.cars.enable", true);
@@ -275,6 +360,11 @@ public class ucars extends JavaPlugin {
 		}
 
 		saveConfig();
+		try {
+			lang.save(langFile);
+		} catch (IOException e1) {
+			getLogger().info("Error parsing lang file!");
+		}
 		colors = new Colors(config.getString("colorScheme.success"),
 				config.getString("colorScheme.error"),
 				config.getString("colorScheme.info"),

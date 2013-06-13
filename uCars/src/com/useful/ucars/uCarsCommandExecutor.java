@@ -28,38 +28,38 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Low Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Right click with "
+					+ Lang.get("lang.messages.rightClickWith")
 					+ ucars.config.getString("general.cars.lowBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Medium Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Right click with "
+					+ Lang.get("lang.messages.rightClickWith")
 					+ ucars.config.getString("general.cars.medBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[High Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Right click with "
+					+ Lang.get("lang.messages.rightClickWith")
 					+ ucars.config.getString("general.cars.highBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Medium block Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Drive over "
+					+ Lang.get("lang.messages.driveOver")
 					+ ucars.config.getString("general.cars.blockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[High block Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Drive over "
+					+ Lang.get("lang.messages.driveOver")
 					+ ucars.config.getString("general.cars.HighblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Reset block Boost:]"
 					+ ucars.colors.getInfo()
-					+ "Drive over "
+					+ Lang.get("lang.messages.driveOver")
 					+ ucars.config
 							.getString("general.cars.ResetblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Jump block:]"
 					+ ucars.colors.getInfo()
-					+ "Drive over "
+					+ Lang.get("lang.messages.driveOver")
 					+ ucars.config.getString("general.cars.jumpBlock"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]"
 					+ ucars.colors.getInfo()
@@ -81,12 +81,12 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			return true;
 		} else if (cmd.getName().equalsIgnoreCase("ufuel")) {
 			if (!(sender instanceof Player)) {
-				sender.sendMessage("Players only");
+				sender.sendMessage(Lang.get("lang.messages.playersOnly"));
 				return true;
 			}
 			if (!ucars.config.getBoolean("general.cars.fuel.enable")) {
 				sender.sendMessage(ucars.colors.getError()
-						+ "Fuel is not enabled!");
+						+ Lang.get("lang.fuel.disabled"));
 				return true;
 			}
 			if (args.length < 1) {
@@ -102,11 +102,9 @@ public class uCarsCommandExecutor implements CommandExecutor {
 					fuel = ucars.fuel.get(sender.getName());
 				}
 				sender.sendMessage(ucars.colors.getTitle() + "[Your fuel:]"
-						+ ucars.colors.getInfo() + fuel + " litres");
+						+ ucars.colors.getInfo() + fuel + " "+Lang.get("lang.fuel.unit"));
 				if (ucars.config.getBoolean("general.cars.fuel.items.enable")) {
-					sender.sendMessage(ucars.colors.getTitle() + "[Important:]"
-							+ ucars.colors.getInfo()
-							+ "Item fuel is enabled-The above is irrelevant!");
+					sender.sendMessage(ucars.colors.getTitle() + Lang.get("lang.fuel.isItem"));
 				}
 				return true;
 			} else if (action.equalsIgnoreCase("buy")) {
@@ -118,7 +116,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 					amount = Double.parseDouble(args[1]);
 				} catch (NumberFormatException e) {
 					sender.sendMessage(ucars.colors.getError()
-							+ "Amount invalid!");
+							+ Lang.get("lang.fuel.invalidAmount"));
 					return true;
 				}
 				double fuel = 0;
@@ -127,7 +125,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				}
 				if (!(ucars.economy.hasAccount(sender.getName()))) {
 					sender.sendMessage(ucars.colors.getError()
-							+ "You have no money!");
+							+ Lang.get("lang.fuel.noMoney"));
 					return true;
 				}
 				double cost = ucars.config.getDouble("general.cars.fuel.price");
@@ -136,11 +134,12 @@ public class uCarsCommandExecutor implements CommandExecutor {
 						.getName());
 				double bal = resp.balance;
 				if (bal < value) {
+					String notEnough = Lang.get("lang.fuel.notEnoughMoney");
+					notEnough = notEnough.replaceAll("%amount%", ""+value);
+					notEnough = notEnough.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
+					notEnough = notEnough.replaceAll("%balance%", ""+bal);
 					sender.sendMessage(ucars.colors.getError()
-							+ "That purchase costs " + value + " "
-							+ ucars.economy.currencyNamePlural()
-							+ "! But you only have " + bal + " "
-							+ ucars.economy.currencyNamePlural() + "!");
+							+ notEnough);
 					return true;
 				}
 				ucars.economy.bankWithdraw(sender.getName(), value);
@@ -148,11 +147,13 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				ucars.fuel.put(sender.getName(), fuel);
 				ucars.saveHashMap(ucars.fuel, plugin.getDataFolder()
 						.getAbsolutePath() + File.separator + "fuel.bin");
+				String success = Lang.get("lang.fuel.notEnoughMoney");
+				success = success.replaceAll("%amount%", ""+value);
+				success = success.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
+				success = success.replaceAll("%balance%", ""+bal);
+				success = success.replaceAll("%quantity%", ""+amount);
 				sender.sendMessage(ucars.colors.getSuccess()
-						+ "Successfully purchased " + amount + " of fuel for "
-						+ value + " " + ucars.economy.currencyNamePlural()
-						+ "! You now have " + bal + " "
-						+ ucars.economy.currencyNamePlural() + "!");
+						+ success);
 				return true;
 			} else {
 				return false;
@@ -162,7 +163,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			plugin.onEnable();
 			plugin.onLoad();
 			sender.sendMessage(ucars.colors.getInfo()
-					+ "The config has been reloaded!");
+					+ Lang.get("lang.messages.reload"));
 			return true;
 		}
 		return false;

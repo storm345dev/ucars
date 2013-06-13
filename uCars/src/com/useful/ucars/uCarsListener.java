@@ -150,7 +150,7 @@ public class uCarsListener implements Listener {
 		if (plugin == null) {
 			plugin.getLogger()
 					.log(Level.SEVERE,
-							"Error in ucars: Caused by: plugin = null? Report on bukkitdev immediately!");
+							Lang.get("lang.error.pluginNull"));
 		}
 		// PLUGIN IS NULL??? //TODO
 		plugin.getServer().getScheduler()
@@ -394,7 +394,7 @@ public class uCarsListener implements Listener {
 			if (ucars.config.getBoolean("general.permissions.enable")) {
 				if (!player.hasPermission("ucars.cars")) {
 					player.sendMessage(ucars.colors.getInfo()
-							+ "You don't have the permission ucars.cars required to drive a car!");
+							+ Lang.get("lang.messages.noDrivePerm"));
 					return;
 				}
 			}
@@ -426,7 +426,7 @@ public class uCarsListener implements Listener {
 				}
 				if (fuel < 0.1) {
 					player.sendMessage(ucars.colors.getError()
-							+ "You don't have any fuel left!");
+							+ Lang.get("lang.fuel.empty"));
 					return;
 				}
 				int amount = 0 + (int) (Math.random() * 250);
@@ -459,7 +459,7 @@ public class uCarsListener implements Listener {
 				}
 				if (fuel < 0.1) {
 					player.sendMessage(ucars.colors.getError()
-							+ "You don't have any fuel left!");
+							+ Lang.get("lang.fuel.empty"));
 					return;
 				}
 				int amount = 0 + (int) (Math.random() * 150);
@@ -684,7 +684,7 @@ public class uCarsListener implements Listener {
 		double speed = (x * z) / 2;
 		double mult = ucars.config.getDouble("general.cars.hitBy.power") / 5;
 		p.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-		p.sendMessage(ucars.colors.getInfo() + "You were hit by a car!");
+		p.sendMessage(ucars.colors.getInfo() + Lang.get("lang.messages.hitByCar"));
 		double damage = ucars.config.getDouble("general.cars.hitBy.damage");
 		p.damage((int) (damage * speed));
 		return;
@@ -709,17 +709,17 @@ public class uCarsListener implements Listener {
 				String perm = ucars.config
 						.getString("general.cars.placePerm.perm");
 				if (!event.getPlayer().hasPermission(perm)) {
+					String noPerm = Lang.get("lang.messages.noPlacePerm");
+					noPerm = noPerm.replaceAll("%perm%", perm);
 					event.getPlayer().sendMessage(
-							ucars.colors.getError() + "You do not have the "
-									+ perm
-									+ " permission needed to place cars!");
+							ucars.colors.getError() + noPerm);
 					return;
 				}
 			}
 			if (event.isCancelled()) {
 				event.getPlayer().sendMessage(
 						ucars.colors.getError()
-								+ "You are not allowed to place a car here!");
+								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
 			Location loc = block.getLocation().add(0, 1, 0);
@@ -734,7 +734,7 @@ public class uCarsListener implements Listener {
 			event.getPlayer()
 					.sendMessage(
 							ucars.colors.getInfo()
-									+ "You placed a car! Cars can be driven with similar controls to a boat!");
+									+ Lang.get("lang.messages.place"));
 			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 				event.getPlayer().getInventory().removeItem(new ItemStack(328));
 			}
@@ -785,11 +785,11 @@ public class uCarsListener implements Listener {
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
-									+ "Initiated low level boost!");
+									+ Lang.get("lang.boosts.low"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError() + "Already boosting!");
+							ucars.colors.getError() + Lang.get("lang.boosts.already"));
 				}
 				return;
 			}
@@ -806,11 +806,11 @@ public class uCarsListener implements Listener {
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
-									+ "Initiated medium level boost!");
+									+ Lang.get("lang.boosts.med"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError() + "Already boosting!");
+							ucars.colors.getError() + Lang.get("lang.boosts.already"));
 				}
 				return;
 			}
@@ -827,11 +827,11 @@ public class uCarsListener implements Listener {
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
-									+ "Initiated high level boost!");
+									+ Lang.get("lang.boosts.high"));
 					return;
 				} else {
 					event.getPlayer().sendMessage(
-							ucars.colors.getError() + "Already boosting!");
+							ucars.colors.getError() + Lang.get("lang.boosts.already"));
 				}
 				return;
 			}
