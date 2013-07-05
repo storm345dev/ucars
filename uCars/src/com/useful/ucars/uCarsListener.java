@@ -212,7 +212,7 @@ public class uCarsListener implements Listener {
 		}
 		return;
 	}
-
+    
 	@EventHandler
 	public void onVehicleUpdate(VehicleUpdateEvent event) {
 		Vehicle vehicle = event.getVehicle();
@@ -355,9 +355,15 @@ public class uCarsListener implements Listener {
 							ucars.config.getDouble("general.cars.defSpeed"));
 				}
 			}
-			Vector playerVelocity = car.getPassenger().getVelocity();
+			Vector playerVelocity = car.getPassenger().getVelocity(); //TODO Better, but broken
+			/*
+			*Vector playerVelocity = player.getLocation().getDirection(); //NOT a viable replacement 
+			*playerVelocity.setY(0); //as dividing vectors ten fold creates mega lag
+			*playerVelocity.divide(new Vector(10, 0, 10));
+			*/
+			//Bukkit.broadcastMessage(""+playerVelocity.toString());
 			// Vector cur = car.getVelocity();
-			// playerVelocity = playerVelocity.multiply(cur); //TODO velocity
+			// playerVelocity = playerVelocity.multiply(cur);
 			// preservation
 			double defMultiplier = ucars.config
 					.getDouble("general.cars.defSpeed");
