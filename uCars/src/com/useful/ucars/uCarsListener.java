@@ -217,12 +217,13 @@ public class uCarsListener implements Listener {
     @EventHandler
     public void playerJoin(PlayerJoinEvent event){
     	
-    	
+    	if(event.getPlayer().isOp()){
+    		if(!plugin.protocolLib){
+    			event.getPlayer().sendMessage(ucars.colors.getError()+Lang.get("lang.messages.noProtocolLib"));
+    		}
+    	}
     
     
-    }
-    public void playerleave(PlayerQuitEvent event){
-    	
     }
 	
     @EventHandler 

@@ -65,19 +65,19 @@ public class MotionManager extends Event {
 		    	z = plaD.getZ();
 	    	}
 	    	if(side < 0){ //go left
-	    		double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
-	    		yaw = yaw - 3;
-	    		x = Math.cos(yaw); //TODO VECTOR MATH??
-	    		z = Math.sin(yaw);
+	    		//double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
+	    		//double pitch = ((0 + 90) * Math.PI) / 180;
+	    		//x = Math.sin(pitch) * Math.cos(yaw);
+	    		//z = Math.cos(pitch);
 	    		vec = new Vector(x,y,z);
 	    		ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
 		    	ucars.plugin.getServer().getPluginManager().callEvent(event);
 	    	}
 	    	else if(side > 0){ //go right
-	    		double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
-	    		yaw = yaw + 3;
-	    		x = Math.cos(yaw); //TODO VECTOR MATH??
-	    		z = Math.sin(yaw);
+	    		//double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
+	    		//double pitch = ((0 + 90) * Math.PI) / 180;
+	    		//x = Math.sin(pitch) * Math.cos(yaw);
+	    		//z = Math.cos(pitch);
 	    		vec = new Vector(x,y,z);
 	    		ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
 		    	ucars.plugin.getServer().getPluginManager().callEvent(event);

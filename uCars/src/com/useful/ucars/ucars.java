@@ -2,7 +2,6 @@ package com.useful.ucars;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +17,11 @@ import java.util.logging.Level;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,7 +33,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.useful.ucars.Colors;
 
 public class ucars extends JavaPlugin {
 	// The main file
@@ -50,7 +45,7 @@ public class ucars extends JavaPlugin {
 	public static Economy economy = null;
 	public static Colors colors;
 	public Boolean protocolLib = false;
-	public ProtocolManager  protocolManager = null;
+	public Object  protocolManager = null;
 	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
     public static uCarsListener listener = null;
     
@@ -247,6 +242,9 @@ public class ucars extends JavaPlugin {
 			if(!lang.contains("lang.messages.reload")){
 				lang.set("lang.messages.reload", "The config has been reloaded!");
 			}
+			if(!lang.contains("lang.messages.noProtocolLib")){
+				lang.set("lang.messages.noProtocolLib", "Hello operator, ProtocolLib (http://dev.bukkit.org/bukkit-plugins/protocollib/) was not detected and is required for ucars in MC 1.6 or higher. Please install it if necessary!");
+			}
 			if (!config.contains("general.cars.enable")) {
 				config.set("general.cars.enable", true);
 			}
@@ -412,13 +410,13 @@ public class ucars extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		this.listener = new uCarsListener(null);
-		getServer().getPluginManager().registerEvents(this.listener,
+		ucars.listener = new uCarsListener(null);
+		getServer().getPluginManager().registerEvents(ucars.listener,
 				this);
 		if(getServer().getPluginManager().getPlugin("ProtocolLib")!=null){
 			this.protocolLib = true;
 			this.protocolManager = ProtocolLibrary.getProtocolManager();
-			this.protocolManager.addPacketListener(new PacketAdapter(plugin,
+			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
 	    	        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
 	    	        0x1b) {
 	    	    @Override
@@ -427,14 +425,14 @@ public class ucars extends JavaPlugin {
 	    	            PacketContainer packet = event.getPacket();	
 	    	            float sideways = packet.getFloat().read(0);
 	    	            float forwards = packet.getFloat().read(1);  
-	    	            MotionManager moveEvent = new MotionManager(event.getPlayer(), forwards, sideways);
+	    	            new MotionManager(event.getPlayer(), forwards, sideways);
 	    	        }
 	    	    }
 	    	});
 		}
 		else{
 			this.protocolLib = false;
-			getLogger().log(Level.WARNING, "ProtocolLib (http://http://dev.bukkit.org/bukkit-plugins/protocollib/) was not found! For server running MC 1.6 or above this is required for ucars to work!");	    
+			getLogger().log(Level.WARNING, "ProtocolLib (http://http://dev.bukkit.org/bukkit-plugins/protocollib/) was not found! For servers running MC 1.6 or above this is required for ucars to work!");	    
 		}
 		getLogger().info("uCars has been enabled!");
 		return;
