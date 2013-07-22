@@ -26,6 +26,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.Inventory;
@@ -212,9 +214,43 @@ public class uCarsListener implements Listener {
 		}
 		return;
 	}
+    @EventHandler
+    public void playerJoin(PlayerJoinEvent event){
+    	
+    	
+    
+    
+    }
+    public void playerleave(PlayerQuitEvent event){
+    	
+    }
+	
+    @EventHandler 
+    public void legacyWorkings(VehicleUpdateEvent event){
+    	if(plugin.protocolLib){ 
+    		return;
+    	}
+    	//Attempt pre-1.6 controls
+    	Vehicle vehicle = event.getVehicle();
+    	Entity passenger = vehicle.getPassenger();
+		if (!(passenger instanceof Player)) {
+			return;
+		}
+		if (vehicle instanceof Minecart) {
+			if (!ucars.config.getBoolean("general.cars.enable")) {
+				return;
+			}
+			Minecart car = (Minecart) vehicle;
+			Vector playerVelocity = car.getPassenger().getVelocity();
+			ucarUpdateEvent ucarupdate = new ucarUpdateEvent(car, playerVelocity);
+			plugin.getServer().getPluginManager().callEvent(ucarupdate);
+			return;
+		}
+			// It is a valid car!
+    }
     
 	@EventHandler
-	public void onVehicleUpdate(VehicleUpdateEvent event) {
+	public void onUcarUpdate(ucarUpdateEvent event) {
 		Vehicle vehicle = event.getVehicle();
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
@@ -232,10 +268,6 @@ public class uCarsListener implements Listener {
 		 * == 9){ return; }
 		 */
 		Entity passenger = vehicle.getPassenger();
-		if (!(passenger instanceof Player)) {
-			return;
-		}
-
 		Player player = (Player) passenger;
 		if (vehicle instanceof Minecart) {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
@@ -355,7 +387,7 @@ public class uCarsListener implements Listener {
 							ucars.config.getDouble("general.cars.defSpeed"));
 				}
 			}
-			Vector playerVelocity = car.getPassenger().getVelocity(); //TODO Better, but broken
+			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
 			/*
 			*Vector playerVelocity = player.getLocation().getDirection(); //NOT a viable replacement 
 			*playerVelocity.setY(0); //as dividing vectors ten fold creates mega lag
