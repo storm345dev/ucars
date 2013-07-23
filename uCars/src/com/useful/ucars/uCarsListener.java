@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -27,7 +26,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.Inventory;
@@ -398,6 +396,7 @@ public class uCarsListener implements Listener {
 			// Vector cur = car.getVelocity();
 			// playerVelocity = playerVelocity.multiply(cur);
 			// preservation
+			
 			double defMultiplier = ucars.config
 					.getDouble("general.cars.defSpeed");
 			double multiplier = defMultiplier;
@@ -456,6 +455,11 @@ public class uCarsListener implements Listener {
 			}
 			if (playerVelocity.getX() == 0 && playerVelocity.getZ() == 0) {
 				return;
+			}
+			//definitely moving somewhere!
+			if(event.getChangePlayerYaw()){
+				//TODO find out how to change yaw when in minecart as tp doesn't work
+				
 			}
 			if (ucars.config.getBoolean("general.cars.fuel.enable")
 					&& !ucars.config

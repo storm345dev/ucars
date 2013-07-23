@@ -174,7 +174,7 @@ public class ucars extends JavaPlugin {
 						"If enabled this will allow for drivable cars(Minecarts not on rails)");
 			}
 			if(!lang.contains("lang.messages.place")){
-				lang.set("lang.messages.place", "&eYou placed a car! Cars can be driven with similar controls to a boat!");
+				lang.set("lang.messages.place", "&eYou placed a car! Cars can be driven with similar controls to a horse!");
 			}
 			if(!lang.contains("lang.error.pluginNull")){
 				lang.set("lang.error.pluginNull", "&4Error in ucars: Caused by: plugin = null? Report on bukkitdev immediately!");

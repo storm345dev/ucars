@@ -7,9 +7,11 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
-public class MotionManager extends Event {
+public class MotionManager {
 
 	public MotionManager(Player player, float f, float s){
 		Vector vec = new Vector();
@@ -28,18 +30,42 @@ public class MotionManager extends Event {
 		Boolean turning = false;
 		if(f < 0){forwards=false;}else{forwards=true;}
 		if(s>0){side=-1;turning=true;}if(s<0){side=1;turning=true;}
-		double y = -0.4; //rough gravity of minecraft
-	    if(forwards && !turning){ //Mouse controls please
-	    	double x = plaD.getX() / 25;
-	    	double z = plaD.getZ() / 25;
+		double y = -0.3; //rough gravity of minecraft
+		double d = 27;
+		if(turning){
+			if(side<0){//do left action
+				Vector arrowVel = plaD.clone();
+				arrowVel.setY(-0.01);
+				if(!player.hasMetadata("firing")){
+				player.getWorld().spawnArrow(car.getLocation().add(0, 0.7, 0), arrowVel, 2, 1);
+				final String playername = player.getName();
+				player.setMetadata("firing", new FixedMetadataValue(ucars.plugin,true));
+				ucars.plugin.getServer().getScheduler().runTaskLater(ucars.plugin, new Runnable(){
+
+					@Override
+					public void run() {
+						Player p = ucars.plugin.getServer().getPlayer(playername);
+						if(p.hasMetadata("firing")){
+						p.removeMetadata("firing", ucars.plugin);
+						}
+					}}, 10l);
+				}
+		    }
+			else if(side>0){//do right action
+				
+			}
+		}
+	    if(forwards){ //Mouse controls please
+	    	double x = plaD.getX() / d;
+	    	double z = plaD.getZ() / d;
 	    	vec = new Vector(x,y,z);
 	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
 	    	ucars.plugin.getServer().getPluginManager().callEvent(event);
 	    	return;
 	    }
-	    if(!forwards && !turning){ //Mouse controls please
-	    	double x = plaD.getX() / 25;
-	    	double z = plaD.getZ() / 25;
+	    if(!forwards){ //Mouse controls please
+	    	double x = plaD.getX() / d;
+	    	double z = plaD.getZ() / d;
 	    	x = 0-x;
 	    	z = 0-z;
 	    	vec = new Vector(x,y,z);
@@ -47,52 +73,10 @@ public class MotionManager extends Event {
 	    	ucars.plugin.getServer().getPluginManager().callEvent(event);
 	    	return;
 	    }
-	    else{ //Do complicated vector math
-	    	double x = 0;
-	    	double z = 0;
-	    	if(forwards){
-	    		x = plaD.getX() / 25;
-		    	z = plaD.getZ() / 25;
-	    	}
-	    	else if(!forwards){
-	    		x = plaD.getX() / 25;
-		    	z = plaD.getZ() / 25;
-		    	x = 0-x;
-		    	z = 0-z;	
-	    	}
-	    	else{
-	    		x = plaD.getX();
-		    	z = plaD.getZ();
-	    	}
-	    	if(side < 0){ //go left
-	    		//double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
-	    		//double pitch = ((0 + 90) * Math.PI) / 180;
-	    		//x = Math.sin(pitch) * Math.cos(yaw);
-	    		//z = Math.cos(pitch);
-	    		vec = new Vector(x,y,z);
-	    		ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
-		    	ucars.plugin.getServer().getPluginManager().callEvent(event);
-	    	}
-	    	else if(side > 0){ //go right
-	    		//double yaw  = ((player.getLocation().getYaw() + 90)  * Math.PI) / 180;
-	    		//double pitch = ((0 + 90) * Math.PI) / 180;
-	    		//x = Math.sin(pitch) * Math.cos(yaw);
-	    		//z = Math.cos(pitch);
-	    		vec = new Vector(x,y,z);
-	    		ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
-		    	ucars.plugin.getServer().getPluginManager().callEvent(event);
-	    	}
-	    	else { //should never happen
-	    		return;
-	    	}
-	    	
-	    }
 	}
+
 	
-	@Override
-	public HandlerList getHandlers() {
-		return null;
-	}
+
       
 	
 
