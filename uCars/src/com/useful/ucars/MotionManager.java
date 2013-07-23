@@ -19,7 +19,7 @@ public class MotionManager {
 			return;
 		}
 		Minecart car = (Minecart) player.getVehicle();
-		Location loc = car.getLocation();
+		//Location loc = car.getLocation();
 		//Vector carD = loc.getDirection();
 		Vector plaD = player.getEyeLocation().getDirection();
 		if(f==0){
@@ -30,10 +30,11 @@ public class MotionManager {
 		Boolean turning = false;
 		if(f < 0){forwards=false;}else{forwards=true;}
 		if(s>0){side=-1;turning=true;}if(s<0){side=1;turning=true;}
-		double y = -0.3; //rough gravity of minecraft
+		double y = -0.35; //rough gravity of minecraft
 		double d = 27;
 		if(turning){
 			if(side<0){//do left action
+				if(ucars.config.getBoolean("general.cars.turret")){
 				Vector arrowVel = plaD.clone();
 				arrowVel.setY(-0.01);
 				if(!player.hasMetadata("firing")){
@@ -49,6 +50,7 @@ public class MotionManager {
 						p.removeMetadata("firing", ucars.plugin);
 						}
 					}}, 10l);
+				}
 				}
 		    }
 			else if(side>0){//do right action

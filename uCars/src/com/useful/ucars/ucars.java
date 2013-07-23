@@ -272,6 +272,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.ResetblockBoost")) {
 				config.set("general.cars.ResetblockBoost", "133");
 			}
+			if (!config.contains("general.cars.turret")) {
+				config.set("general.cars.turret", false);
+			}
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", "42");
 			}

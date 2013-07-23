@@ -457,10 +457,6 @@ public class uCarsListener implements Listener {
 				return;
 			}
 			//definitely moving somewhere!
-			if(event.getChangePlayerYaw()){
-				//TODO find out how to change yaw when in minecart as tp doesn't work
-				
-			}
 			if (ucars.config.getBoolean("general.cars.fuel.enable")
 					&& !ucars.config
 							.getBoolean("general.cars.fuel.items.enable")) {
@@ -549,6 +545,16 @@ public class uCarsListener implements Listener {
 			// Block block = player.getTargetBlock(null, 1);
 			int bid = block.getTypeId();
 			int bidData = block.getData();
+			Boolean fly = false;
+			if(block.getRelative(faceDir).getTypeId()==44 && !(block.getRelative(faceDir).getData() != 0)){
+				fly = true;
+			}
+			if(block.getTypeId()==44 && !(block.getData() != 0)){
+				fly = true;
+			}
+			if(fly){
+				Velocity.setY(0.5);
+			}
 			if (plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
 					underblock)
 					|| plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
