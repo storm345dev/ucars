@@ -753,7 +753,7 @@ public class uCarsListener implements Listener {
 								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
-			Location loc = block.getLocation().add(0, 1, 0);
+			Location loc = block.getLocation().add(0, 1.5, 0);
 			loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 			event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
 			/*
