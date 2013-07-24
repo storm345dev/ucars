@@ -668,7 +668,7 @@ public class uCarsListener implements Listener {
 							|| carBlock == Material.BIRCH_WOOD_STAIRS
 							|| carBlock == Material.JUNGLE_WOOD_STAIRS
 							|| carBlock == Material.QUARTZ_STAIRS) {
-						y = 0.2;
+						y = 0.4;
 					}
 					Boolean ignore = false;
 					if (car.getVelocity().getY() > 0) {
