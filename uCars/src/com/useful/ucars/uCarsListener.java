@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -673,10 +674,12 @@ public class uCarsListener implements Listener {
 		}
 		Player p = (Player) event.getEntity();
 		if (inACar(p.getName())) {
-			Vehicle veh = (Vehicle) p.getVehicle();
-			Vector vel = veh.getVelocity();
-			if (vel.getY() != (double) 0) {
+			Vector vel = p.getVehicle().getVelocity();
+			if (!(vel.getY() > (double) -0.1 && vel.getY() < (double) 0.1)) {
 				event.setCancelled(true);
+			}
+			else{
+				p.damage(event.getDamage());
 			}
 
 		}
@@ -719,7 +722,7 @@ public class uCarsListener implements Listener {
 		if (z < 0) {
 			z = -z;
 		}
-		if (x < 0.3 && y < 0.3 && z < 0.3) {
+		if (x < 0.3 && z < 0.3) {
 			return;
 		}
 		double speed = (x * z) / 2;
