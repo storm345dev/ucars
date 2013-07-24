@@ -130,7 +130,28 @@ public class ucars extends JavaPlugin {
 		}
 		return (economy != null);
 	}
-
+    private Boolean setupProtocol(){
+    	try {
+			this.protocolLib = true;
+			this.protocolManager = ProtocolLibrary.getProtocolManager();
+			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
+			        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
+			        0x1b) {
+			    @Override
+			    public void onPacketReceiving(PacketEvent event) {
+			        if (event.getPacketID() == 0x1b) {
+			            PacketContainer packet = event.getPacket();	
+			            float sideways = packet.getFloat().read(0);
+			            float forwards = packet.getFloat().read(1);  
+			            new MotionManager(event.getPlayer(), forwards, sideways);
+			        }
+			    }
+			});
+		} catch (Exception e) {
+			return false;
+		}
+    	return true;
+    }
 	public void onEnable() {
 		plugin = this;
 		File langFile = new File(getDataFolder().getAbsolutePath()
@@ -417,21 +438,11 @@ public class ucars extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(ucars.listener,
 				this);
 		if(getServer().getPluginManager().getPlugin("ProtocolLib")!=null){
-			this.protocolLib = true;
-			this.protocolManager = ProtocolLibrary.getProtocolManager();
-			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
-	    	        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
-	    	        0x1b) {
-	    	    @Override
-	    	    public void onPacketReceiving(PacketEvent event) {
-	    	        if (event.getPacketID() == 0x1b) {
-	    	            PacketContainer packet = event.getPacket();	
-	    	            float sideways = packet.getFloat().read(0);
-	    	            float forwards = packet.getFloat().read(1);  
-	    	            new MotionManager(event.getPlayer(), forwards, sideways);
-	    	        }
-	    	    }
-	    	});
+			Boolean success = setupProtocol();
+			if(!success){
+				this.protocolLib = false;
+				getLogger().log(Level.WARNING, "ProtocolLib (http://http://dev.bukkit.org/bukkit-plugins/protocollib/) was not found! For servers running MC 1.6 or above this is required for ucars to work!");	
+			}
 		}
 		else{
 			this.protocolLib = false;

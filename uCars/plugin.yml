@@ -1,7 +1,8 @@
 name: uCars
 main: com.useful.ucars.ucars
 version: 10
-softdepend: [Vault,ProtocolLib]
+softdepend: [Vault]
+depend: [ProtocolLib]
 commands:
    ucars:
         description: This gives ucars info

@@ -35,6 +35,8 @@ public class MotionManager {
 		if(s>0){side=-1;turning=true;}if(s<0){side=1;turning=true;}
 		double y = -0.35; //rough gravity of minecraft
 		double d = 27;
+		Boolean doDivider = false;
+		double divider = 0.5; //x of the (1) speed
 		if(turning){
 			if(side<0){//do left action
 				if(ucars.config.getBoolean("general.cars.turret")){
@@ -70,7 +72,7 @@ public class MotionManager {
 				
 		    }
 			else if(side>0){//do right action
-				
+				doDivider = true;
 			}
 		}
 	    if(forwards){ //Mouse controls please
@@ -78,6 +80,8 @@ public class MotionManager {
 	    	double z = plaD.getZ() / d;
 	    	vec = new Vector(x,y,z);
 	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
+	    	event.setDoDivider(doDivider);
+	    	event.setDivider(divider);
 	    	ucars.plugin.getServer().getPluginManager().callEvent(event);
 	    	return;
 	    }
@@ -88,6 +92,8 @@ public class MotionManager {
 	    	z = 0-z;
 	    	vec = new Vector(x,y,z);
 	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
+	    	event.setDoDivider(doDivider);
+	    	event.setDivider(divider);
 	    	ucars.plugin.getServer().getPluginManager().callEvent(event);
 	    	return;
 	    }

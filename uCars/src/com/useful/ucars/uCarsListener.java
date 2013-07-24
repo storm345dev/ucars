@@ -227,10 +227,7 @@ public class uCarsListener implements Listener {
 	
     @EventHandler 
     public void legacyWorkings(VehicleUpdateEvent event){
-    	if(plugin.protocolLib){ 
-    		return;
-    	}
-    	//Attempt pre-1.6 controls
+    	//start vehicleupdate mechs
     	Vehicle vehicle = event.getVehicle();
     	Entity passenger = vehicle.getPassenger();
 		if (!(passenger instanceof Player)) {
@@ -240,13 +237,37 @@ public class uCarsListener implements Listener {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;
 			}
+			if(!inACar(((Player)passenger))){
+				return;
+			}
 			Minecart car = (Minecart) vehicle;
+    	Material carBlock = car.getLocation().getBlock().getType();
+		if (carBlock == Material.WOOD_STAIRS
+				|| carBlock == Material.COBBLESTONE_STAIRS
+				|| carBlock == Material.BRICK_STAIRS
+				|| carBlock == Material.SMOOTH_STAIRS
+				|| carBlock == Material.NETHER_BRICK_STAIRS
+				|| carBlock == Material.SANDSTONE_STAIRS
+				|| carBlock == Material.SPRUCE_WOOD_STAIRS
+				|| carBlock == Material.BIRCH_WOOD_STAIRS
+				|| carBlock == Material.JUNGLE_WOOD_STAIRS
+				|| carBlock == Material.QUARTZ_STAIRS) {
+			Vector vel = car.getVelocity();
+			vel.setY(0.4);
+			car.setVelocity(vel);
+		}
+    	//end vehicleupdate mechs
+    	//start legacy controls
+    	if(plugin.protocolLib){ 
+    		return;
+    	}
+    	//Attempt pre-1.6 controls
+    	
 			Vector playerVelocity = car.getPassenger().getVelocity();
 			ucarUpdateEvent ucarupdate = new ucarUpdateEvent(car, playerVelocity);
 			plugin.getServer().getPluginManager().callEvent(ucarupdate);
 			return;
 		}
-			// It is a valid car!
     }
     
 	@EventHandler
@@ -416,6 +437,9 @@ public class uCarsListener implements Listener {
 			if (ucars.carBoosts.containsKey(player.getName())) {
 				multiplier = ucars.carBoosts.get(player.getName());
 			}
+			if(event.getDoDivider()){ //Braking or going slower
+			multiplier = multiplier * event.getDivider();
+			}
 			double maxSpeed = 5;
 			Vector Velocity = playerVelocity.multiply(multiplier);
 			if (loc.getBlock().getTypeId() == 27
@@ -529,7 +553,7 @@ public class uCarsListener implements Listener {
 				}
 			}
 			if (Velocity.getY() < 0) {
-				double newy = Velocity.getY() + 1d;
+				double newy = Velocity.getY() + 2d;
 				Velocity.setY(newy);
 			}
 			car.setMaxSpeed(maxSpeed);
