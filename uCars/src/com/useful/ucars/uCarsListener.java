@@ -614,6 +614,7 @@ public class uCarsListener implements Listener {
 			ignoreJump.add("151"); // daylight detector
 			ignoreJump.add("63"); // sign
 			ignoreJump.add("68"); // sign on the side of a block
+			ignoreJump.add("171"); // carpet
 			for (String raw : ignoreJump) {
 				if (ItemStackFromId.equals(raw, bid, bidData)) {
 					cont = false;
