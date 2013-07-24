@@ -679,7 +679,7 @@ public class uCarsListener implements Listener {
 				event.setCancelled(true);
 			}
 			else{
-				p.damage(event.getDamage());j
+				p.damage(event.getDamage());
 			}
 
 		}
