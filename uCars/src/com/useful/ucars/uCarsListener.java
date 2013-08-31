@@ -642,7 +642,7 @@ public class uCarsListener implements Listener {
 					cont = false;
 				}
 			}
-			// TODO have a list for grass, etc... so stop cars jumping
+			//a list for grass, etc... so stop cars jumping
 			if (bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9
 					&& bid != 139 && bid != 85 && bid != 107 && bid != 113
 					&& bid != 70 && bid != 72 && cont) {
@@ -690,7 +690,7 @@ public class uCarsListener implements Listener {
 		return;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	void safeFly(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
