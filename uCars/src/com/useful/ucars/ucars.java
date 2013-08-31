@@ -330,6 +330,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.fuel.check")) {
 				config.set("general.cars.fuel.check", "288:0");
 			}
+			if (!config.contains("general.cars.fuel.bypassPerm")) {
+				config.set("general.cars.fuel.bypassPerm", "ucars.bypassfuel");
+			}
 			if (!config.contains("general.cars.fuel.items.enable")) {
 				config.set("general.cars.fuel.items.enable", false);
 			}

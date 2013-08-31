@@ -127,16 +127,15 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				if (ucars.fuel.containsKey(sender.getName())) {
 					fuel = ucars.fuel.get(sender.getName());
 				}
-				if (!(ucars.economy.hasAccount(sender.getName()))) {
+				double cost = ucars.config.getDouble("general.cars.fuel.price");
+				double value = cost * amount;
+				double bal = ucars.economy.getBalance(sender
+						.getName());
+				if (bal <= 0) {
 					sender.sendMessage(ucars.colors.getError()
 							+ Lang.get("lang.fuel.noMoney"));
 					return true;
 				}
-				double cost = ucars.config.getDouble("general.cars.fuel.price");
-				double value = cost * amount;
-				EconomyResponse resp = ucars.economy.bankBalance(sender
-						.getName());
-				double bal = resp.balance;
 				if (bal < value) {
 					String notEnough = Lang.get("lang.fuel.notEnoughMoney");
 					notEnough = notEnough.replaceAll("%amount%", ""+value);
@@ -146,12 +145,12 @@ public class uCarsCommandExecutor implements CommandExecutor {
 							+ notEnough);
 					return true;
 				}
-				ucars.economy.bankWithdraw(sender.getName(), value);
+				ucars.economy.withdrawPlayer(sender.getName(), value);
 				fuel = fuel + amount;
 				ucars.fuel.put(sender.getName(), fuel);
 				ucars.saveHashMap(ucars.fuel, plugin.getDataFolder()
 						.getAbsolutePath() + File.separator + "fuel.bin");
-				String success = Lang.get("lang.fuel.notEnoughMoney");
+				String success = Lang.get("lang.fuel.success");
 				success = success.replaceAll("%amount%", ""+value);
 				success = success.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
 				success = success.replaceAll("%balance%", ""+bal);

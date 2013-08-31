@@ -482,7 +482,7 @@ public class uCarsListener implements Listener {
 			//definitely moving somewhere!
 			if (ucars.config.getBoolean("general.cars.fuel.enable")
 					&& !ucars.config
-							.getBoolean("general.cars.fuel.items.enable")) {
+							.getBoolean("general.cars.fuel.items.enable") && !player.hasPermission(ucars.config.getString("general.cars.fuel.bypassPerm"))) {
 				double fuel = 0;
 				if (ucars.fuel.containsKey(player.getName())) {
 					fuel = ucars.fuel.get(player.getName());
