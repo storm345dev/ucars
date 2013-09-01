@@ -302,6 +302,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", "42");
 			}
+			if (!config.contains("general.cars.teleportBlock")) {
+				config.set("general.cars.teleportBlock", "159:2");
+			}
 			if (!config.contains("general.cars.trafficLights.enable")) {
 				config.set("general.cars.trafficLights.enable", true);
 			}

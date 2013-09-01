@@ -720,6 +720,49 @@ public class uCarsListener implements Listener {
 				car.setVelocity(Velocity);
 			}
 			}
+			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
+				if (plugin.isBlockEqualToConfigIds("general.cars.teleportBlock",
+						underblock)
+						|| plugin.isBlockEqualToConfigIds("general.cars.teleportBlock",
+								underunderblock)) {
+					//teleport the player
+					Sign s = null;
+					if(underunderblock.getState() instanceof Sign){
+						s = (Sign) underunderblock.getState();
+					}
+					if(underunderblock.getRelative(BlockFace.DOWN).getState() instanceof Sign){
+						s = (Sign) underunderblock.getRelative(BlockFace.DOWN).getState();
+					}
+					if(s!=null){
+					String[] lines = s.getLines();
+					if(lines[0].equalsIgnoreCase("[Teleport]")){
+						car.eject();
+						car.remove();
+						String xs = lines[1];
+						String ys = lines[2];
+						String zs = lines[3];
+						Boolean valid = true;
+						double x = 0,y = 0,z = 0;
+						try {
+							x = Double.parseDouble(xs);
+							y = Double.parseDouble(ys);
+							y = y+0.5;
+							z = Double.parseDouble(zs);
+						} catch (NumberFormatException e) {
+							valid = false;
+						}
+						if(valid){
+						Location toTele = new Location(s.getWorld(),x,y,z);
+						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
+					    car.setMetadata("carhealth", health);
+					    player.sendMessage(ChatColor.DARK_PURPLE+"Teleporting...");
+					    car.setPassenger(player);
+					    car.setVelocity(Velocity);
+						}
+					}
+					}
+				}
+				}
 			if (block.getY() == under.getBlockY()
 					|| block.getY() > normalblock.getY()) {
 				// On the floor or too high to jump
