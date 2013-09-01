@@ -1160,7 +1160,10 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		//TODO
+		//TODO - fuel signs!
+		// [ufuel]
+		// buy/sell
+		// how many litres
 	}
 
 }
