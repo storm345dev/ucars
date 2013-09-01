@@ -888,7 +888,7 @@ public class uCarsListener implements Listener {
         double dmg = ucars.config.getDouble("general.cars.health.crashDamage");
     	if(dmg > 0){
     		if(cart.getPassenger() instanceof Player){
-    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"["+Material.CACTUS.name().toLowerCase()+"]");
+    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"[crash]");
     		}
     		health.damage(dmg);
     	}
