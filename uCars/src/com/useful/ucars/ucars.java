@@ -351,6 +351,21 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.placePerm.perm")) {
 				config.set("general.cars.placePerm.perm", "ucars.place");
 			}
+			if (!config.contains("general.cars.health.default")) {
+				config.set("general.cars.health.default", (double)10.0);
+			}
+			if (!config.contains("general.cars.health.underwaterDamage")) {
+				config.set("general.cars.health.underwaterDamage", (double)0.0);
+			}
+			if (!config.contains("general.cars.health.lavaDamage")) {
+				config.set("general.cars.health.lavaDamage", (double)0.0);
+			}
+			if (!config.contains("general.cars.health.cactusDamage")) {
+				config.set("general.cars.health.cactusDamage", (double)0.0);
+			}
+			if (!config.contains("general.cars.health.crashDamage")) {
+				config.set("general.cars.health.crashDamage", (double)0.0);
+			}
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
 			}
