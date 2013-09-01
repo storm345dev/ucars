@@ -572,11 +572,9 @@ public class uCarsListener implements Listener {
 			if(block.getRelative(faceDir).getTypeId()==44 && !(block.getRelative(faceDir).getData() != 0)){
 				fly = true;
 			}
+			
 			if(block.getTypeId()==44 && !(block.getData() != 0)){
 				fly = true;
-			}
-			if(fly){
-				Velocity.setY(0.5);
 			}
 			if (plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
 					underblock)
@@ -674,6 +672,14 @@ public class uCarsListener implements Listener {
 					}
 					if (!ignore) {
 						Velocity.setY(y);
+					}
+					if(fly && cont){
+						//if(y<0){
+						//	y = 0;
+						//}
+						Velocity.setY(0.5);
+						//Velocity.setX(0);
+						//Velocity.setZ(0);
 					}
 					car.setVelocity(Velocity);
 
