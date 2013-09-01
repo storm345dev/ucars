@@ -308,6 +308,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.hitBy.enable")) {
 				config.set("general.cars.hitBy.enable", false);
 			}
+			if (!config.contains("general.cars.hitBy.enableMonsterDamage")) {
+				config.set("general.cars.hitBy.enableMonsterDamage", true);
+			}
 			if (!config.contains("general.cars.hitBy.power")) {
 				config.set("general.cars.hitBy.power", (double) 5);
 			}

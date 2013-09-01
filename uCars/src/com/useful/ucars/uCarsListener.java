@@ -16,6 +16,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
@@ -823,9 +824,6 @@ public class uCarsListener implements Listener {
 
 	@EventHandler
 	void hitByCar(VehicleEntityCollisionEvent event) {
-		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
-			return;
-		}
 		Vehicle veh = event.getVehicle();
 		if (!(veh instanceof Minecart)) {
 			return;
@@ -834,7 +832,45 @@ public class uCarsListener implements Listener {
 		if (!isACar(cart)) {
 			return;
 		}
-		Entity ent = event.getEntity();
+		Runnable onDeath = new Runnable(){
+			@Override
+			public void run(){
+				cart.eject();
+				Location loc = cart.getLocation();
+				cart.remove();
+				loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+			}
+		};
+		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
+		// It is a valid car!
+        if(cart.hasMetadata("carhealth")){
+        	List<MetadataValue> vals = cart.getMetadata("carhealth");
+        	for(MetadataValue val:vals){
+        		if(val instanceof CarHealthData){
+        			health = (CarHealthData) val;
+        		}
+        	}
+        }
+        double dmg = ucars.config.getDouble("general.cars.health.crashDamage");
+    	if(dmg > 0){
+    		if(cart.getPassenger() instanceof Player){
+    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"[crash]");
+    		}
+    		health.damage(dmg);
+    	}
+        	if(cart.hasMetadata("carhealth")){
+        		cart.removeMetadata("carhealth", plugin);
+        	}
+        	cart.setMetadata("carhealth", health);
+        	Entity ent = event.getEntity();
+        	if(ucars.config.getBoolean("general.cars.hitBy.enableMonsterDamage")){
+        		if(ent instanceof Monster){
+        			((Monster) ent).damage(3);
+        		}
+            	}
+        	if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
+    			return;
+    		}
 		if (!(ent instanceof Player)) {
 			return;
 		}
@@ -866,36 +902,6 @@ public class uCarsListener implements Listener {
 		p.sendMessage(ucars.colors.getInfo() + Lang.get("lang.messages.hitByCar"));
 		double damage = ucars.config.getDouble("general.cars.hitBy.damage");
 		p.damage((int) (damage * speed));
-		Runnable onDeath = new Runnable(){
-			@Override
-			public void run(){
-				cart.eject();
-				Location loc = cart.getLocation();
-				cart.remove();
-				loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
-			}
-		};
-		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
-		// It is a valid car!
-        if(cart.hasMetadata("carhealth")){
-        	List<MetadataValue> vals = cart.getMetadata("carhealth");
-        	for(MetadataValue val:vals){
-        		if(val instanceof CarHealthData){
-        			health = (CarHealthData) val;
-        		}
-        	}
-        }
-        double dmg = ucars.config.getDouble("general.cars.health.crashDamage");
-    	if(dmg > 0){
-    		if(cart.getPassenger() instanceof Player){
-    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"[crash]");
-    		}
-    		health.damage(dmg);
-    	}
-        	if(cart.hasMetadata("carhealth")){
-        		cart.removeMetadata("carhealth", plugin);
-        	}
-        	cart.setMetadata("carhealth", health);
 		return;
 	}
 
