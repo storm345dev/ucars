@@ -275,6 +275,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.defSpeed")) {
 				config.set("general.cars.defSpeed", (double) 30);
 			}
+			if (!config.contains("general.cars.effectBlocks.enable")) {
+				config.set("general.cars.effectBlocks.enable", true);
+			}
 			if (!config.contains("general.cars.lowBoost")) {
 				config.set("general.cars.lowBoost", "263");
 			}

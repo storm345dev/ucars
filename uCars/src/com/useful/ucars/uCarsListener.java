@@ -490,6 +490,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
+			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
 			if (plugin.isBlockEqualToConfigIds("general.cars.blockBoost",
 					underblock)
 					|| plugin.isBlockEqualToConfigIds(
@@ -516,6 +517,7 @@ public class uCarsListener implements Listener {
 					ResetCarBoost(player.getName(), car,
 							ucars.config.getDouble("general.cars.defSpeed"));
 				}
+			}
 			}
 			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
 			/*
@@ -706,6 +708,7 @@ public class uCarsListener implements Listener {
 			if(block.getTypeId()==44 && !(block.getData() != 0)){
 				fly = true;
 			}
+			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
 			if (plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
 					underblock)
 					|| plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
@@ -715,9 +718,8 @@ public class uCarsListener implements Listener {
 				double y = Velocity.getY() + jumpAmount;
 				Velocity.setY(y);
 				car.setVelocity(Velocity);
-
 			}
-
+			}
 			if (block.getY() == under.getBlockY()
 					|| block.getY() > normalblock.getY()) {
 				// On the floor or too high to jump
