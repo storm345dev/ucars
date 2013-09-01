@@ -1,6 +1,8 @@
 package com.useful.ucars;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -9,6 +11,8 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -163,6 +167,12 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			}
 		} else if (cmd.getName().equalsIgnoreCase("reloaducars")) {
 			plugin.onDisable();
+			try {
+				ucars.config.load(new File(plugin.getDataFolder()+File.separator+"config.yml"));
+			} catch (Exception e) {
+				//Load config
+				e.printStackTrace();
+			}
 			plugin.onEnable();
 			plugin.onLoad();
 			sender.sendMessage(ucars.colors.getInfo()
