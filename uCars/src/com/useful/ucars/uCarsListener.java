@@ -300,7 +300,16 @@ public class uCarsListener implements Listener {
         	double damage = ucars.config.getDouble("general.cars.health.underwaterDamage");
         	if(damage > 0){
         		if(driven){
-        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.WATER.name().toLowerCase()+"]");
+        			double max = ucars.config.getDouble("general.cars.health.default");
+		    	    double left = health.getHealth() - damage;
+		    	    ChatColor color = ChatColor.YELLOW;
+		    	    if(left > (max*0.66)){
+		    	    	color = ChatColor.GREEN;
+		    	    }
+		    	    if(left < (max*0.33)){
+		    	    	color = ChatColor.RED;
+		    	    }
+        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.WATER.name().toLowerCase()+"]" + color + " ("+left+")");
         		}
         		health.damage(damage);
         		recalculateHealth = true;
@@ -310,7 +319,16 @@ public class uCarsListener implements Listener {
         	double damage = ucars.config.getDouble("general.cars.health.lavaDamage");
         	if(damage > 0){
         		if(driven){
-        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.LAVA.name().toLowerCase()+"]");
+        			double max = ucars.config.getDouble("general.cars.health.default");
+		    	    double left = health.getHealth() - damage;
+		    	    ChatColor color = ChatColor.YELLOW;
+		    	    if(left > (max*0.66)){
+		    	    	color = ChatColor.GREEN;
+		    	    }
+		    	    if(left < (max*0.33)){
+		    	    	color = ChatColor.RED;
+		    	    }
+        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.LAVA.name().toLowerCase()+"]" + color + " ("+left+")");
         		}
         		health.damage(damage);
         		recalculateHealth = true;
@@ -585,7 +603,16 @@ public class uCarsListener implements Listener {
 			if(block.getType().equals(Material.CACTUS)){
 	        	double damage = ucars.config.getDouble("general.cars.health.cactusDamage");
 	        	if(damage > 0){
-	        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.CACTUS.name().toLowerCase()+"]");
+	        		double max = ucars.config.getDouble("general.cars.health.default");
+		    	    double left = health.getHealth() - damage;
+		    	    ChatColor color = ChatColor.YELLOW;
+		    	    if(left > (max*0.66)){
+		    	    	color = ChatColor.GREEN;
+		    	    }
+		    	    if(left < (max*0.33)){
+		    	    	color = ChatColor.RED;
+		    	    }
+	        		player.sendMessage(ChatColor.RED+"-"+damage+"["+Material.CACTUS.name().toLowerCase()+"]" + color + " ("+left+")");
 	        		health.damage(damage);
 	        		recalculateHealth = true;
 	        	}
@@ -876,7 +903,16 @@ public class uCarsListener implements Listener {
 	        double dmg = ucars.config.getDouble("general.cars.health.crashDamage");
 	    	if(dmg > 0){
 	    		if(cart.getPassenger() instanceof Player){
-	    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"[crash]");
+	    	    double max = ucars.config.getDouble("general.cars.health.default");
+	    	    double left = health.getHealth() - dmg;
+	    	    ChatColor color = ChatColor.YELLOW;
+	    	    if(left > (max*0.66)){
+	    	    	color = ChatColor.GREEN;
+	    	    }
+	    	    if(left < (max*0.33)){
+	    	    	color = ChatColor.RED;
+	    	    }
+	    		((Player)cart.getPassenger()).sendMessage(ChatColor.RED+"-"+dmg+"[crash]" + color + " ("+left+")");
 	    		}
 	    		health.damage(dmg);
 	    	}
@@ -892,7 +928,7 @@ public class uCarsListener implements Listener {
     		if(ent instanceof Monster){
     			double mult = ucars.config.getDouble("general.cars.hitBy.power") / 7;
     			ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-    			((Monster) ent).damage(3*(speed*100));
+    			((Monster) ent).damage(0.75*(speed*100));
     		}
         }
 		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
