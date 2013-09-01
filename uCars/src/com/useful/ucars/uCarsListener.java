@@ -1154,5 +1154,13 @@ public class uCarsListener implements Listener {
 
 		return;
 	}
+	@EventHandler
+	void signInteract(PlayerInteractEvent event){
+		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			return;
+		}
+		Block block = event.getClickedBlock();
+		//TODO
+	}
 
 }
