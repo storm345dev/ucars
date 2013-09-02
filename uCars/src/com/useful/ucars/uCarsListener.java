@@ -1164,6 +1164,17 @@ public class uCarsListener implements Listener {
 		// [ufuel]
 		// buy/sell
 		// how many litres
+		if(!(block.getState() instanceof Sign)){
+			return;
+		}
+		Sign sign = (Sign) block.getState();
+		String[] lines = sign.getLines();
+		if(!lines[0].equalsIgnoreCase("[uFuel]")){
+			return;
+		}
+		event.setCancelled(true);
+		String action = lines[1];
+		String quantity = lines[2];
 	}
 
 }
