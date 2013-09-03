@@ -36,11 +36,35 @@ import org.bukkit.util.Vector;
 
 public class uCarsListener implements Listener {
 	private ucars plugin;
+	private List<String> ignoreJump = null;
 
 	public uCarsListener(ucars plugin) {
 		this.plugin = ucars.plugin;
+		ignoreJump = new ArrayList<String>();
+		ignoreJump.add("132"); // tripwires
+		ignoreJump.add("50"); // torches
+		ignoreJump.add("76"); // redstone torches
+		ignoreJump.add("75"); // redstone off torches
+		ignoreJump.add("93"); // repeater off
+		ignoreJump.add("94"); // repeater on
+		ignoreJump.add("149"); // comparator off
+		ignoreJump.add("106"); // vines
+		ignoreJump.add("31"); // Tall grass
+		ignoreJump.add("77"); // stone button
+		ignoreJump.add("143"); // wood button
+		ignoreJump.add("107"); // fence gate
+		ignoreJump.add("69"); // lever
+		ignoreJump.add("157"); // activator rail
+		ignoreJump.add("78"); // snow
+		ignoreJump.add("151"); // daylight detector
+		ignoreJump.add("63"); // sign
+		ignoreJump.add("68"); // sign on the side of a block
+		ignoreJump.add("171"); // carpet
 	}
-
+    
+	/*
+	 * Checks if a trafficlight sign is attached to the given block
+	 */
 	public boolean trafficlightSignOn(Block block) {
 		if (block.getRelative(BlockFace.NORTH).getState() instanceof Sign) {
 			Sign sign = (Sign) block.getRelative(BlockFace.NORTH).getState();
@@ -81,7 +105,10 @@ public class uCarsListener implements Listener {
 		}
 		return false;
 	}
-
+	/*
+     * Checks if the specified player is inside a ucars (public
+     * for traincarts support)
+     */
 	public boolean inACar(String playername) {
 		Player p = plugin.getServer().getPlayer(playername);
 		if (p == null) {
@@ -107,7 +134,11 @@ public class uCarsListener implements Listener {
 		}
 		return true;
 	}
-
+    
+	/*
+	 * Checks if a minecart is a car
+	 * (Public for traincarts support)
+	 */
 	public boolean isACar(Minecart cart) {
 		Location loc = cart.getLocation();
 		float id = loc.getBlock().getTypeId();
@@ -124,7 +155,9 @@ public class uCarsListener implements Listener {
 		}
 		return true;
 	}
-
+    /*
+     * Resets any boosts the given car may have
+     */
 	public void ResetCarBoost(String playername, Minecart car,
 			double defaultSpeed) {
 		String p = playername;
@@ -136,7 +169,10 @@ public class uCarsListener implements Listener {
 		}
 		return;
 	}
-
+	
+    /*
+     * Applies a boost to the car mentioned
+     */
 	public boolean carBoost(String playerName, final double power,
 			final long lengthMillis, double defaultSpeed) {
 		final String p = playerName;
@@ -179,7 +215,10 @@ public class uCarsListener implements Listener {
 				});
 		return true;
 	}
-
+    /*
+     * Checks if the specified player is inside a ucars (public
+     * for traincarts support)
+     */
 	public boolean inACar(Player p) {
 		if (p == null) {
 			// Should NEVER happen(It means they r offline)
@@ -204,15 +243,26 @@ public class uCarsListener implements Listener {
 		}
 		return true;
 	}
-
+    /*
+     * Standardises the text on some effect signs
+     */
 	@EventHandler
 	public void signWriter(SignChangeEvent event) {
 		String[] lines = event.getLines();
 		if (ChatColor.stripColor(lines[1]).equalsIgnoreCase("[TrafficLight]")) {
 			lines[1] = "[TrafficLight]";
 		}
+		if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[uFuel]")) {
+			lines[0] = "[uFuel]";
+		}
+		if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[Teleport]")) {
+			lines[0] = "[Teleport]";
+		}
 		return;
 	}
+	/*
+	 * Alert op's if no protocolLib found
+	 */
     @EventHandler
     public void playerJoin(PlayerJoinEvent event){
     	
@@ -224,6 +274,14 @@ public class uCarsListener implements Listener {
     
     
     }
+    /*
+     * Performs on-vehicle-tick calculations(even when stationary) 
+     * and also allows for old versions of minecraft AND ucars 
+     * to access the new features through this 'bridge' (in theory)
+     * But in practice they need protocol to get past the bukkit
+     * dependency exception so it uses that anyway! 
+     * (Kept for old version hybrids, eg. tekkti)
+     */
     @EventHandler 
     public void tickCalcsAndLegacy(VehicleUpdateEvent event){
     	//start vehicleupdate mechs
@@ -354,7 +412,9 @@ public class uCarsListener implements Listener {
 			return;
 		}
     }
-    
+    /*
+     * Performs the actually mechanic for making the cars move
+     */
 	@EventHandler
 	public void onUcarUpdate(ucarUpdateEvent event) {
 		Vehicle vehicle = event.getVehicle();
@@ -362,17 +422,8 @@ public class uCarsListener implements Listener {
 		under.setY(vehicle.getLocation().getY() - 1);
 		Block underblock = under.getBlock();
 		Block underunderblock = underblock.getRelative(BlockFace.DOWN);
-		// Block underunderblock = underblock.getRelative(BlockFace.DOWN);
 		Block normalblock = vehicle.getLocation().getBlock();
-		Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
-		/*
-		 * if(underblock.getTypeId() == 0 || underblock.getTypeId() == 10 ||
-		 * underblock.getTypeId() == 11 || underblock.getTypeId() == 8 ||
-		 * underblock.getTypeId() == 9 && underunderblock.getTypeId() == 0 ||
-		 * underunderblock.getTypeId() == 10 || underunderblock.getTypeId() ==
-		 * 11 || underunderblock.getTypeId() == 8 || underunderblock.getTypeId()
-		 * == 9){ return; }
-		 */
+		//Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
 		Entity passenger = vehicle.getPassenger();
 		Player player = (Player) passenger;
 		if (vehicle instanceof Minecart) {
@@ -489,6 +540,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
+			//Calculate default effect blocks
 			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
 			if (plugin.isBlockEqualToConfigIds("general.cars.blockBoost",
 					underblock)
@@ -519,16 +571,6 @@ public class uCarsListener implements Listener {
 			}
 			}
 			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
-			/*
-			*Vector playerVelocity = player.getLocation().getDirection(); //NOT a viable replacement 
-			*playerVelocity.setY(0); //as dividing vectors ten fold creates mega lag
-			*playerVelocity.divide(new Vector(10, 0, 10));
-			*/
-			//Bukkit.broadcastMessage(""+playerVelocity.toString());
-			// Vector cur = car.getVelocity();
-			// playerVelocity = playerVelocity.multiply(cur);
-			// preservation
-			
 			double defMultiplier = ucars.config
 					.getDouble("general.cars.defSpeed");
 			double multiplier = defMultiplier;
@@ -536,6 +578,7 @@ public class uCarsListener implements Listener {
 			String[] units = speedMods.split(",");
 			int underid = under.getBlock().getTypeId();
 			int underdata = under.getBlock().getData();
+			//calculate speedmods
 			for (String unit : units) {
 				String[] sections = unit.split("-");
 				String rawid = sections[0];
@@ -544,25 +587,14 @@ public class uCarsListener implements Listener {
 					multiplier = mult;
 				}
 			}
-			if (ucars.carBoosts.containsKey(player.getName())) {
+			if (ucars.carBoosts.containsKey(player.getName())) { //Use the boost allocated
 				multiplier = ucars.carBoosts.get(player.getName());
 			}
 			if(event.getDoDivider()){ //Braking or going slower
 			multiplier = multiplier * event.getDivider();
 			}
-			double maxSpeed = 5;
 			Vector Velocity = playerVelocity.multiply(multiplier);
-			if (loc.getBlock().getTypeId() == 27
-					|| loc.getBlock().getTypeId() == 27
-					|| loc.getBlock().getTypeId() == 66) {
-				return;
-			}
 			if (!(player.isInsideVehicle())) {
-				return;
-			}
-			if (car.getLocation().add(0, -1, 0).getBlock().getTypeId() == 27
-					|| car.getLocation().add(0, -1, 0).getBlock().getTypeId() == 28
-					|| car.getLocation().add(0, -1, 0).getBlock().getTypeId() == 66) {
 				return;
 			}
 			if (ucars.config.getBoolean("general.permissions.enable")) {
@@ -579,16 +611,11 @@ public class uCarsListener implements Listener {
 					&& normalblock.getTypeId() != 70
 					&& normalblock.getTypeId() != 72
 					&& normalblock.getTypeId() != 31) {
+				//Stuck in a block
 				car.setVelocity(new Vector(0, 1, 0));
-				// player.getWorld().createExplosion(loc, 0);
-			}
-			if (up.getTypeId() != 0 && up.getTypeId() != 8
-					&& up.getTypeId() != 9 && up.getTypeId() != 44
-					&& up.getTypeId() != 43) {
-				car.setVelocity(new Vector(0, 1, 0));
-				// player.getWorld().createExplosion(loc, 0);
 			}
 			if (playerVelocity.getX() == 0 && playerVelocity.getZ() == 0) {
+				//Not moving
 				return;
 			}
 			//definitely moving somewhere!
@@ -641,7 +668,7 @@ public class uCarsListener implements Listener {
 			if (ucars.config.getBoolean("general.cars.fuel.enable")
 					&& ucars.config
 							.getBoolean("general.cars.fuel.items.enable")) {
-				// item fuel
+				// item fuel - Not for laggy servers!!!
 				double fuel = 0;
 				List<ItemStack> items = plugin.ufuelitems;
 				Inventory inv = player.getInventory();
@@ -689,22 +716,20 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
-			if (Velocity.getY() < 0) {
+			if (Velocity.getY() < 0) { //Fix falling into ground
 				double newy = Velocity.getY() + 2d;
 				Velocity.setY(newy);
 			}
-			car.setMaxSpeed(maxSpeed);
-			// Block block = car.getLocation().getBlock().getRelative(faceDir );
-			// Block block = normalblock.getRelative(modX, modY, modZ);
-			// Block block = player.getTargetBlock(null, 1);
 			int bid = block.getTypeId();
 			int bidData = block.getData();
-			Boolean fly = false;
+			Boolean fly = false; //Fly is the 'easter egg' slab elevator
 			if(block.getRelative(faceDir).getTypeId()==44 && !(block.getRelative(faceDir).getData() != 0)){
+				//If looking at slabs
 				fly = true;
 			}
 			
 			if(block.getTypeId()==44 && !(block.getData() != 0)){
+				//If in a slab block
 				fly = true;
 			}
 			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
@@ -762,26 +787,28 @@ public class uCarsListener implements Listener {
 					}
 				}
 				}
+			/* -OLD
 			if (block.getY() == under.getBlockY()
 					|| block.getY() > normalblock.getY()) {
 				// On the floor or too high to jump
 				if (bid == 0 || bid == 10 || bid == 11 || bid == 8 || bid == 9
 						|| bid == 139 || bid == 85 || bid == 107 || bid == 113
-						|| bid == 70 || bid == 72) {
-					car.getLocation().setYaw(dir);
+						|| bid == 70 || bid == 72) { //excluded jump blocks
 					car.setVelocity(Velocity);
 				} else if (block.getY() == under.getBlockY()) {
-					car.getLocation().setYaw(dir);
 					car.setVelocity(Velocity);
 				} else {
-					return;// wall to high or on the floor
+					return;// wall too high or on the floor
 				}
 				return;
 			}
+			*/
+			//actually jump
 			Location theNewLoc = block.getLocation();
 			Location bidUpLoc = block.getLocation().add(0, 1, 0);
 			int bidU = bidUpLoc.getBlock().getTypeId();
 			Boolean cont = true;
+			//check it's not a barrier
 			String[] rawids = ucars.config.getString("general.cars.barriers")
 					.split(",");
 			for (String raw : rawids) {
@@ -789,27 +816,7 @@ public class uCarsListener implements Listener {
 					cont = false;
 				}
 			}
-			List<String> ignoreJump = new ArrayList<String>();
-			ignoreJump.add("132"); // tripwires
-			ignoreJump.add("50"); // torches
-			ignoreJump.add("76"); // redstone torches
-			ignoreJump.add("75"); // redstone off torches
-			ignoreJump.add("93"); // repeater off
-			ignoreJump.add("94"); // repeater on
-			ignoreJump.add("149"); // comparator off
-			ignoreJump.add("106"); // vines
-			ignoreJump.add("31"); // Tall grass
-			ignoreJump.add("77"); // stone button
-			ignoreJump.add("143"); // wood button
-			ignoreJump.add("107"); // fence gate
-			ignoreJump.add("69"); // lever
-			ignoreJump.add("157"); // activator rail
-			ignoreJump.add("78"); // snow
-			ignoreJump.add("151"); // daylight detector
-			ignoreJump.add("63"); // sign
-			ignoreJump.add("68"); // sign on the side of a block
-			ignoreJump.add("171"); // carpet
-			for (String raw : ignoreJump) {
+			for (String raw : ignoreJump) { //Check it's not a non-jumping block
 				if (ItemStackFromId.equals(raw, bid, bidData)) {
 					cont = false;
 				}
@@ -820,7 +827,6 @@ public class uCarsListener implements Listener {
 					&& bid != 70 && bid != 72 && cont) {
 				if (bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8
 						|| bidU == 9 || bidU == 44 || bidU == 43) {
-					// if(block.getTypeId() == 44 || block.getTypeId() == 43){
 					theNewLoc.add(0, 1.5d, 0);
 					double y = 10;
 					if (block.getType() == Material.STEP
@@ -839,32 +845,29 @@ public class uCarsListener implements Listener {
 							|| carBlock == Material.JUNGLE_WOOD_STAIRS
 							|| carBlock == Material.QUARTZ_STAIRS) {
 						y = 0.4;
+						//stop cars getting stuck on stairs
 					}
 					Boolean ignore = false;
 					if (car.getVelocity().getY() > 0) {
+						//if car is going up already then dont do gravity 
 						ignore = true;
 					}
 					if (!ignore) {
+						//Do gravity
 						Velocity.setY(y);
 					}
 					if(fly && cont){
-						//if(y<0){
-						//	y = 0;
-						//}
+						//Make the car ascend (easter egg, slab elevator)
 						Velocity.setY(0.5);
-						//Velocity.setX(0);
-						//Velocity.setZ(0);
 					}
+					//Move the car
 					car.setVelocity(Velocity);
-
-					// car.teleport(theNewLoc);
 				}
 			} else {
-				car.getLocation().setYaw(dir);
+				//Move the car
 				car.setVelocity(Velocity);
-				// theNewLoc.add(0, 1d, 0);
 			}
-			// player.getWorld().playEffect(exhaust, Effect.SMOKE, 1);
+			//Recalculate car health
 			if(recalculateHealth){
 	        	if(car.hasMetadata("carhealth")){
 	        		car.removeMetadata("carhealth", plugin);
@@ -874,7 +877,10 @@ public class uCarsListener implements Listener {
 		}
 		return;
 	}
-
+	
+	/* 
+	 * This disables fall damage whilst driving a car
+	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	void safeFly(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
@@ -893,7 +899,10 @@ public class uCarsListener implements Listener {
 		}
 		return;
 	}
-
+  
+	/*
+	 * This provides effects and health changes when cars collide with entities
+	 */
 	@EventHandler
 	void hitByCar(VehicleEntityCollisionEvent event) {
 		Vehicle veh = event.getVehicle();
@@ -993,6 +1002,9 @@ public class uCarsListener implements Listener {
 		return;
 	}
 
+	/*
+	 * This places cars and other interacting features
+	 */
 	@EventHandler
 	void interact(PlayerInteractEvent event) {
 		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -1153,6 +1165,9 @@ public class uCarsListener implements Listener {
 
 		return;
 	}
+	/*
+	 * This controls the [ufuel] signs
+	 */
 	@EventHandler
 	void signInteract(PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
