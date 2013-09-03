@@ -448,6 +448,7 @@ public class uCarsListener implements Listener {
 			CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
 			Boolean recalculateHealth = false;
 			// It is a valid car!
+			car.setMaxSpeed(5);
             if(car.hasMetadata("carhealth")){
             	List<MetadataValue> vals = car.getMetadata("carhealth");
             	for(MetadataValue val:vals){
