@@ -88,83 +88,12 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			}
 			return true;
 		} else if (cmd.getName().equalsIgnoreCase("ufuel")) {
-			if (!(sender instanceof Player)) {
-				sender.sendMessage(Lang.get("lang.messages.playersOnly"));
-				return true;
-			}
 			if (!ucars.config.getBoolean("general.cars.fuel.enable")) {
 				sender.sendMessage(ucars.colors.getError()
 						+ Lang.get("lang.fuel.disabled"));
 				return true;
 			}
-			if (args.length < 1) {
-				return false;
-			}
-			String action = args[0];
-			if (action.equalsIgnoreCase("view")) {
-				sender.sendMessage(ucars.colors.getTitle()
-						+ "[Fuel cost (Per litre):]" + ucars.colors.getInfo()
-						+ ucars.config.getDouble("general.cars.fuel.price"));
-				double fuel = 0;
-				if (ucars.fuel.containsKey(sender.getName())) {
-					fuel = ucars.fuel.get(sender.getName());
-				}
-				sender.sendMessage(ucars.colors.getTitle() + "[Your fuel:]"
-						+ ucars.colors.getInfo() + fuel + " "+Lang.get("lang.fuel.unit"));
-				if (ucars.config.getBoolean("general.cars.fuel.items.enable")) {
-					sender.sendMessage(ucars.colors.getTitle() + Lang.get("lang.fuel.isItem"));
-				}
-				return true;
-			} else if (action.equalsIgnoreCase("buy")) {
-				if (args.length < 2) {
-					return false;
-				}
-				double amount = 0;
-				try {
-					amount = Double.parseDouble(args[1]);
-				} catch (NumberFormatException e) {
-					sender.sendMessage(ucars.colors.getError()
-							+ Lang.get("lang.fuel.invalidAmount"));
-					return true;
-				}
-				double fuel = 0;
-				if (ucars.fuel.containsKey(sender.getName())) {
-					fuel = ucars.fuel.get(sender.getName());
-				}
-				double cost = ucars.config.getDouble("general.cars.fuel.price");
-				double value = cost * amount;
-				double bal = ucars.economy.getBalance(sender
-						.getName());
-				if (bal <= 0) {
-					sender.sendMessage(ucars.colors.getError()
-							+ Lang.get("lang.fuel.noMoney"));
-					return true;
-				}
-				if (bal < value) {
-					String notEnough = Lang.get("lang.fuel.notEnoughMoney");
-					notEnough = notEnough.replaceAll("%amount%", ""+value);
-					notEnough = notEnough.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
-					notEnough = notEnough.replaceAll("%balance%", ""+bal);
-					sender.sendMessage(ucars.colors.getError()
-							+ notEnough);
-					return true;
-				}
-				ucars.economy.withdrawPlayer(sender.getName(), value);
-				fuel = fuel + amount;
-				ucars.fuel.put(sender.getName(), fuel);
-				ucars.saveHashMap(ucars.fuel, plugin.getDataFolder()
-						.getAbsolutePath() + File.separator + "fuel.bin");
-				String success = Lang.get("lang.fuel.success");
-				success = success.replaceAll("%amount%", ""+value);
-				success = success.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
-				success = success.replaceAll("%balance%", ""+bal);
-				success = success.replaceAll("%quantity%", ""+amount);
-				sender.sendMessage(ucars.colors.getSuccess()
-						+ success);
-				return true;
-			} else {
-				return false;
-			}
+			return ufuel(sender, args);
 		} else if (cmd.getName().equalsIgnoreCase("reloaducars")) {
 			plugin.onDisable();
 			try {
@@ -215,5 +144,124 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			return false;
 		}
 		return false;
+	}
+	public Boolean ufuel(CommandSender sender, String[] args){
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(Lang.get("lang.messages.playersOnly"));
+			return true;
+		}
+		if (args.length < 1) {
+			return false;
+		}
+		String action = args[0];
+		if (action.equalsIgnoreCase("view")) {
+			sender.sendMessage(ucars.colors.getTitle()
+					+ "[Fuel cost (Per litre):]" + ucars.colors.getInfo()
+					+ ucars.config.getDouble("general.cars.fuel.price"));
+			double fuel = 0;
+			if (ucars.fuel.containsKey(sender.getName())) {
+				fuel = ucars.fuel.get(sender.getName());
+			}
+			sender.sendMessage(ucars.colors.getTitle() + "[Your fuel:]"
+					+ ucars.colors.getInfo() + fuel + " "+Lang.get("lang.fuel.unit"));
+			if (ucars.config.getBoolean("general.cars.fuel.items.enable")) {
+				sender.sendMessage(ucars.colors.getTitle() + Lang.get("lang.fuel.isItem"));
+			}
+			return true;
+		} else if (action.equalsIgnoreCase("buy")) {
+			if (args.length < 2) {
+				return false;
+			}
+			double amount = 0;
+			try {
+				amount = Double.parseDouble(args[1]);
+			} catch (NumberFormatException e) {
+				sender.sendMessage(ucars.colors.getError()
+						+ Lang.get("lang.fuel.invalidAmount"));
+				return true;
+			}
+			double fuel = 0;
+			if (ucars.fuel.containsKey(sender.getName())) {
+				fuel = ucars.fuel.get(sender.getName());
+			}
+			double cost = ucars.config.getDouble("general.cars.fuel.price");
+			double value = cost * amount;
+			double bal = ucars.economy.getBalance(sender
+					.getName());
+			if (bal <= 0) {
+				sender.sendMessage(ucars.colors.getError()
+						+ Lang.get("lang.fuel.noMoney"));
+				return true;
+			}
+			if (bal < value) {
+				String notEnough = Lang.get("lang.fuel.notEnoughMoney");
+				notEnough = notEnough.replaceAll("%amount%", ""+value);
+				notEnough = notEnough.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
+				notEnough = notEnough.replaceAll("%balance%", ""+bal);
+				sender.sendMessage(ucars.colors.getError()
+						+ notEnough);
+				return true;
+			}
+			ucars.economy.withdrawPlayer(sender.getName(), value);
+			bal = bal-value;
+			fuel = fuel + amount;
+			ucars.fuel.put(sender.getName(), fuel);
+			ucars.saveHashMap(ucars.fuel, plugin.getDataFolder()
+					.getAbsolutePath() + File.separator + "fuel.bin");
+			String success = Lang.get("lang.fuel.success");
+			success = success.replaceAll("%amount%", ""+value);
+			success = success.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
+			success = success.replaceAll("%balance%", ""+bal);
+			success = success.replaceAll("%quantity%", ""+amount);
+			sender.sendMessage(ucars.colors.getSuccess()
+					+ success);
+			return true;
+		}
+		else if(action.equalsIgnoreCase("sell")){
+			if(!ucars.config.getBoolean("general.cars.fuel.sellFuel")){
+				sender.sendMessage(ucars.colors.getError()+"Not allowed to sell fuel!");
+				return true;
+			}
+			if (args.length < 2) {
+				return false;
+			}
+			double amount = 0;
+			try {
+				amount = Double.parseDouble(args[1]);
+			} catch (NumberFormatException e) {
+				sender.sendMessage(ucars.colors.getError()
+						+ Lang.get("lang.fuel.invalidAmount"));
+				return true;
+			}
+			double fuel = 0;
+			if (ucars.fuel.containsKey(sender.getName())) {
+				fuel = ucars.fuel.get(sender.getName());
+			}
+			if((fuel-amount)<=0){
+				sender.sendMessage(ucars.colors.getError()+Lang.get("lang.fuel.empty"));
+				return true;
+			}
+			double cost = ucars.config.getDouble("general.cars.fuel.price");
+			double value = cost * amount;
+			double bal = ucars.economy.getBalance(sender
+					.getName());
+			ucars.economy.depositPlayer(sender.getName(), value);
+			bal = bal+value;
+			fuel = fuel - amount;
+			ucars.fuel.put(sender.getName(), fuel);
+			ucars.saveHashMap(ucars.fuel, plugin.getDataFolder()
+					.getAbsolutePath() + File.separator + "fuel.bin");
+			String success = Lang.get("lang.fuel.sellSuccess");
+			success = success.replaceAll("%amount%", ""+value);
+			success = success.replaceAll("%unit%", ""+ucars.economy.currencyNamePlural());
+			success = success.replaceAll("%balance%", ""+bal);
+			success = success.replaceAll("%quantity%", ""+amount);
+			sender.sendMessage(ucars.colors.getSuccess()
+					+ success);
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

@@ -14,6 +14,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -1160,6 +1162,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
+		final PlayerInteractEvent evt = event;
 		//TODO - fuel signs!
 		// [ufuel]
 		// buy/sell
@@ -1175,6 +1178,23 @@ public class uCarsListener implements Listener {
 		event.setCancelled(true);
 		String action = lines[1];
 		String quantity = lines[2];
+		double amount = 0;
+		try {
+			amount = Double.parseDouble(quantity);
+		} catch (NumberFormatException e) {
+			return;
+		}
+		if(action.equalsIgnoreCase("buy")){
+			String[] args = new String[]{"buy",""+amount};
+			plugin.cmdExecutor.ufuel(event.getPlayer(), args);
+		}
+		else if(action.equalsIgnoreCase("sell")){
+			String[] args = new String[]{"sell",""+amount};
+			plugin.cmdExecutor.ufuel(event.getPlayer(), args);
+		}
+		else{
+			return;
+		}
 	}
 
 }

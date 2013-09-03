@@ -47,6 +47,7 @@ public class ucars extends JavaPlugin {
 	public Boolean protocolLib = false;
 	public Object  protocolManager = null;
 	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
+	public uCarsCommandExecutor cmdExecutor = null;
     public static uCarsListener listener = null;
     
 	public static String colorise(String prefix) {
@@ -251,6 +252,9 @@ public class ucars extends JavaPlugin {
 			if(!lang.contains("lang.fuel.success")){
 				lang.set("lang.fuel.success", "Successfully purchased %quantity% of fuel for %amount% %unit%! You now have %balance% %unit% left!");
 			}
+			if(!lang.contains("lang.fuel.sellSuccess")){
+				lang.set("lang.fuel.sellSuccess", "Successfully sold %quantity% of fuel for %amount% %unit%! You now have %balance% %unit% left!");
+			}
 			if(!lang.contains("lang.messages.rightClickWith")){
 				lang.set("lang.messages.rightClickWith", "Right click with ");
 			}
@@ -347,6 +351,9 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.fuel.items.ids")) {
 				config.set("general.cars.fuel.items.ids", "5,263:0,263:1");
+			}
+			if(!config.contains("general.cars.fuel.sellFuel")){
+				config.set("general.cars.fuel.sellFuel", true);
 			}
 			if (!config.contains("general.cars.barriers")) {
 				config.set("general.cars.barriers", "139,85,107,113");
@@ -454,7 +461,8 @@ public class ucars extends JavaPlugin {
 		Set<String> keys = commands.keySet();
 		for (String k : keys) {
 			try {
-				getCommand(k).setExecutor(new uCarsCommandExecutor(this));
+				cmdExecutor = new uCarsCommandExecutor(this);
+				getCommand(k).setExecutor(cmdExecutor);
 			} catch (Exception e) {
 				getLogger().log(Level.SEVERE,
 						"Error registering command " + k.toString());
