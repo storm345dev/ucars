@@ -58,7 +58,7 @@ public class MotionManager {
 				player.setMetadata("firing", new FixedMetadataValue(ucars.plugin,true));
 				ucars.plugin.getServer().getScheduler().runTaskLater(ucars.plugin, new Runnable(){
 
-					@Override
+					//@Override
 					public void run() {
 						Player p = ucars.plugin.getServer().getPlayer(playername);
 						if(p.hasMetadata("firing")){

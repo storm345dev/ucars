@@ -27,7 +27,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 		this.plugin = ucars.plugin;
 	}
 
-	@Override
+	//@Override
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("ucars")) {

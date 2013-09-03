@@ -12,59 +12,59 @@ public class CarHealthData implements MetadataValue {
 		this.onDeath = onDeath;
 		this.plugin = plugin;
 	}
-	@Override
+	//@Override
 	public boolean asBoolean() {
 		return false;
 	}
 
-	@Override
+	//@Override
 	public byte asByte() {
 		return 0;
 	}
 
-	@Override
+	//@Override
 	public double asDouble() {
 		return health;
 	}
 
-	@Override
+	//@Override
 	public float asFloat() {
 		return (float) (health);
 	}
 
-	@Override
+	//@Override
 	public int asInt() {
 		return (int) Math.floor(health+0.5f);
 	}
 
-	@Override
+	//@Override
 	public long asLong() {
 		return Math.round(health);
 	}
 
-	@Override
+	//@Override
 	public short asShort() {
 		return Short.parseShort(""+health);
 	}
 
-	@Override
+	//@Override
 	public String asString() {
 		return ""+health;
 	}
 
-	@Override
+	//@Override
 	public Plugin getOwningPlugin() {
 		return plugin;
 	}
 
-	@Override
+	//@Override
 	public void invalidate() {
 		health = 0;
 		die();
 		return;
 	}
 
-	@Override
+	//@Override
 	public Object value() {
 		return health;
 	}
