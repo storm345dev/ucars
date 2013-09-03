@@ -47,6 +47,7 @@ public class ucars extends JavaPlugin {
 	public Boolean protocolLib = false;
 	public Object  protocolManager = null;
 	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
+	public ListStore licensedPlayers = null;
 	public uCarsCommandExecutor cmdExecutor = null;
     public static uCarsListener listener = null;
     
@@ -76,7 +77,15 @@ public class ucars extends JavaPlugin {
                 */
 		 return ChatColor.translateAlternateColorCodes('&', prefix);
 	}
-
+    public ListStore getLicensedPlayers(){
+    	return this.licensedPlayers;
+    }
+    public void setLicensedPlayers(ListStore licensed){
+    	this.licensedPlayers = licensed;
+    	return;
+    }
+	
+	
 	private void copy(InputStream in, File file) {
 		try {
 			OutputStream out = new FileOutputStream(file);
@@ -270,6 +279,27 @@ public class ucars extends JavaPlugin {
 			if(!lang.contains("lang.messages.noProtocolLib")){
 				lang.set("lang.messages.noProtocolLib", "Hello operator, ProtocolLib (http://dev.bukkit.org/bukkit-plugins/protocollib/) was not detected and is required for ucars in MC 1.6 or higher. Please install it if necessary!");
 			}
+			if(!lang.contains("lang.licenses.next")){
+				lang.set("lang.licenses.next", "Now do %command% to continue!");
+			}
+			if(!lang.contains("lang.licenses.basics")){
+				lang.set("lang.licenses.basics", "A car is just a minecart placed on the ground, not rails. To place a car simply look and the floor while holding a minecart and right click!");
+			}
+			if(!lang.contains("lang.licenses.controls")){
+				lang.set("lang.licenses.controls", "1) Look where you would like to go. 2) Use the 'w' key to go forward and 's' to go backwards. 3) Use the 'd' key to slow down/brake and the 'a' key to shoot a turret (if turret enabled)!");
+			}
+			if(!lang.contains("lang.licenses.effects")){
+				lang.set("lang.licenses.effects", "Car speed can change depending on what block you may drive over. These can be short term boosts or a speedmod block. Do /ucars for more info on boosts!");
+			}
+			if(!lang.contains("lang.licenses.itemBoosts")){
+				lang.set("lang.licenses.itemBoosts", "Right clicking with certain items can give you different boosts. Do /ucars for more info!");
+			}
+			if(!lang.contains("lang.licenses.success")){
+				lang.set("lang.licenses.success", "Congratulations! You can now drive a ucar!");
+			}
+			if(!lang.contains("lang.licenses.noLicense")){
+				lang.set("lang.licenses.noLicense", "To drive a car you need a license, do /ulicense to obtain one!");
+			}
 			if (!config.contains("general.cars.enable")) {
 				config.set("general.cars.enable", true);
 			}
@@ -334,6 +364,9 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.roadBlocks.ids",
 						"35:15,35:8,35:0,35:7");
 			}
+			if (!config.contains("general.cars.licenses.enable")) {
+				config.set("general.cars.licenses.enable", false);
+			}
 			if (!config.contains("general.cars.fuel.enable")) {
 				config.set("general.cars.fuel.enable", false);
 			}
@@ -381,6 +414,9 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.health.crashDamage")) {
 				config.set("general.cars.health.crashDamage", (double)0.0);
+			}
+			if (!config.contains("general.cars.ulicense.enable")) {
+				config.set("general.cars.ulicense.enable", false);
 			}
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
@@ -483,6 +519,8 @@ public class ucars extends JavaPlugin {
 			this.protocolLib = false;
 			getLogger().log(Level.WARNING, "ProtocolLib (http://http://dev.bukkit.org/bukkit-plugins/protocollib/) was not found! For servers running MC 1.6 or above this is required for ucars to work!");	    
 		}
+		this.licensedPlayers = new ListStore(new File(getDataFolder()+File.separator+"licenses.txt"));
+		this.licensedPlayers.load();
 		getLogger().info("uCars has been enabled!");
 		return;
 	}
@@ -490,6 +528,7 @@ public class ucars extends JavaPlugin {
 	public void onDisable() {
 		saveHashMap(fuel, plugin.getDataFolder().getAbsolutePath()
 				+ File.separator + "fuel.bin");
+		this.licensedPlayers.save();
 		getLogger().info("uCars has been disabled!");
 		return;
 	}

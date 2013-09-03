@@ -17,8 +17,14 @@ commands:
         permission-message: You don't have access to this command
         default: op
    ufuel:
-        description: This buys the specified amount of ufuel
+        description: This buys/sells the specified amount of ufuel
         usage: /<command> [Buy <Amount>], [View], [Sell <Amount>]
+        permission: ucars.ucars
+        permission-message: You don't have access to this command
+        default: true
+   ulicense:
+        description: This obtains a ulicense to drive a car
+        usage: /<command> (stage)
         permission: ucars.ucars
         permission-message: You don't have access to this command
         default: true

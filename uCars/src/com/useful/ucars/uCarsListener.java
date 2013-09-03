@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -14,8 +13,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -35,7 +32,6 @@ import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 public class uCarsListener implements Listener {
@@ -239,11 +235,8 @@ public class uCarsListener implements Listener {
 		}
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
-		Block underblock = under.getBlock();
-		Block underunderblock = underblock.getRelative(BlockFace.DOWN);
 		// Block underunderblock = underblock.getRelative(BlockFace.DOWN);
 		Block normalblock = vehicle.getLocation().getBlock();
-		Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
 		/*
 		 * if(underblock.getTypeId() == 0 || underblock.getTypeId() == 10 ||
 		 * underblock.getTypeId() == 11 || underblock.getTypeId() == 8 ||
@@ -276,7 +269,7 @@ public class uCarsListener implements Listener {
 		}
 		final Minecart cart = (Minecart) vehicle;
 		Runnable onDeath = new Runnable(){
-			@Override
+			//@Override
 			public void run(){
 				cart.eject();
 				Location loc = cart.getLocation();
@@ -386,10 +379,14 @@ public class uCarsListener implements Listener {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;
 			}
+			if(!((ucars)plugin).licensedPlayers.contains(player.getName()) && ucars.config.getBoolean("general.cars.licenses.enable")){
+				player.sendMessage(ucars.colors.getError()+Lang.get("lang.licenses.noLicense"));
+				return;
+			}
 			Minecart car = (Minecart) vehicle;
 			final Minecart cart = (Minecart) vehicle;
 			Runnable onDeath = new Runnable(){
-				@Override
+				//@Override
 				public void run(){
 					cart.eject();
 					Location loc = cart.getLocation();
@@ -757,7 +754,7 @@ public class uCarsListener implements Listener {
 						Location toTele = new Location(s.getWorld(),x,y,z);
 						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
 					    car.setMetadata("carhealth", health);
-					    player.sendMessage(ChatColor.DARK_PURPLE+"Teleporting...");
+					    player.sendMessage(ucars.colors.getTp()+"Teleporting...");
 					    car.setPassenger(player);
 					    car.setVelocity(Velocity);
 						}
@@ -929,7 +926,7 @@ public class uCarsListener implements Listener {
 		double speed = (x * z) / 2;
 		if(speed > 0){
 			Runnable onDeath = new Runnable(){
-				@Override
+				//@Override
 				public void run(){
 					cart.eject();
 					Location loc = cart.getLocation();
@@ -1033,7 +1030,7 @@ public class uCarsListener implements Listener {
 			final Entity car = event.getPlayer().getWorld().spawnEntity(loc, EntityType.MINECART);
 			double health = ucars.config.getDouble("general.cars.health.default");
 			Runnable onDeath = new Runnable(){
-				@Override
+				//@Override
 				public void run(){
 					car.eject();
 					Location loc = car.getLocation();
@@ -1162,8 +1159,6 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		final PlayerInteractEvent evt = event;
-		//TODO - fuel signs!
 		// [ufuel]
 		// buy/sell
 		// how many litres

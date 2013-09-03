@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -142,6 +143,51 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				return true;
 			}
 			return false;
+		}
+		else if(cmd.getName().equalsIgnoreCase("ulicense")){
+			if(!ucars.config.getBoolean("general.cars.licenses.enable")){
+				return true;
+			}
+			int stage = 1;
+			if(args.length > 0){
+				try {
+					stage = Integer.parseInt(args[0]);
+				} catch (NumberFormatException e) {
+					return false;
+				}
+			}
+			if(stage == 1){
+				sender.sendMessage(ucars.colors.getInfo()+Lang.get("lang.licenses.basics"));
+				String next = Lang.get("lang.licenses.next");
+				next = next.replaceAll(Pattern.quote("%command%"), "/ulicense 2");
+				sender.sendMessage(ucars.colors.getTitle()+next);
+			}
+			else if(stage == 2){
+				sender.sendMessage(ucars.colors.getInfo()+Lang.get("lang.licenses.controls"));
+				String next = Lang.get("lang.licenses.next");
+				next = next.replaceAll(Pattern.quote("%command%"), "/ulicense 3");
+				sender.sendMessage(ucars.colors.getTitle()+next);
+			}
+			else if(stage == 3){
+				sender.sendMessage(ucars.colors.getInfo()+Lang.get("lang.licenses.effects"));
+				String next = Lang.get("lang.licenses.next");
+				next = next.replaceAll(Pattern.quote("%command%"), "/ulicense 4");
+				sender.sendMessage(ucars.colors.getTitle()+next);
+			}
+			else if(stage == 4){
+				sender.sendMessage(ucars.colors.getInfo()+Lang.get("lang.licenses.itemBoosts"));
+                if(sender instanceof Player){
+				if(!((ucars)plugin).licensedPlayers.contains(sender.getName())){
+				sender.sendMessage(ucars.colors.getSuccess()+Lang.get("lang.licenses.success"));
+				((ucars)plugin).licensedPlayers.add(sender.getName());
+				((ucars)plugin).licensedPlayers.save();
+				}
+                }
+			}
+			else{
+				return false;
+			}
+			return true;
 		}
 		return false;
 	}
