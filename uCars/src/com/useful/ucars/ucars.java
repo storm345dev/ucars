@@ -312,7 +312,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.jumpBlock", "42");
 			}
 			if (!config.contains("general.cars.jumpAmount")) {
-				config.set("general.cars.jumpAmount", "60");
+				config.set("general.cars.jumpAmount", (double)60);
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
 				config.set("general.cars.teleportBlock", "159:2");
