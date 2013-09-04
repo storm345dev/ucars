@@ -70,6 +70,16 @@ public class uCarsCommandExecutor implements CommandExecutor {
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
 					+ ucars.config.getString("general.cars.jumpBlock"));
+			sender.sendMessage(ucars.colors.getTitle()
+					+ "[Teleport block:]"
+					+ ucars.colors.getInfo()
+					+ Lang.get("lang.messages.driveOver")
+					+ ucars.config.getString("general.cars.teleportBlock"));
+			sender.sendMessage(ucars.colors.getTitle()
+					+ "[Traffic light waiting block:]"
+					+ ucars.colors.getInfo()
+					+ Lang.get("lang.messages.driveOver")
+					+ ucars.config.getString("general.cars.trafficLights.waitingBlock"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]"
 					+ ucars.colors.getInfo()
 					+ ucars.config.getDouble("general.cars.defSpeed"));
