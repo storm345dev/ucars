@@ -153,7 +153,7 @@ public class ucars extends JavaPlugin {
 		try {
 			lang.load(langFile);
 		} catch (Exception e1) {
-			getLogger().info("Error creating/loading lang file!");
+			getLogger().log(Level.WARNING, "Error creating/loading lang file! Regenerating..");
 		}
 		if (new File(getDataFolder().getAbsolutePath() + File.separator
 				+ "config.yml").exists() == false
@@ -310,6 +310,9 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", "42");
+			}
+			if (!config.contains("general.cars.jumpAmount")) {
+				config.set("general.cars.jumpAmount", "60");
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
 				config.set("general.cars.teleportBlock", "159:2");
