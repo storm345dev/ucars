@@ -393,9 +393,6 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.health.crashDamage")) {
 				config.set("general.cars.health.crashDamage", (double)0.0);
 			}
-			if (!config.contains("general.cars.ulicense.enable")) {
-				config.set("general.cars.ulicense.enable", false);
-			}
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
 			}
