@@ -303,7 +303,10 @@ public class uCarsListener implements Listener {
 		 * 11 || underunderblock.getTypeId() == 8 || underunderblock.getTypeId()
 		 * == 9){ return; }
 		 */
-		Player player = (Player) passenger;
+	    Player player = null;
+		if(driven){
+	    player = (Player) passenger;
+		}
 		if (vehicle instanceof Minecart) {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;
@@ -347,7 +350,9 @@ public class uCarsListener implements Listener {
         		}
         	}
         }
+        if(driven){
         driven = inACar(((Player)passenger));
+        }
         //Calculate health based on location
         if(normalblock.getType().equals(Material.WATER) || normalblock.getType().equals(Material.STATIONARY_WATER)){
         	double damage = ucars.config.getDouble("general.cars.health.underwaterDamage");
