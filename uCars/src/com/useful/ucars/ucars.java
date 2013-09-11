@@ -49,6 +49,7 @@ public class ucars extends JavaPlugin {
 	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
 	public ListStore licensedPlayers = null;
 	public uCarsCommandExecutor cmdExecutor = null;
+	Boolean ucarsTrade = false;
     public static uCarsListener listener = null;
     
 	public static String colorise(String prefix) {

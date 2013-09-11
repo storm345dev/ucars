@@ -34,6 +34,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
+import com.useful.ucarsCommon.StatValue;
+
 public class uCarsListener implements Listener {
 	private ucars plugin;
 	private List<String> ignoreJump = null;
@@ -62,6 +64,17 @@ public class uCarsListener implements Listener {
 		ignoreJump.add("171"); // carpet
 	}
     
+	/*
+	 * Performs on-tick calculations for if ucarsTrade is installed
+	 */
+	public Vector calculateCarStats(Minecart car, Player player, Vector velocity){
+		if(!plugin.ucarsTrade){
+			return velocity;
+		}
+		//TODO Get UcarsTrade to modify velocity
+		return velocity;
+	}
+	
 	/*
 	 * Checks if a trafficlight sign is attached to the given block
 	 */
@@ -866,12 +879,12 @@ public class uCarsListener implements Listener {
 						//Make the car ascend (easter egg, slab elevator)
 						Velocity.setY(0.5);
 					}
-					//Move the car
-					car.setVelocity(Velocity);
+					//Move the car and adjust vector to fit car stats
+					car.setVelocity(calculateCarStats(car, player, Velocity));
 				}
 			} else {
-				//Move the car
-				car.setVelocity(Velocity);
+				//Move the car and adjust vector to fit car stats
+				car.setVelocity(calculateCarStats(car, player, Velocity));
 			}
 			//Recalculate car health
 			if(recalculateHealth){
