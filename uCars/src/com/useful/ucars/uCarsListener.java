@@ -71,7 +71,7 @@ public class uCarsListener implements Listener {
 		if(!plugin.ucarsTrade){
 			return velocity;
 		}
-		//TODO Get UcarsTrade to modify velocity
+		//TODO Get UcarsTrade to modify velocity and stats
 		return velocity;
 	}
 	
