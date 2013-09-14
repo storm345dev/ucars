@@ -542,7 +542,7 @@ public class ucars extends JavaPlugin {
 		getLogger().info("Successfully unhooked: "+plugin.getName());
 		this.hookedPlugins.remove(plugin);
 	}
-	public void unHookPlugins(Plugin plugin){
+	public void unHookPlugins(){
 		this.hookedPlugins.removeAll(hookedPlugins);
 		getLogger().info("Successfully unhooked all plugins!");
 	}
