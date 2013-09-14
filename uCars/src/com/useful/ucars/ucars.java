@@ -22,6 +22,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,6 +50,7 @@ public class ucars extends JavaPlugin {
 	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
 	public ListStore licensedPlayers = null;
 	public uCarsCommandExecutor cmdExecutor = null;
+	public ArrayList<Plugin> hookedPlugins = new ArrayList<Plugin>();
 	Boolean ucarsTrade = false;
     public static uCarsListener listener = null;
     
@@ -531,5 +533,20 @@ public class ucars extends JavaPlugin {
 			}
 		}
 		return false;
+	}
+	public void hookPlugin(Plugin plugin){
+		getLogger().info("Successfully hooked into by: "+plugin.getName());
+		this.hookedPlugins.add(plugin);
+	}
+	public void unHookPlugin(Plugin plugin){
+		getLogger().info("Successfully unhooked: "+plugin.getName());
+		this.hookedPlugins.remove(plugin);
+	}
+	public void unHookPlugins(Plugin plugin){
+		this.hookedPlugins.removeAll(hookedPlugins);
+		getLogger().info("Successfully unhooked all plugins!");
+	}
+	public Boolean isPluginHooked(Plugin plugin){
+		return this.hookedPlugins.contains(plugin);
 	}
 }
