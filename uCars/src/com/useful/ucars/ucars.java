@@ -507,6 +507,7 @@ public class ucars extends JavaPlugin {
 		saveHashMap(fuel, plugin.getDataFolder().getAbsolutePath()
 				+ File.separator + "fuel.bin");
 		this.licensedPlayers.save();
+		unHookPlugins();
 		getLogger().info("uCars has been disabled!");
 		return;
 	}
