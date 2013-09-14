@@ -68,6 +68,9 @@ public class uCarsListener implements Listener {
 	 * Performs on-tick calculations for if ucarsTrade is installed
 	 */
 	public Vector calculateCarStats(Minecart car, Player player, Vector velocity){
+		if(car.hasMetadata("car.frozen")){
+			velocity = new Vector(0,0,0);
+		}
 		if(!plugin.ucarsTrade){
 			return velocity;
 		}
