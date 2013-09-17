@@ -27,14 +27,13 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
-
-import com.useful.ucarsCommon.StatValue;
 
 public class uCarsListener implements Listener {
 	private ucars plugin;
@@ -451,9 +450,12 @@ public class uCarsListener implements Listener {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;
 			}
-			if(!((ucars)plugin).licensedPlayers.contains(player.getName()) && ucars.config.getBoolean("general.cars.licenses.enable")){
-				player.sendMessage(ucars.colors.getError()+Lang.get("lang.licenses.noLicense"));
-				return;
+			try {
+				if(!((ucars)plugin).licensedPlayers.contains(player.getName()) && ucars.config.getBoolean("general.cars.licenses.enable")){
+					player.sendMessage(ucars.colors.getError()+Lang.get("lang.licenses.noLicense"));
+					return;
+				}
+			} catch (Exception e1) {
 			}
 			Minecart car = (Minecart) vehicle;
 			final Minecart cart = (Minecart) vehicle;
@@ -1084,7 +1086,9 @@ public class uCarsListener implements Listener {
 							ucars.colors.getInfo()
 									+ Lang.get("lang.messages.place"));
 			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-				event.getPlayer().getInventory().removeItem(new ItemStack(328));
+				ItemStack placed = event.getPlayer().getItemInHand();
+				placed.setAmount(placed.getAmount()-1);
+				event.getPlayer().getInventory().setItemInHand(placed);
 			}
 		}
 		if (inACar(event.getPlayer())) {
@@ -1227,6 +1231,63 @@ public class uCarsListener implements Listener {
 		else{
 			return;
 		}
+	}
+	@EventHandler
+	void minecartBreak(VehicleDamageEvent event){
+		if(!(event.getVehicle() instanceof Minecart) || !(event.getAttacker() instanceof Player)){
+			return;
+		}
+		final Minecart car = (Minecart) event.getVehicle();
+		Player player = (Player) event.getAttacker();
+		if(!isACar(car)){
+			return;
+		}
+		if(!ucars.config.getBoolean("general.cars.health.overrideDefault")){
+			return;
+		}
+		if(car.hasMetadata("carhealth")){
+    		car.removeMetadata("carhealth", plugin);
+    	}
+		Runnable onDeath = new Runnable(){
+			//@Override
+			public void run(){
+				car.eject();
+				Location loc = car.getLocation();
+				car.remove();
+				loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+			}
+		};
+		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
+		// It is a valid car!
+		//START ON TICK CALCULATIONS
+        if(car.hasMetadata("carhealth")){
+        	List<MetadataValue> vals = car.getMetadata("carhealth");
+        	for(MetadataValue val:vals){
+        		if(val instanceof CarHealthData){
+        			health = (CarHealthData) val;
+        		}
+        	}
+        }
+        double damage = ucars.config.getDouble("general.cars.health.punchDamage");
+    	if(damage > 0){
+    		double max = ucars.config.getDouble("general.cars.health.default");
+    	    double left = health.getHealth() - damage;
+    	    ChatColor color = ChatColor.YELLOW;
+    	    if(left > (max*0.66)){
+    	    	color = ChatColor.GREEN;
+    	    }
+    	    if(left < (max*0.33)){
+    	    	color = ChatColor.RED;
+    	    }
+    	    if(left < 0){
+    	    	left = 0;
+    	    }
+    		player.sendMessage(ChatColor.RED+"-"+damage+ChatColor.YELLOW+"["+player.getName()+"]" + color + " ("+left+")");
+    		health.damage(damage);
+    		car.setMetadata("carhealth", health);
+    		event.setCancelled(true);
+    		event.setDamage(0);
+    	}
 	}
 
 }

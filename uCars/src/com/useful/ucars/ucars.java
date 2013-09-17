@@ -384,11 +384,23 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.health.default")) {
 				config.set("general.cars.health.default", (double)10.0);
 			}
+			if (!config.contains("general.cars.health.max")) {
+				config.set("general.cars.health.max", (double)100.0);
+			}
+			if (!config.contains("general.cars.health.min")) {
+				config.set("general.cars.health.min", (double)5.0);
+			}
+			if (!config.contains("general.cars.health.overrideDefault")) {
+				config.set("general.cars.health.overrideDefault", true);
+			}
 			if (!config.contains("general.cars.health.underwaterDamage")) {
 				config.set("general.cars.health.underwaterDamage", (double)0.0);
 			}
 			if (!config.contains("general.cars.health.lavaDamage")) {
 				config.set("general.cars.health.lavaDamage", (double)0.0);
+			}
+			if (!config.contains("general.cars.health.punchDamage")) {
+				config.set("general.cars.health.punchDamage", (double)50.0);
 			}
 			if (!config.contains("general.cars.health.cactusDamage")) {
 				config.set("general.cars.health.cactusDamage", (double)0.0);
