@@ -78,10 +78,14 @@ public class MotionManager {
 	    	double x = plaD.getX() / d;
 	    	double z = plaD.getZ() / d;
 	    	vec = new Vector(x,y,z);
-	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
+	    	final ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
 	    	event.setDoDivider(doDivider);
 	    	event.setDivider(divider);
-	    	ucars.plugin.getServer().getPluginManager().callEvent(event);
+	    	ucars.plugin.getServer().getScheduler().runTask(ucars.plugin, new Runnable(){
+
+				public void run() {
+					ucars.plugin.getServer().getPluginManager().callEvent(event);
+				}});
 	    	return;
 	    }
 	    if(!forwards){ //Mouse controls please
