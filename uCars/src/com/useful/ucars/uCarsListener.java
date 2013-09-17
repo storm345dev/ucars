@@ -35,6 +35,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
+import com.useful.ucarsCommon.StatValue;
+
 public class uCarsListener implements Listener {
 	private ucars plugin;
 	private List<String> ignoreJump = null;
@@ -480,6 +482,7 @@ public class uCarsListener implements Listener {
             		}
             	}
             }
+            //Calculate road blocks
 			if (ucars.config.getBoolean("general.cars.roadBlocks.enable")) {
 				Location loc = car.getLocation().getBlock()
 						.getRelative(BlockFace.DOWN).getLocation();
@@ -595,6 +598,26 @@ public class uCarsListener implements Listener {
 			}
 			}
 			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
+			//Calculate jumping gravity
+            if(car.hasMetadata("car.falling")){
+   			 List<MetadataValue> falling = car.getMetadata("car.falling");
+   		     StatValue val = null;
+   		     for(MetadataValue fall:falling){
+   		    	 if(fall instanceof StatValue){
+   		    		 val = (StatValue) fall;
+   		    	 }
+   		     }
+   		     if(val != null){
+   		    	 double gravity = (Double) val.getValue();
+   		    	 double newGravity = gravity + (gravity*(gravity/6));
+   		    	 car.removeMetadata("car.falling", val.getOwningPlugin());
+   		    	 if(!(gravity > 0.35)){
+   		    		ucars.plugin.getLogger().info("Gravity: "+gravity);
+      		    	 car.setMetadata("car.falling", new StatValue(newGravity, ucars.plugin));
+      		    	 playerVelocity.setY(-gravity);
+   		    	 }
+   		     }
+   		}
 			double defMultiplier = ucars.config
 					.getDouble("general.cars.defSpeed");
 			double multiplier = defMultiplier;
@@ -764,6 +787,7 @@ public class uCarsListener implements Listener {
 				double jumpAmount = ucars.config
 						.getDouble("general.cars.jumpAmount");
 				double y = Velocity.getY() + jumpAmount;
+				car.setMetadata("car.falling", new StatValue(0.1, plugin));
 				Velocity.setY(y);
 				car.setVelocity(Velocity);
 			}
@@ -873,11 +897,11 @@ public class uCarsListener implements Listener {
 					}
 					Boolean ignore = false;
 					if (car.getVelocity().getY() > 0) {
-						//if car is going up already then dont do gravity 
+						//if car is going up already then dont do ascent
 						ignore = true;
 					}
 					if (!ignore) {
-						//Do gravity
+						//Do ascent
 						Velocity.setY(y);
 					}
 					if(fly && cont){

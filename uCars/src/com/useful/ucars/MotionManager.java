@@ -1,18 +1,17 @@
 package com.useful.ucars;
 
-import org.bukkit.Bukkit;
+import java.util.List;
+
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
+
+import com.useful.ucarsCommon.StatValue;
 
 public class MotionManager {
 
