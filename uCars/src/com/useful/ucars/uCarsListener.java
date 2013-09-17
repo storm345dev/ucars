@@ -612,7 +612,6 @@ public class uCarsListener implements Listener {
    		    	 double newGravity = gravity + (gravity*(gravity/6));
    		    	 car.removeMetadata("car.falling", val.getOwningPlugin());
    		    	 if(!(gravity > 0.35)){
-   		    		ucars.plugin.getLogger().info("Gravity: "+gravity);
       		    	 car.setMetadata("car.falling", new StatValue(newGravity, ucars.plugin));
       		    	 playerVelocity.setY(-gravity);
    		    	 }
