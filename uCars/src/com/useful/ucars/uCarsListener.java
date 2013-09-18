@@ -823,12 +823,24 @@ public class uCarsListener implements Listener {
 							valid = false;
 						}
 						if(valid){
+						List<MetadataValue> metas = null;
+						if(player.hasMetadata("car.stayIn")){
+							metas = player.getMetadata("car.stayIn");
+							for(MetadataValue val:metas){
+								player.removeMetadata("car.stayIn", val.getOwningPlugin());
+							}
+						}
 						Location toTele = new Location(s.getWorld(),x,y,z);
 						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
 					    car.setMetadata("carhealth", health);
 					    player.sendMessage(ucars.colors.getTp()+"Teleporting...");
 					    car.setPassenger(player);
 					    car.setVelocity(Velocity);
+					    if(metas != null){
+					    	for(MetadataValue val:metas){
+					    		player.setMetadata("car.stayIn", val);
+					    	}
+					    }
 						}
 					}
 					}
