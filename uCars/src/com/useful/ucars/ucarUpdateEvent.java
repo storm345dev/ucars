@@ -1,15 +1,17 @@
 package com.useful.ucars;
 
 import org.bukkit.entity.Vehicle;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.util.Vector;
 
-public class ucarUpdateEvent extends VehicleUpdateEvent {
+public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable{
     public Vector toTravel = new Vector();
     public Boolean changePlayerYaw = false;
     public float yaw = 90;
     public Boolean doDivider = false;;
     public double divider = 1;
+    public Boolean cancelled = false;
 	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel) {
 		super(vehicle);
 		this.toTravel = toTravel;
@@ -37,6 +39,12 @@ public class ucarUpdateEvent extends VehicleUpdateEvent {
 	}
 	public double getDivider(){
 		return this.divider;
+	}
+	public boolean isCancelled() {
+		return this.cancelled;
+	}
+	public void setCancelled(boolean arg0) {
+		this.cancelled = arg0;
 	}
 
 }

@@ -437,8 +437,11 @@ public class uCarsListener implements Listener {
     /*
      * Performs the actually mechanic for making the cars move
      */
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST)
 	public void onUcarUpdate(ucarUpdateEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		Vehicle vehicle = event.getVehicle();
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
