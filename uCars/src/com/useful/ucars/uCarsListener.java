@@ -636,8 +636,12 @@ public class uCarsListener implements Listener {
 					multiplier = mult;
 				}
 			}
-			if (ucars.carBoosts.containsKey(player.getName())) { //Use the boost allocated
-				multiplier = ucars.carBoosts.get(player.getName());
+			try {
+				if (ucars.carBoosts.containsKey(player.getName())) { //Use the boost allocated
+					multiplier = ucars.carBoosts.get(player.getName());
+				}
+			} catch (Exception e1) {
+				return;
 			}
 			if(event.getDoDivider()){ //Braking or going slower
 			multiplier = multiplier * event.getDivider();
