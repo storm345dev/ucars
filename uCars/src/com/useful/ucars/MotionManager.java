@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import com.useful.ucarsCommon.StatValue;
+
 public class MotionManager {
 
 	public MotionManager(Player player, float f, float s){
@@ -67,11 +69,17 @@ public class MotionManager {
 		    }
 			else if(side>0){//do right action
 				doDivider = true;
+				car.setMetadata("car.braking", new StatValue(true, ucars.plugin));
 			}
 		}
 	    if(forwards){ //Mouse controls please
 	    	double x = plaD.getX() / d;
 	    	double z = plaD.getZ() / d;
+	    	if(!doDivider){
+	    		if(car.hasMetadata("car.braking")){
+	    			car.removeMetadata("car.braking", ucars.plugin);
+	    		}
+	    	}
 	    	vec = new Vector(x,y,z);
 	    	final ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
 	    	event.setDoDivider(doDivider);
@@ -86,6 +94,11 @@ public class MotionManager {
 	    if(!forwards){ //Mouse controls please
 	    	double x = plaD.getX() / d;
 	    	double z = plaD.getZ() / d;
+	    	if(!doDivider){
+	    		if(car.hasMetadata("car.braking")){
+	    			car.removeMetadata("car.braking", ucars.plugin);
+	    		}
+	    	}
 	    	x = 0-x;
 	    	z = 0-z;
 	    	vec = new Vector(x,y,z);
