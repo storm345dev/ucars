@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,6 +28,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ConnectionSide;
@@ -122,12 +124,18 @@ public class ucars extends JavaPlugin {
     	try {
 			this.protocolLib = true;
 			this.protocolManager = ProtocolLibrary.getProtocolManager();
+			/*
 			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
 			        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
 			        0x1b) {
+			*/
+			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
+			        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
+			        Packets.Client.PLAYER_INPUT) {
 			    @Override
 			    public void onPacketReceiving(PacketEvent event) {
-			        if (event.getPacketID() == 0x1b) {
+			        //if (event.getPacketID() == 0x1b) {
+			    	if (event.getPacketID() == Packets.Client.PLAYER_INPUT) {
 			            PacketContainer packet = event.getPacket();	
 			            float sideways = packet.getFloat().read(0);
 			            float forwards = packet.getFloat().read(1);  

@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/Vault.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/ProtocolLib-2.4.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/ProtocolLib.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/bukkit.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/mcserver.jar">
 		<attributes>
