@@ -106,15 +106,15 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			}
 			return ufuel(sender, args);
 		} else if (cmd.getName().equalsIgnoreCase("reloaducars")) {
-			plugin.onDisable();
+			//plugin.onDisable();
 			try {
 				ucars.config.load(new File(plugin.getDataFolder()+File.separator+"config.yml"));
 			} catch (Exception e) {
 				//Load config
 				e.printStackTrace();
 			}
-			plugin.onEnable();
-			plugin.onLoad();
+			//plugin.onEnable();
+			//plugin.onLoad();
 			sender.sendMessage(ucars.colors.getInfo()
 					+ Lang.get("lang.messages.reload"));
 			return true;
