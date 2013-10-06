@@ -1083,6 +1083,9 @@ public class uCarsListener implements Listener {
 			if (iar == 66 || iar == 28 || iar == 27) {
 				return;
 			}
+			if(!PlaceManager.placeableOn(iar, block.getData())){
+				return;
+			}
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;
 			}
