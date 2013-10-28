@@ -959,7 +959,11 @@ public class uCarsListener implements Listener {
 				event.setCancelled(true);
 			}
 			else{
-				p.damage(event.getDamage());
+				try {
+					p.damage(event.getDamage());
+				} catch (Exception e) {
+					//Damaging failed
+				}
 			}
 
 		}
