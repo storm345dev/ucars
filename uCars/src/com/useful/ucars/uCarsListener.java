@@ -1281,9 +1281,12 @@ public class uCarsListener implements Listener {
 			return;
 		}
 	}
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOWEST)
 	void minecartBreak(VehicleDamageEvent event){
 		if(!(event.getVehicle() instanceof Minecart) || !(event.getAttacker() instanceof Player)){
+			return;
+		}
+		if(event.isCancelled()){
 			return;
 		}
 		final Minecart car = (Minecart) event.getVehicle();
