@@ -1077,6 +1077,9 @@ public class uCarsListener implements Listener {
 	 */
 	@EventHandler
 	void interact(PlayerInteractEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			return;
 		}
