@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.stormdev.ucars.trade.main;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -71,10 +73,12 @@ public class uCarsListener implements Listener {
 	public Vector calculateCarStats(Minecart car, Player player, Vector velocity){
 		if(car.hasMetadata("car.frozen")){
 			velocity = new Vector(0,0,0);
+			return velocity;
 		}
 		if(!plugin.ucarsTrade){
 			return velocity;
 		}
+		velocity = net.stormdev.ucars.trade.main.plugin.carCals.getVelocity(car, velocity);
 		//TODO Get UcarsTrade to modify velocity and stats
 		return velocity;
 	}
