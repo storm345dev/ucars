@@ -503,7 +503,7 @@ public class ucars extends JavaPlugin {
 			}
 		}
 		ucars.listener = new uCarsListener(null);
-		getServer().getPluginManager().registerEvents(ucars.listener,
+		getServer().getPluginManager().registerEvents(listener,
 				this);
 		if(getServer().getPluginManager().getPlugin("ProtocolLib")!=null){
 			Boolean success = setupProtocol();

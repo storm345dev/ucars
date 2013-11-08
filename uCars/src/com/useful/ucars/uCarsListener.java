@@ -79,7 +79,6 @@ public class uCarsListener implements Listener {
 			return velocity;
 		}
 		velocity = net.stormdev.ucars.trade.main.plugin.carCals.getVelocity(car, velocity, currentMult);
-		//TODO Get UcarsTrade to modify velocity and stats
 		return velocity;
 	}
 	
@@ -377,10 +376,7 @@ public class uCarsListener implements Listener {
 		Runnable onDeath = new Runnable(){
 			//@Override
 			public void run(){
-				cart.eject();
-				Location loc = cart.getLocation();
-				cart.remove();
-				loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+				plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent(cart));
 			}
 		};
 		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
@@ -500,10 +496,7 @@ public class uCarsListener implements Listener {
 			Runnable onDeath = new Runnable(){
 				//@Override
 				public void run(){
-					cart.eject();
-					Location loc = cart.getLocation();
-					cart.remove();
-					loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+					plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent(cart));
 				}
 			};
 			CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
@@ -1045,10 +1038,7 @@ public class uCarsListener implements Listener {
 			Runnable onDeath = new Runnable(){
 				//@Override
 				public void run(){
-					cart.eject();
-					Location loc = cart.getLocation();
-					cart.remove();
-					loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+					plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent(cart));
 				}
 			};
 			CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
@@ -1158,10 +1148,7 @@ public class uCarsListener implements Listener {
 			Runnable onDeath = new Runnable(){
 				//@Override
 				public void run(){
-					car.eject();
-					Location loc = car.getLocation();
-					car.remove();
-					loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+					plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent((Minecart) car));
 				}
 			};
 			car.setMetadata("carhealth", new CarHealthData(health, onDeath, plugin));
@@ -1344,10 +1331,7 @@ public class uCarsListener implements Listener {
 		Runnable onDeath = new Runnable(){
 			//@Override
 			public void run(){
-				car.eject();
-				Location loc = car.getLocation();
-				car.remove();
-				loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+				plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent(car));
 			}
 		};
 		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
@@ -1381,6 +1365,18 @@ public class uCarsListener implements Listener {
     		event.setCancelled(true);
     		event.setDamage(0);
     	}
+	}
+	@EventHandler (priority=EventPriority.HIGHEST)
+	void carDeath(ucarDeathEvent event){
+		if(event.isCancelled()){
+			return;
+		}
+		Minecart cart = event.getCar();
+		cart.eject();
+		Location loc = cart.getLocation();
+		cart.remove();
+		loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
+		return;
 	}
 
 }
