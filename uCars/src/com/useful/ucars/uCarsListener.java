@@ -70,7 +70,7 @@ public class uCarsListener implements Listener {
 	/*
 	 * Performs on-tick calculations for if ucarsTrade is installed
 	 */
-	public Vector calculateCarStats(Minecart car, Player player, Vector velocity){
+	public Vector calculateCarStats(Minecart car, Player player, Vector velocity, double currentMult){
 		if(car.hasMetadata("car.frozen")){
 			velocity = new Vector(0,0,0);
 			return velocity;
@@ -78,7 +78,7 @@ public class uCarsListener implements Listener {
 		if(!plugin.ucarsTrade){
 			return velocity;
 		}
-		velocity = net.stormdev.ucars.trade.main.plugin.carCals.getVelocity(car, velocity);
+		velocity = net.stormdev.ucars.trade.main.plugin.carCals.getVelocity(car, velocity, currentMult);
 		//TODO Get UcarsTrade to modify velocity and stats
 		return velocity;
 	}
@@ -153,6 +153,14 @@ public class uCarsListener implements Listener {
 		if (id == 27 || id == 66 || id == 28 || id == 157) {
 			return false;
 		}
+		if(plugin.ucarsTrade){
+			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
 		return true;
 	}
     
@@ -173,6 +181,14 @@ public class uCarsListener implements Listener {
 		id = loc.getBlock().getRelative(BlockFace.DOWN, 2).getTypeId();
 		if (id == 27 || id == 66 || id == 28 || id == 157) {
 			return false;
+		}
+		if(plugin.ucarsTrade){
+			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		return true;
 	}
@@ -261,6 +277,14 @@ public class uCarsListener implements Listener {
 		float id = loc.getBlock().getTypeId();
 		if (id == 27 || id == 66 || id == 28) {
 			return false;
+		}
+		if(plugin.ucarsTrade){
+			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 		return true;
 	}
@@ -362,6 +386,11 @@ public class uCarsListener implements Listener {
 		CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
 		Boolean recalculateHealth = false;
 		// It is a valid car!
+		if(plugin.ucarsTrade){
+			if(!net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+				return;
+			}
+		}
 		//START ON TICK CALCULATIONS
         if(car.hasMetadata("carhealth")){
         	List<MetadataValue> vals = car.getMetadata("carhealth");
@@ -479,6 +508,11 @@ public class uCarsListener implements Listener {
 			};
 			CarHealthData health = new CarHealthData(ucars.config.getDouble("general.cars.health.default"), onDeath, plugin);
 			Boolean recalculateHealth = false;
+			if(plugin.ucarsTrade){
+				if(!net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+					return;
+				}
+			}
 			// It is a valid car!
 			car.setMaxSpeed(5);
             if(car.hasMetadata("carhealth")){
@@ -931,11 +965,11 @@ public class uCarsListener implements Listener {
 						Velocity.setY(0.5);
 					}
 					//Move the car and adjust vector to fit car stats
-					car.setVelocity(calculateCarStats(car, player, Velocity));
+					car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
 				}
 			} else {
 				//Move the car and adjust vector to fit car stats
-				car.setVelocity(calculateCarStats(car, player, Velocity));
+				car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
 			}
 			//Recalculate car health
 			if(recalculateHealth){

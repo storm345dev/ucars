@@ -52,7 +52,7 @@ public class ucars extends JavaPlugin {
 	public ListStore licensedPlayers = null;
 	public uCarsCommandExecutor cmdExecutor = null;
 	public ArrayList<Plugin> hookedPlugins = new ArrayList<Plugin>();
-	Boolean ucarsTrade = false;
+	public Boolean ucarsTrade = false;
     public static uCarsListener listener = null;
     
 	public static String colorise(String prefix) {
