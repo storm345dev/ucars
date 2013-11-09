@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.stormdev.ucars.trade.main;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -181,6 +179,12 @@ public class uCarsListener implements Listener {
 		if (id == 27 || id == 66 || id == 28 || id == 157) {
 			return false;
 		}
+		if(cart.getPassenger() == null){
+			return false;
+		}
+		if(!(cart.getPassenger() instanceof Player)){
+			return false;
+		}
 		if(plugin.ucarsTrade){
 			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
 				return true;
@@ -275,6 +279,12 @@ public class uCarsListener implements Listener {
 		Location loc = cart.getLocation();
 		float id = loc.getBlock().getTypeId();
 		if (id == 27 || id == 66 || id == 28) {
+			return false;
+		}
+		if(cart.getPassenger() == null){
+			return false;
+		}
+		if(!(cart.getPassenger() instanceof Player)){
 			return false;
 		}
 		if(plugin.ucarsTrade){
