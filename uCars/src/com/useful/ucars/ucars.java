@@ -110,7 +110,7 @@ public class ucars extends JavaPlugin {
 		}
 	}
 
-	private boolean setupEconomy() {
+	protected boolean setupEconomy() {
 		RegisteredServiceProvider<Economy> economyProvider = getServer()
 				.getServicesManager().getRegistration(
 						net.milkbowl.vault.economy.Economy.class);

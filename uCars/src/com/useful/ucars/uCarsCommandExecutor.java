@@ -242,8 +242,25 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			}
 			double cost = ucars.config.getDouble("general.cars.fuel.price");
 			double value = cost * amount;
-			double bal = ucars.economy.getBalance(sender
-					.getName());
+			double bal = 0.0;
+			try {
+				bal = ucars.economy.getBalance(sender
+						.getName());
+			} catch (Exception e) {
+				if(!ucars.plugin.setupEconomy()){
+					sender.sendMessage(ucars.colors.getError()+"Error finding economy plugin");
+					return true;
+				}
+				else{
+					try {
+						bal = ucars.economy.getBalance(sender
+								.getName());
+					} catch (Exception e1) {
+						sender.sendMessage(ucars.colors.getError()+"Error finding economy plugin");
+						return true;
+					}
+				}
+			}
 			if (bal <= 0) {
 				sender.sendMessage(ucars.colors.getError()
 						+ Lang.get("lang.fuel.noMoney"));
