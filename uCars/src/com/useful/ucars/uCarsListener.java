@@ -2,6 +2,7 @@ package com.useful.ucars;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -844,6 +845,20 @@ public class uCarsListener implements Listener {
 					String[] lines = s.getLines();
 					if(lines[0].equalsIgnoreCase("[Teleport]")){
 						car.eject();
+						Boolean raceCar = false;
+						if(car.hasMetadata("kart.racing")){
+							raceCar = true;
+						}
+						Boolean validCar = false;
+						UUID carId = null;
+						if(plugin.ucarsTrade){
+							if(!raceCar){
+								if(isACar(car)){
+									validCar = true;
+									carId = car.getUniqueId();
+								}
+							}
+						}
 						car.remove();
 						String xs = lines[1];
 						String ys = lines[2];
@@ -868,7 +883,26 @@ public class uCarsListener implements Listener {
 						}
 						Location toTele = new Location(s.getWorld(),x,y,z);
 						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
+						final Minecart v = car;
 					    car.setMetadata("carhealth", health);
+					    if(raceCar){
+					    	car.setMetadata("kart.racing", new StatValue(null, plugin));
+					    }
+					    if(validCar){
+					    	//Maintain car id
+					    	health.onDeath = new Runnable(){
+								//@Override
+								public void run(){
+									plugin.getServer().getPluginManager().callEvent(new ucarDeathEvent(v));
+								}
+							};
+						    car.setMetadata("carhealth", health);
+					    	net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars.get(carId);
+					    	c.id = car.getUniqueId();
+					    	net.stormdev.ucars.trade.main.plugin.carSaver.cars.remove(carId);
+					    	net.stormdev.ucars.trade.main.plugin.carSaver.cars.put(car.getUniqueId(), c);
+					    	net.stormdev.ucars.trade.main.plugin.carSaver.save();
+					    }
 					    player.sendMessage(ucars.colors.getTp()+"Teleporting...");
 					    car.setPassenger(player);
 					    car.setVelocity(Velocity);
