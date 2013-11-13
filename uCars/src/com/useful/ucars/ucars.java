@@ -165,14 +165,12 @@ public class ucars extends JavaPlugin {
 		} catch (Exception e1) {
 			getLogger().log(Level.WARNING, "Error creating/loading lang file! Regenerating..");
 		}
-		if (new File(getDataFolder().getAbsolutePath() + File.separator
-				+ "config.yml").exists() == false
-				|| new File(getDataFolder().getAbsolutePath() + File.separator
-						+ "config.yml").length() < 1) {
+		File configFile = new File(getDataFolder().getAbsolutePath()
+				+ File.separator + "config.yml");
+		if (configFile.exists() == false
+				|| configFile.length() < 1) {
 			// YamlConfiguration newC = new YamlConfiguration();
 			// newC.set("time.created", System.currentTimeMillis());
-			File configFile = new File(getDataFolder().getAbsolutePath()
-					+ File.separator + "config.yml");
 			try {
 				configFile.createNewFile();
 				// newC.save(configFile);
@@ -181,7 +179,16 @@ public class ucars extends JavaPlugin {
 			copy(getResource("ucarsConfigHeader.yml"), configFile);
 		}
 
-		config = getConfig();
+		try {
+			config = getConfig();
+		} catch (Exception e2) {
+			try {
+				configFile.createNewFile();
+				// newC.save(configFile);
+			} catch (IOException e) {
+			}
+			copy(getResource("ucarsConfigHeader.yml"), configFile);
+		}
 		try {
 			// config.load(this.getDataFolder().getAbsolutePath() +
 			// File.separator + "config.yml");
