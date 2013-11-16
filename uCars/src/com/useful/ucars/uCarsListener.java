@@ -360,7 +360,7 @@ public class uCarsListener implements Listener {
 			if(!isACar(car)){
 			    return;	
 			}
-			if(car.getVelocity().getY() > 10.5){ //Fix jumping bug in most occasions
+			if(car.getVelocity().getY() > 10.5 && !car.hasMetadata("car.falling")){ //Fix jumping bug in most occasions
 				Vector vel = car.getVelocity();
 				vel.setY(10.2);
 				car.setVelocity(vel);
@@ -518,7 +518,7 @@ public class uCarsListener implements Listener {
 				}
 			}
 			// It is a valid car!
-			if(car.getVelocity().getY() > 1){
+			if(car.getVelocity().getY() > 1 && !car.hasMetadata("car.falling")){
 				modY = false;
 			}
 			car.setMaxSpeed(5); //Don't allow game breaking speed - but faster than default
