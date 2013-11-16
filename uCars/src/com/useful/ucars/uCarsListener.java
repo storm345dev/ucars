@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -356,6 +357,15 @@ public class uCarsListener implements Listener {
 			}
 			
 			Minecart car = (Minecart) vehicle;
+			if(!isACar(car)){
+			    return;	
+			}
+			if(car.getVelocity().getY() > 10.5){ //Fix jumping bug in most occasions
+				Vector vel = car.getVelocity();
+				vel.setY(10.2);
+				car.setVelocity(vel);
+			}
+			/*
     	Material carBlock = car.getLocation().getBlock().getType();
 		if (carBlock == Material.WOOD_STAIRS
 				|| carBlock == Material.COBBLESTONE_STAIRS
@@ -368,10 +378,11 @@ public class uCarsListener implements Listener {
 				|| carBlock == Material.JUNGLE_WOOD_STAIRS
 				|| carBlock == Material.QUARTZ_STAIRS) {
 			Vector vel = car.getVelocity();
-			vel.setY(0.4);
+			vel.setY(0.5);
 			car.setVelocity(vel);
 		}
-		final Minecart cart = (Minecart) vehicle;
+		*/
+		final Minecart cart = car;
 		Runnable onDeath = new Runnable(){
 			//@Override
 			public void run(){
@@ -470,6 +481,7 @@ public class uCarsListener implements Listener {
 		if(event.isCancelled()){
 			return;
 		}
+		Boolean modY = true;
 		Vehicle vehicle = event.getVehicle();
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
@@ -506,7 +518,10 @@ public class uCarsListener implements Listener {
 				}
 			}
 			// It is a valid car!
-			car.setMaxSpeed(5);
+			if(car.getVelocity().getY() > 1){
+				modY = false;
+			}
+			car.setMaxSpeed(5); //Don't allow game breaking speed - but faster than default
             if(car.hasMetadata("carhealth")){
             	List<MetadataValue> vals = car.getMetadata("carhealth");
             	for(MetadataValue val:vals){
@@ -705,10 +720,16 @@ public class uCarsListener implements Listener {
 			Location before = car.getLocation();
 			float dir = (float) player.getLocation().getYaw();
 			BlockFace faceDir = ClosestFace.getClosestFace(dir);
-			int modX = faceDir.getModX() * 1;
-			int modY = faceDir.getModY() * 1;
-			int modZ = faceDir.getModZ() * 1;
-			before.add(modX, modY, modZ);
+			//before.add(faceDir.getModX(), faceDir.getModY(), faceDir.getModZ());
+			double fx = Velocity.getX();
+			if(fx>1){
+				fx = faceDir.getModX();
+			}
+			double fz = Velocity.getZ();
+			if(fz>1){
+				fz = faceDir.getModZ();
+			}
+			before.add(new Vector(fx, faceDir.getModY(), fz));
 			Block block = before.getBlock();
 			//Calculate collision health
 			if(block.getType().equals(Material.CACTUS)){
@@ -799,7 +820,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
-			if (Velocity.getY() < 0) { //Fix falling into ground
+			if (Velocity.getY() < 0) { //Fix falling into ground and also use custom gravity values
 				double newy = Velocity.getY() + 2d;
 				Velocity.setY(newy);
 			}
@@ -953,31 +974,26 @@ public class uCarsListener implements Listener {
 			//a list for grass, etc... so stop cars jumping
 			if (bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9
 					&& bid != 139 && bid != 85 && bid != 107 && bid != 113
-					&& bid != 70 && bid != 72 && cont) {
+					&& bid != 70 && bid != 72 && cont && modY) {
 				if (bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8
 						|| bidU == 9 || bidU == 44 || bidU == 43) {
 					theNewLoc.add(0, 1.5d, 0);
-					double y = 10;
-					if (block.getType() == Material.STEP
-							|| block.getType() == Material.DOUBLE_STEP) {
-						y = 5;
+					double y = 10.2;
+					if (block.getType().name().toLowerCase().contains("step")){
+						y = 5.1;
 					}
 					Material carBlock = car.getLocation().getBlock().getType();
-					if (carBlock == Material.WOOD_STAIRS
-							|| carBlock == Material.COBBLESTONE_STAIRS
-							|| carBlock == Material.BRICK_STAIRS
-							|| carBlock == Material.SMOOTH_STAIRS
-							|| carBlock == Material.NETHER_BRICK_STAIRS
-							|| carBlock == Material.SANDSTONE_STAIRS
-							|| carBlock == Material.SPRUCE_WOOD_STAIRS
-							|| carBlock == Material.BIRCH_WOOD_STAIRS
-							|| carBlock == Material.JUNGLE_WOOD_STAIRS
-							|| carBlock == Material.QUARTZ_STAIRS) {
-						y = 0.4;
-						//stop cars getting stuck on stairs
+					if(carBlock.name().toLowerCase().contains("step")){ //In a step block and trying to jump
+						y = 5.1;
+					}
+					if (carBlock.name().toLowerCase().contains(Pattern.quote("stairs")) 
+							|| underblock.getType().name().toLowerCase().contains(Pattern.quote("stairs")) 
+							|| block.getType().name().toLowerCase().contains(Pattern.quote("stairs"))) {
+						y = 5.2;
+						//ascend stairs
 					}
 					Boolean ignore = false;
-					if (car.getVelocity().getY() > 0) {
+					if (car.getVelocity().getY() > 4.5) {
 						//if car is going up already then dont do ascent
 						ignore = true;
 					}
