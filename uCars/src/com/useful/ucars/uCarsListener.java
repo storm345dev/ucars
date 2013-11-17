@@ -1008,7 +1008,7 @@ public class uCarsListener implements Listener {
 						|| bidU == 9 || bidU == 44 || bidU == 43 || inStairs) {
 					theNewLoc.add(0, 1.5d, 0);
 					Boolean calculated = false;
-					double y = 10;
+					double y = 7;//TODO
 					if (block.getType().name().toLowerCase().contains("step")){
 						calculated = true;
 						y = 5;
