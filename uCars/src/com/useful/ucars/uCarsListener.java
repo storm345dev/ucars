@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -360,9 +361,22 @@ public class uCarsListener implements Listener {
 			if(!isACar(car)){
 			    return;	
 			}
-			if(car.getVelocity().getY() > 10.5 && !car.hasMetadata("car.falling")){ //Fix jumping bug in most occasions
+			if(car.getVelocity().getY() > 0.1 && !car.hasMetadata("car.falling") && !car.hasMetadata("car.ascending")){ //Fix jumping bug in most occasions
 				Vector vel = car.getVelocity();
-				vel.setY(10.2);
+				if(car.hasMetadata("car.jumping")){
+					vel.setY(2.5);
+					car.removeMetadata("car.jumping", plugin);
+				}
+				else if(car.hasMetadata("car.jumpFull")){
+					//Jumping a full block
+					if(car.getVelocity().getY() > 10){
+						vel.setY(5);
+					}
+					car.removeMetadata("car.jumpFull", plugin);
+				}
+				else{
+					vel.setY(0);
+				}
 				car.setVelocity(vel);
 			}
 			/*
@@ -518,8 +532,14 @@ public class uCarsListener implements Listener {
 				}
 			}
 			// It is a valid car!
-			if(car.getVelocity().getY() > 1 && !car.hasMetadata("car.falling")){
+			if(car.getVelocity().getY() > 0.01 && !car.hasMetadata("car.falling") && !car.hasMetadata("car.ascending")){
 				modY = false;
+			}
+			if(car.hasMetadata("car.jumping")){
+				if(!car.hasMetadata("car.ascending")){
+				modY = false;
+				}
+				car.removeMetadata("car.jumping", plugin);
 			}
 			car.setMaxSpeed(5); //Don't allow game breaking speed - but faster than default
             if(car.hasMetadata("carhealth")){
@@ -708,7 +728,8 @@ public class uCarsListener implements Listener {
 					&& normalblock.getTypeId() != 43
 					&& normalblock.getTypeId() != 70
 					&& normalblock.getTypeId() != 72
-					&& normalblock.getTypeId() != 31) {
+					&& normalblock.getTypeId() != 31
+					&& !normalblock.getType().name().toLowerCase().contains("stairs")) {
 				//Stuck in a block
 				car.setVelocity(new Vector(0, 1, 0));
 			}
@@ -722,11 +743,11 @@ public class uCarsListener implements Listener {
 			BlockFace faceDir = ClosestFace.getClosestFace(dir);
 			//before.add(faceDir.getModX(), faceDir.getModY(), faceDir.getModZ());
 			double fx = Velocity.getX();
-			if(fx>1){
+			if(Math.abs(fx)>1){
 				fx = faceDir.getModX();
 			}
 			double fz = Velocity.getZ();
-			if(fz>1){
+			if(Math.abs(fz)>1){
 				fz = faceDir.getModZ();
 			}
 			before.add(new Vector(fx, faceDir.getModY(), fz));
@@ -971,39 +992,54 @@ public class uCarsListener implements Listener {
 					cont = false;
 				}
 			}
+			Boolean inStairs = false;
+			Material carBlock = car.getLocation().getBlock().getType();
+			if(carBlock.name().toLowerCase().contains("stairs")){
+				inStairs = true;
+			}
 			//a list for grass, etc... so stop cars jumping
 			if (bid != 0 && bid != 10 && bid != 11 && bid != 8 && bid != 9
 					&& bid != 139 && bid != 85 && bid != 107 && bid != 113
-					&& bid != 70 && bid != 72 && cont && modY) {
+					&& bid != 70 && bid != 72 && cont && modY || inStairs) {
 				if (bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8
-						|| bidU == 9 || bidU == 44 || bidU == 43) {
+						|| bidU == 9 || bidU == 44 || bidU == 43 || inStairs) {
 					theNewLoc.add(0, 1.5d, 0);
-					double y = 10.2;
+					Boolean calculated = false;
+					double y = 10;
 					if (block.getType().name().toLowerCase().contains("step")){
-						y = 5.1;
+						calculated = true;
+						y = 5;
 					}
-					Material carBlock = car.getLocation().getBlock().getType();
 					if(carBlock.name().toLowerCase().contains("step")){ //In a step block and trying to jump
-						y = 5.1;
+						calculated = true;
+						y = 5;
 					}
 					if (carBlock.name().toLowerCase().contains(Pattern.quote("stairs")) 
-							|| underblock.getType().name().toLowerCase().contains(Pattern.quote("stairs")) 
-							|| block.getType().name().toLowerCase().contains(Pattern.quote("stairs"))) {
-						y = 5.2;
+							//|| underblock.getType().name().toLowerCase().contains(Pattern.quote("stairs")) 
+							|| block.getType().name().toLowerCase().contains(Pattern.quote("stairs")) || inStairs) {
+						calculated = true;
+						y = 2.5;
 						//ascend stairs
 					}
 					Boolean ignore = false;
-					if (car.getVelocity().getY() > 4.5) {
+					if (car.getVelocity().getY() > 4) {
 						//if car is going up already then dont do ascent
 						ignore = true;
 					}
 					if (!ignore) {
 						//Do ascent
 						Velocity.setY(y);
+						if(calculated){
+						car.setMetadata("car.jumping", new StatValue(null, plugin));
+						}
+						else{
+							car.setMetadata("car.jumpFull", new StatValue(null, plugin));
+						}
 					}
 					if(fly && cont){
 						//Make the car ascend (easter egg, slab elevator)
 						Velocity.setY(0.5);
+						car.setMetadata("car.ascending", new StatValue(null, plugin));
 					}
 					//Move the car and adjust vector to fit car stats
 					car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
