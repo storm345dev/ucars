@@ -361,8 +361,8 @@ public class uCarsListener implements Listener {
 			if(!isACar(car)){
 			    return;	
 			}
+			Vector vel = car.getVelocity();
 			if(car.getVelocity().getY() > 0.1 && !car.hasMetadata("car.falling") && !car.hasMetadata("car.ascending")){ //Fix jumping bug in most occasions
-				Vector vel = car.getVelocity();
 				if(car.hasMetadata("car.jumping")){
 					vel.setY(2.5);
 					car.removeMetadata("car.jumping", plugin);
@@ -379,6 +379,33 @@ public class uCarsListener implements Listener {
 				}
 				car.setVelocity(vel);
 			}
+			//TODO Make jumping work when not moving
+			//Calculate jumping gravity
+	        if(car.hasMetadata("car.falling")){
+				 List<MetadataValue> falling = car.getMetadata("car.falling");
+			     StatValue val = null;
+			     for(MetadataValue fall:falling){
+			    	 if(fall instanceof StatValue){
+			    		 val = (StatValue) fall;
+			    	 }
+			     }
+			     if(val != null){
+			    	 if(!car.hasMetadata("car.fallingPause")){
+			    	 double gravity = (Double) val.getValue();
+			    	 double newGravity = gravity + (gravity*(gravity/6));
+			    	 car.removeMetadata("car.falling", val.getOwningPlugin());
+			    	 if(!(gravity > 0.35)){
+	  		    	 car.setMetadata("car.falling", new StatValue(newGravity, ucars.plugin));
+	  		    	 vel.setY(-(gravity*1.333+0.2d));
+	  		    	 car.setVelocity(vel);
+			    	 }
+			    	 }
+			    	 else{
+			    		 car.removeMetadata("car.fallingPause", plugin);
+			    	 }
+			     }
+			}
+			
 			/*
     	Material carBlock = car.getLocation().getBlock().getType();
 		if (carBlock == Material.WOOD_STAIRS
@@ -667,6 +694,7 @@ public class uCarsListener implements Listener {
 			}
 			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
 			//Calculate jumping gravity
+			/*//TODO Old gravity calcs
             if(car.hasMetadata("car.falling")){
    			 List<MetadataValue> falling = car.getMetadata("car.falling");
    		     StatValue val = null;
@@ -676,6 +704,7 @@ public class uCarsListener implements Listener {
    		    	 }
    		     }
    		     if(val != null){
+   		    	 if(!car.hasMetadata("car.fallingPause")){
    		    	 double gravity = (Double) val.getValue();
    		    	 double newGravity = gravity + (gravity*(gravity/6));
    		    	 car.removeMetadata("car.falling", val.getOwningPlugin());
@@ -683,8 +712,14 @@ public class uCarsListener implements Listener {
       		    	 car.setMetadata("car.falling", new StatValue(newGravity, ucars.plugin));
       		    	 playerVelocity.setY(-gravity);
    		    	 }
+   		    	 }
+   		    	 else{
+   		    		 car.removeMetadata("car.fallingPause", plugin);
+   		    	 }
    		     }
-   		}
+   		    }
+            //ENd jumping gravity calculations
+             */
 			double defMultiplier = ucars.config
 					.getDouble("general.cars.defSpeed");
 			double multiplier = defMultiplier;
@@ -866,6 +901,7 @@ public class uCarsListener implements Listener {
 						.getDouble("general.cars.jumpAmount");
 				double y = Velocity.getY() + jumpAmount;
 				car.setMetadata("car.falling", new StatValue(0.1, plugin));
+				car.setMetadata("car.fallingPause", new StatValue(1, plugin));
 				Velocity.setY(y);
 				car.setVelocity(Velocity);
 			}
@@ -1008,7 +1044,7 @@ public class uCarsListener implements Listener {
 						|| bidU == 9 || bidU == 44 || bidU == 43 || inStairs) {
 					theNewLoc.add(0, 1.5d, 0);
 					Boolean calculated = false;
-					double y = 7;//TODO
+					double y = 7;
 					if (block.getType().name().toLowerCase().contains("step")){
 						calculated = true;
 						y = 5;
