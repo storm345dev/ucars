@@ -379,7 +379,7 @@ public class uCarsListener implements Listener {
 				}
 				car.setVelocity(vel);
 			}
-			//TODO Make jumping work when not moving
+			//Make jumping work when not moving
 			//Calculate jumping gravity
 	        if(car.hasMetadata("car.falling")){
 				 List<MetadataValue> falling = car.getMetadata("car.falling");
