@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -960,6 +961,10 @@ public class uCarsListener implements Listener {
 							}
 						}
 						Location toTele = new Location(s.getWorld(),x,y,z);
+						Chunk c = toTele.getChunk();
+						if(c.isLoaded()){
+							c.load(true);
+						}
 						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
 						final Minecart v = car;
 					    car.setMetadata("carhealth", health);
