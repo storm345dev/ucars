@@ -961,9 +961,9 @@ public class uCarsListener implements Listener {
 							}
 						}
 						Location toTele = new Location(s.getWorld(),x,y,z);
-						Chunk c = toTele.getChunk();
-						if(c.isLoaded()){
-							c.load(true);
+						Chunk ch = toTele.getChunk();
+						if(ch.isLoaded()){
+							ch.load(true);
 						}
 						car = (Minecart) s.getWorld().spawnEntity(toTele, EntityType.MINECART);
 						final Minecart v = car;
