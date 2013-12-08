@@ -1106,7 +1106,7 @@ public class uCarsListener implements Listener {
 	/* 
 	 * This disables fall damage whilst driving a car
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	void safeFly(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
