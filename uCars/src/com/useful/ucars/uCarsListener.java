@@ -132,37 +132,41 @@ public class uCarsListener implements Listener {
      * for traincarts support)
      */
 	public boolean inACar(String playername) {
-		Player p = plugin.getServer().getPlayer(playername);
-		if (p == null) {
-			// Should NEVER happen(It means they r offline)
-			return false;
-		}
-		if (!p.isInsideVehicle()) {
-			return false;
-		}
-		Entity ent = p.getVehicle();
-		if (!(ent instanceof Vehicle)) {
-			return false;
-		}
-		Vehicle veh = (Vehicle) ent;
-		if (!(veh instanceof Minecart)) {
-			return false;
-		}
-		Minecart cart = (Minecart) veh;
-		Location loc = cart.getLocation();
-		float id = loc.getBlock().getTypeId();
-		if (id == 27 || id == 66 || id == 28 || id == 157) {
-			return false;
-		}
-		if(plugin.ucarsTrade){
-			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
-				return true;
-			}
-			else{
+		try {
+			Player p = plugin.getServer().getPlayer(playername);
+			if (p == null) {
+				// Should NEVER happen(It means they r offline)
 				return false;
 			}
+			if (!p.isInsideVehicle()) {
+				return false;
+			}
+			Entity ent = p.getVehicle();
+			if (!(ent instanceof Vehicle)) {
+				return false;
+			}
+			Vehicle veh = (Vehicle) ent;
+			if (!(veh instanceof Minecart)) {
+				return false;
+			}
+			Minecart cart = (Minecart) veh;
+			Location loc = cart.getLocation();
+			float id = loc.getBlock().getTypeId();
+			if (id == 27 || id == 66 || id == 28 || id == 157) {
+				return false;
+			}
+			if(plugin.ucarsTrade){
+				if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			//Server reloading
 		}
-		return true;
 	}
     
 	/*
@@ -258,36 +262,40 @@ public class uCarsListener implements Listener {
      * for traincarts support)
      */
 	public boolean inACar(Player p) {
-		if (p == null) {
-			// Should NEVER happen(It means they r offline)
-			return false;
-		}
-		if (!p.isInsideVehicle()) {
-			return false;
-		}
-		Entity ent = p.getVehicle();
-		if (!(ent instanceof Vehicle)) {
-			return false;
-		}
-		Vehicle veh = (Vehicle) ent;
-		if (!(veh instanceof Minecart)) {
-			return false;
-		}
-		Minecart cart = (Minecart) veh;
-		Location loc = cart.getLocation();
-		float id = loc.getBlock().getTypeId();
-		if (id == 27 || id == 66 || id == 28) {
-			return false;
-		}
-		if(plugin.ucarsTrade){
-			if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
-				return true;
-			}
-			else{
+		try {
+			if (p == null) {
+				// Should NEVER happen(It means they r offline)
 				return false;
 			}
+			if (!p.isInsideVehicle()) {
+				return false;
+			}
+			Entity ent = p.getVehicle();
+			if (!(ent instanceof Vehicle)) {
+				return false;
+			}
+			Vehicle veh = (Vehicle) ent;
+			if (!(veh instanceof Minecart)) {
+				return false;
+			}
+			Minecart cart = (Minecart) veh;
+			Location loc = cart.getLocation();
+			float id = loc.getBlock().getTypeId();
+			if (id == 27 || id == 66 || id == 28) {
+				return false;
+			}
+			if(plugin.ucarsTrade){
+				if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			//Server reloading
 		}
-		return true;
 	}
     /*
      * Standardises the text on some effect signs
