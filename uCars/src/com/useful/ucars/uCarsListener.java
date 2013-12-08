@@ -166,6 +166,7 @@ public class uCarsListener implements Listener {
 			return true;
 		} catch (Exception e) {
 			//Server reloading
+			return false;
 		}
 	}
     
@@ -295,6 +296,7 @@ public class uCarsListener implements Listener {
 			return true;
 		} catch (Exception e) {
 			//Server reloading
+			return false;
 		}
 	}
     /*
