@@ -695,7 +695,7 @@ public class uCarsListener implements Listener {
 			}
 			Vector playerVelocity = event.getTravelVector(); //Travel Vector, fixes controls for 1.6
 			//Calculate jumping gravity
-			/*//TODO Old gravity calcs
+			/*//Old gravity calcs
             if(car.hasMetadata("car.falling")){
    			 List<MetadataValue> falling = car.getMetadata("car.falling");
    		     StatValue val = null;
@@ -1109,6 +1109,9 @@ public class uCarsListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	void safeFly(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+		if(event.isCancelled()){
 			return;
 		}
 		Player p = (Player) event.getEntity();
