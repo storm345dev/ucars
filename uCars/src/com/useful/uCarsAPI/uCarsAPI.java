@@ -36,7 +36,7 @@ public class uCarsAPI {
 	/**
 	 * Get the running instance of the API implementation
 	 * 
-	 * @return
+	 * @return Returns the API
 	 */
 	public static uCarsAPI getAPI(){
 		return ucars.plugin.getAPI();
