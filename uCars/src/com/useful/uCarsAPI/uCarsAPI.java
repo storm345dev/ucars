@@ -1,17 +1,18 @@
-package com.useful.ucars;
+package com.useful.uCarsAPI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import net.stormdev.ucars.trade.main;
+
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import com.useful.uCarsAPI.CarCheck;
-import com.useful.uCarsAPI.CarSpeedModifier;
+import com.useful.ucars.ucars;
 import com.useful.ucarsCommon.StatValue;
 
 /**
@@ -28,8 +29,12 @@ public class uCarsAPI {
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 	
-	protected uCarsAPI(){
+	public uCarsAPI(){
 		this.plugin = ucars.plugin;
+	}
+	
+	public static uCarsAPI getAPI(){
+		return ucars.plugin.getAPI();
 	}
 	/**
 	 * Will hook your plugin into uCars.
@@ -47,7 +52,7 @@ public class uCarsAPI {
 	 * being unhooked. Else it will be unhooked
 	 * automatically anyway.
 	 * 
-	 * @param plugin
+	 * @param plugin Your plugin
 	 */
 	public void unHookPlugin(Plugin plugin){
 		plugin.getLogger().info("Successfully unhooked: "+plugin.getName());
@@ -106,7 +111,7 @@ public class uCarsAPI {
 		carChecks.remove(plugin);
 		return true;
 	}
-	protected Boolean runCarChecks(Minecart car){
+	public Boolean runCarChecks(Minecart car){
 		final ArrayList<CarCheck> checks = new ArrayList<CarCheck>(carChecks.values());
 		for(CarCheck c:checks){
 			if(!c.isACar(car)){
@@ -145,7 +150,7 @@ public class uCarsAPI {
 		carSpeedMods.remove(plugin);
 		return true;
 	}
-	protected Vector getTravelVector(Minecart car, Vector travelVector){
+	public Vector getTravelVector(Minecart car, Vector travelVector){
 		final ArrayList<CarSpeedModifier> mods = new ArrayList<CarSpeedModifier>(carSpeedMods.values());
 		for(CarSpeedModifier m:mods){
 			travelVector = m.getModifiedSpeed(car, travelVector);
