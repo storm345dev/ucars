@@ -148,6 +148,7 @@ public class ucars extends JavaPlugin {
 		}
     	return true;
     }
+	@Override
 	public void onEnable() {
 		plugin = this;
 		File langFile = new File(getDataFolder().getAbsolutePath()
@@ -351,7 +352,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.hitBy.power", (double) 5);
 			}
 			if (!config.contains("general.cars.hitBy.damage")) {
-				config.set("general.cars.hitBy.damage", (double) 1.5);
+				config.set("general.cars.hitBy.damage", 1.5);
 			}
 			if (!config.contains("general.cars.roadBlocks.enable")) {
 				config.set("general.cars.roadBlocks.enable", false);
@@ -397,31 +398,31 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.placePerm.perm", "ucars.place");
 			}
 			if (!config.contains("general.cars.health.default")) {
-				config.set("general.cars.health.default", (double)10.0);
+				config.set("general.cars.health.default", 10.0);
 			}
 			if (!config.contains("general.cars.health.max")) {
-				config.set("general.cars.health.max", (double)100.0);
+				config.set("general.cars.health.max", 100.0);
 			}
 			if (!config.contains("general.cars.health.min")) {
-				config.set("general.cars.health.min", (double)5.0);
+				config.set("general.cars.health.min", 5.0);
 			}
 			if (!config.contains("general.cars.health.overrideDefault")) {
 				config.set("general.cars.health.overrideDefault", true);
 			}
 			if (!config.contains("general.cars.health.underwaterDamage")) {
-				config.set("general.cars.health.underwaterDamage", (double)0.0);
+				config.set("general.cars.health.underwaterDamage", 0.0);
 			}
 			if (!config.contains("general.cars.health.lavaDamage")) {
-				config.set("general.cars.health.lavaDamage", (double)0.0);
+				config.set("general.cars.health.lavaDamage", 0.0);
 			}
 			if (!config.contains("general.cars.health.punchDamage")) {
-				config.set("general.cars.health.punchDamage", (double)50.0);
+				config.set("general.cars.health.punchDamage", 50.0);
 			}
 			if (!config.contains("general.cars.health.cactusDamage")) {
-				config.set("general.cars.health.cactusDamage", (double)0.0);
+				config.set("general.cars.health.cactusDamage", 0.0);
 			}
 			if (!config.contains("general.cars.health.crashDamage")) {
-				config.set("general.cars.health.crashDamage", (double)0.0);
+				config.set("general.cars.health.crashDamage", 0.0);
 			}
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
@@ -531,6 +532,7 @@ public class ucars extends JavaPlugin {
 		return;
 	}
 
+	@Override
 	public void onDisable() {
 		saveHashMap(fuel, plugin.getDataFolder().getAbsolutePath()
 				+ File.separator + "fuel.bin");

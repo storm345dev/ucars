@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -526,7 +525,7 @@ public class uCarsListener implements Listener {
 				return;
 			}
 			try {
-				if(!((ucars)plugin).licensedPlayers.contains(player.getName()) && ucars.config.getBoolean("general.cars.licenses.enable")){
+				if(!plugin.licensedPlayers.contains(player.getName()) && ucars.config.getBoolean("general.cars.licenses.enable")){
 					player.sendMessage(ucars.colors.getError()+Lang.get("lang.licenses.noLicense"));
 					return;
 				}
@@ -763,7 +762,7 @@ public class uCarsListener implements Listener {
 			}
 			//definitely moving somewhere!
 			Location before = car.getLocation();
-			float dir = (float) player.getLocation().getYaw();
+			float dir = player.getLocation().getYaw();
 			BlockFace faceDir = ClosestFace.getClosestFace(dir);
 			//before.add(faceDir.getModX(), faceDir.getModY(), faceDir.getModZ());
 			double fx = Velocity.getX();
@@ -1105,7 +1104,7 @@ public class uCarsListener implements Listener {
 		Player p = (Player) event.getEntity();
 		if (inACar(p.getName())) {
 			Vector vel = p.getVehicle().getVelocity();
-			if (!(vel.getY() > (double) -0.1 && vel.getY() < (double) 0.1)) {
+			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
 				event.setCancelled(true);
 			}
 			else{
@@ -1301,7 +1300,7 @@ public class uCarsListener implements Listener {
 				if (event.getPlayer().getItemInHand().getTypeId() == id) {
 					Boolean valid = true;
 					if (hasdata) {
-						int tdata = ((int) event.getPlayer().getItemInHand()
+						int tdata = (event.getPlayer().getItemInHand()
 								.getData().getData());
 						if (!(tdata == data)) {
 							valid = false;

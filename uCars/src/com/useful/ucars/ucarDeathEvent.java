@@ -21,6 +21,7 @@ public class ucarDeathEvent extends Event implements Cancellable{
 	public Minecart getCar(){
 		return car;
 	}
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
