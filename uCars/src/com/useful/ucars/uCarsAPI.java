@@ -26,7 +26,7 @@ public class uCarsAPI {
 	private ucars plugin = null;
 	private Map<Plugin, CarCheck> carChecks = new HashMap<Plugin, CarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
-	private Map<UUID, ArrayList<StatValue>> ucarsMeta = new HashMap<UUID, ArrayList<StatValue>>();
+	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 	
 	protected uCarsAPI(){
 		this.plugin = ucars.plugin;
@@ -163,9 +163,9 @@ public class uCarsAPI {
 	 * So don't use this for tracking cars)
 	 * @return All the meta set for that car
 	 */
-	public ArrayList<StatValue> getuCarMeta(UUID entityId){
+	public Map<String, StatValue> getuCarMeta(UUID entityId){
 		if(!ucarsMeta.containsKey(entityId)){
-			return new ArrayList<StatValue>();
+			return new HashMap<String, StatValue>();
 		}
 		return ucarsMeta.get(entityId);
 	}
@@ -181,20 +181,68 @@ public class uCarsAPI {
 	 * @param entityId Id of the uCar entity (ID can be changed without your notice
 	 * So don't use this for tracking cars)
 	 * @param toAdd The ucarMeta to add to the car
-	 * @return True is successful and False is plugin is not hooked or unsuccessfull
+	 * @param statName The key/Name of the stat eg. 'myPlugin.myStat'
+	 * @return True is successful and False if plugin is not hooked or unsuccessful
 	 */
-	public Boolean adduCarsMeta(Plugin plugin, UUID entityId, StatValue toAdd){
+	public Boolean adduCarsMeta(Plugin plugin, UUID entityId, String statName, StatValue toAdd){
 		if(!isPluginHooked(plugin)){
 			return false;
 		}
-		ArrayList<StatValue> stats = new ArrayList<StatValue>();
+		Map<String, StatValue> stats = new HashMap<String, StatValue>();
 		if(ucarsMeta.containsKey(entityId)){
 			stats = ucarsMeta.get(entityId);
 		}
-		stats.add(toAdd);
+		stats.put(statName, toAdd);
 		ucarsMeta.put(entityId, stats);
 		return true;
 	}
+	/**
+	 * Gets uCarMeta for a car
+	 * 
+	 * -uCarMeta is removed each time the server restarts
+	 * so use for temporary buffs such as speed-buffs or
+	 * upgrades (If you track and save them)
+	 * 
+	 * @param plugin Your plugin
+	 * @param entityId Id of the uCar entity (ID can be changed without your notice
+	 * So don't use this for tracking cars)
+	 * @param statName The key/Name of the stat eg. 'myPlugin.myStat'
+	 * @return ucarMeta is successful and null if not existing on car or plugin is not hooked or unsuccessful
+	 */
+    public StatValue getUcarMeta(Plugin plugin, String statName, UUID entityId){
+	    if(!isPluginHooked(plugin) || !ucarsMeta.containsKey(entityId)){
+		    return null;
+	    }
+	    Map<String, StatValue> metas = ucarsMeta.get(entityId);
+	    if(!metas.containsKey(statName)){
+	    	return null;
+	    }
+	    return metas.get(statName);
+	}
+    /**
+     * Remove a meta value of a car
+     * 
+     * -uCarMeta is removed each time the server restarts
+	 * so use for temporary buffs such as speed-buffs or
+	 * upgrades (If you track and save them)
+     * 
+     * @param plugin Your plugin
+     * @param statName The name of the stat to remove
+     * @param entityId The entityId of the car
+     * @return True if removed, False if plugin not hooked or removal unsuccessful (Not set)
+     */
+    public Boolean removeUcarMeta(Plugin plugin, String statName, UUID entityId){
+    	 if(!isPluginHooked(plugin) || !ucarsMeta.containsKey(entityId)){
+ 		    return false;
+ 	    }
+ 	    Map<String, StatValue> metas = ucarsMeta.get(entityId);
+ 	    if(!metas.containsKey(statName)){
+ 	    	return false;
+ 	    }
+ 	    metas.remove(statName);
+ 	    ucarsMeta.put(entityId, metas);
+ 	    return true;
+    }
 	/**
 	 * Clears uCarMeta for a car
 	 * 
@@ -224,7 +272,7 @@ public class uCarsAPI {
 		if(!ucarsMeta.containsKey(previousId)){
 			return;
 		}
-		ucarsMeta.put(newId, new ArrayList<StatValue>(ucarsMeta.get(previousId)));
+		ucarsMeta.put(newId, new HashMap<String, StatValue>(ucarsMeta.get(previousId)));
 		ucarsMeta.remove(previousId);
 		return;
 	}
