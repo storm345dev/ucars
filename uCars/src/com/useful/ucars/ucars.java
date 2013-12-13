@@ -54,6 +54,7 @@ public class ucars extends JavaPlugin {
 	public ArrayList<Plugin> hookedPlugins = new ArrayList<Plugin>();
 	public Boolean ucarsTrade = false;
     public static uCarsListener listener = null;
+    protected uCarsAPI API = null;
     
 	public static String colorise(String prefix) {
 		 return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -525,6 +526,7 @@ public class ucars extends JavaPlugin {
 		}
 		this.licensedPlayers = new ListStore(new File(getDataFolder()+File.separator+"licenses.txt"));
 		this.licensedPlayers.load();
+		this.API = new uCarsAPI();
 		getLogger().info("uCars has been enabled!");
 		return;
 	}
@@ -561,19 +563,19 @@ public class ucars extends JavaPlugin {
 		}
 		return false;
 	}
+	public uCarsAPI getAPI(){
+		return API;
+	}
 	public void hookPlugin(Plugin plugin){
-		getLogger().info("Successfully hooked into by: "+plugin.getName());
-		this.hookedPlugins.add(plugin);
+		getAPI().hookPlugin(plugin);
 	}
 	public void unHookPlugin(Plugin plugin){
-		getLogger().info("Successfully unhooked: "+plugin.getName());
-		this.hookedPlugins.remove(plugin);
+		getAPI().unHookPlugin(plugin);
 	}
 	public void unHookPlugins(){
-		this.hookedPlugins.removeAll(hookedPlugins);
-		getLogger().info("Successfully unhooked all plugins!");
+		getAPI().unHookPlugins();
 	}
 	public Boolean isPluginHooked(Plugin plugin){
-		return this.hookedPlugins.contains(plugin);
+		return getAPI().isPluginHooked(plugin);
 	}
 }

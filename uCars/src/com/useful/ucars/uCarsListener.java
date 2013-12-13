@@ -77,6 +77,7 @@ public class uCarsListener implements Listener {
 			velocity = new Vector(0,0,0);
 			return velocity;
 		}
+		velocity = plugin.getAPI().getTravelVector(car, velocity);
 		if(!plugin.ucarsTrade){
 			return velocity;
 		}
@@ -134,36 +135,7 @@ public class uCarsListener implements Listener {
 	public boolean inACar(String playername) {
 		try {
 			Player p = plugin.getServer().getPlayer(playername);
-			if (p == null) {
-				// Should NEVER happen(It means they r offline)
-				return false;
-			}
-			if (!p.isInsideVehicle()) {
-				return false;
-			}
-			Entity ent = p.getVehicle();
-			if (!(ent instanceof Vehicle)) {
-				return false;
-			}
-			Vehicle veh = (Vehicle) ent;
-			if (!(veh instanceof Minecart)) {
-				return false;
-			}
-			Minecart cart = (Minecart) veh;
-			Location loc = cart.getLocation();
-			float id = loc.getBlock().getTypeId();
-			if (id == 27 || id == 66 || id == 28 || id == 157) {
-				return false;
-			}
-			if(plugin.ucarsTrade){
-				if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
-					return true;
-				}
-				else{
-					return false;
-				}
-			}
-			return true;
+			return inACar(p);
 		} catch (Exception e) {
 			//Server reloading
 			return false;
@@ -186,6 +158,9 @@ public class uCarsListener implements Listener {
 		}
 		id = loc.getBlock().getRelative(BlockFace.DOWN, 2).getTypeId();
 		if (id == 27 || id == 66 || id == 28 || id == 157) {
+			return false;
+		}
+		if(!plugin.getAPI().runCarChecks(cart)){
 			return false;
 		}
 		if(plugin.ucarsTrade){
@@ -283,6 +258,9 @@ public class uCarsListener implements Listener {
 			Location loc = cart.getLocation();
 			float id = loc.getBlock().getTypeId();
 			if (id == 27 || id == 66 || id == 28) {
+				return false;
+			}
+			if(!plugin.getAPI().runCarChecks(cart)){
 				return false;
 			}
 			if(plugin.ucarsTrade){
