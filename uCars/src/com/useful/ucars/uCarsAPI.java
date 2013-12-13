@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -226,6 +227,33 @@ public class uCarsAPI {
 		ucarsMeta.put(newId, new ArrayList<StatValue>(ucarsMeta.get(previousId)));
 		ucarsMeta.remove(previousId);
 		return;
+	}
+	/**
+	 * Checks if the given vehicle is a car
+	 * 
+	 * @param car The Minecart to check if it's a car
+	 * @return True if it's a car
+	 */
+	public Boolean checkIfCar(Minecart car){
+		return ucars.listener.isACar(car);
+	}
+	/**
+	 * Checks if the given player is in a car
+	 * 
+	 * @param player The player to check
+	 * @return True if they're in a car
+	 */
+	public Boolean checkInCar(Player player){
+		return ucars.listener.inACar(player);
+	}
+	/**
+	 * Checks if the given player is in a car
+	 * 
+	 * @param player The player to check
+	 * @return True if they're in a car
+	 */
+	public Boolean checkInCar(String player){
+		return ucars.listener.inACar(player);
 	}
 
 }
