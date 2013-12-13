@@ -917,12 +917,11 @@ public class uCarsListener implements Listener {
 							raceCar = true;
 						}
 						Boolean validCar = false;
-						UUID carId = null;
+						UUID carId = car.getUniqueId();
 						if(plugin.ucarsTrade){
 							if(!raceCar){
 								if(isACar(car)){
 									validCar = true;
-									carId = car.getUniqueId();
 								}
 							}
 						}
@@ -982,6 +981,7 @@ public class uCarsListener implements Listener {
 					    		player.setMetadata("car.stayIn", val);
 					    	}
 					    }
+					    plugin.getAPI().updateUcarMeta(carId, car.getUniqueId());
 						}
 					}
 					}
