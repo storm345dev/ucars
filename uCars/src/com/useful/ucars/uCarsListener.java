@@ -249,28 +249,16 @@ public class uCarsListener implements Listener {
 			if (!(ent instanceof Vehicle)) {
 				return false;
 			}
-			Vehicle veh = (Vehicle) ent;
-			if (!(veh instanceof Minecart)) {
-				return false;
-			}
-			Minecart cart = (Minecart) veh;
-			Location loc = cart.getLocation();
-			float id = loc.getBlock().getTypeId();
-			if (id == 27 || id == 66 || id == 28) {
-				return false;
-			}
-			if(!plugin.getAPI().runCarChecks(cart)){
-				return false;
-			}
-			if(plugin.ucarsTrade){
-				if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)){
-					return true;
+			if (!(ent instanceof Minecart)) {
+				while(!(ent instanceof Minecart) && ent.getVehicle() != null){
+					ent = ent.getVehicle();
 				}
-				else{
+				if(!(ent instanceof Minecart)){ //TODO Go around isACar and make sure it traces stacks
 					return false;
 				}
 			}
-			return true;
+			Minecart cart = (Minecart) ent;
+			return isACar(cart);
 		} catch (Exception e) {
 			//Server reloading
 			return false;
@@ -322,7 +310,12 @@ public class uCarsListener implements Listener {
     	Entity passenger = vehicle.getPassenger();
     	Boolean driven = false;
     	if (!(passenger instanceof Player)) {
-			driven = false;
+    		while(!(passenger instanceof Player) && passenger.getPassenger() != null){
+    			passenger = passenger.getPassenger();
+    		}
+    		if(!(passenger instanceof Player)){
+    			driven = false;
+    		}
 		}
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
@@ -1093,7 +1086,7 @@ public class uCarsListener implements Listener {
 	/* 
 	 * This disables fall damage whilst driving a car
 	 */
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	void safeFly(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
