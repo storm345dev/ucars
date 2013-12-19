@@ -33,9 +33,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.ListeningWhitelist;
+import com.comphenix.protocol.events.ListeningWhitelist.Builder;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.injector.GamePhase;
 import com.useful.uCarsAPI.uCarsAPI;
 
 public class ucars extends JavaPlugin {
@@ -137,20 +139,16 @@ public class ucars extends JavaPlugin {
 					return plugin;
 				}
 
-				public ListeningWhitelist getReceivingWhitelist() {
-					final Set<Integer> toListen = new HashSet<Integer>();
-					toListen.add(PacketType.Play.Client.STEER_VEHICLE.getLegacyId()); //Apparently Legacy is the only one which works...
-					//TODO I know it's deprecated but I cannot find any non-deprecated way in the api
-					@SuppressWarnings("deprecation")
-					final ListeningWhitelist listening = new ListeningWhitelist(ListenerPriority.HIGH, 
-							toListen);
-					return listening;
+				public final ListeningWhitelist getReceivingWhitelist() {
+					final Builder b = ListeningWhitelist.newBuilder();
+					b.high();
+					b.gamePhase(GamePhase.PLAYING);
+					b.types(PacketType.Play.Client.STEER_VEHICLE);
+					return b.build();
 				}
 
-				@SuppressWarnings("deprecation")
-				public ListeningWhitelist getSendingWhitelist() {
-					return new ListeningWhitelist(ListenerPriority.MONITOR,
-							new HashSet<Integer>());
+				public final ListeningWhitelist getSendingWhitelist() {
+					return ListeningWhitelist.newBuilder().build();
 				}
 				
 
@@ -161,7 +159,7 @@ public class ucars extends JavaPlugin {
 		            new MotionManager(event.getPlayer(), forwards, sideways);
 				}
 
-				public void onPacketSending(PacketEvent arg0) {
+				public final void onPacketSending(PacketEvent arg0) {
 					//DOn't worry
 				}
 				});
