@@ -871,8 +871,7 @@ public class uCarsListener implements Listener {
 			int bid = block.getTypeId();
 			int bidData = block.getData();
 			Boolean fly = false; //Fly is the 'easter egg' slab elevator
-			if(normalblock.getRelative(faceDir).getType() == Material.STEP 
-					&& normalblock.getRelative(faceDir).getData() < 1){
+			if(normalblock.getRelative(faceDir).getType() == Material.STEP ){
 				//If looking at slabs
 				fly = true;
 			}
