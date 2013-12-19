@@ -2,6 +2,7 @@ package com.useful.ucars;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,10 +15,17 @@ public class MotionManager {
 
 	public MotionManager(Player player, float f, float s){
 		Vector vec = new Vector();
-		if(!ucars.listener.inACar(player)){
+		Entity ent = player.getVehicle();
+		if(ent == null){
 			return;
 		}
-		Minecart car = (Minecart) player.getVehicle();
+		while(!(ent instanceof Minecart) && ent.getVehicle() != null){
+			ent = ent.getVehicle();
+		}
+		if(!ucars.listener.inACar(player) || !(ent instanceof Minecart)){
+			return;
+		}
+		Minecart car = (Minecart) ent;
 		//Location loc = car.getLocation();
 		//Vector carD = loc.getDirection();
 		Vector plaD = player.getEyeLocation().getDirection();

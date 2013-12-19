@@ -10,6 +10,12 @@ commands:
         permission: ucars.ucars
         permission-message: You don't have access to this command
         default: true
+   pigucart:
+        description: Spawns a minecart with a pig riding it and you riding the pig
+        usage: /<command>
+        permission: ucars.pigucart
+        permission-message: You don't have access to this command
+        default: op
    reloaducars:
         description: This reloads the config
         usage: /<command>

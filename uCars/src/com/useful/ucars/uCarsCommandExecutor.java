@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -190,6 +192,20 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			else{
 				return false;
 			}
+			return true;
+		}
+		else if(cmd.getName().equalsIgnoreCase("pigucart")){
+			if(!(sender instanceof Player)){
+				sender.sendMessage(ucars.colors.getError() + Lang.get("lang.messages.playersOnly"));
+				return true;
+			}
+			Player player = (Player) sender;
+			Location spawn = player.getLocation().add(0,2,0);
+			Entity cart = player.getWorld().spawnEntity(spawn, EntityType.MINECART);
+			Entity pig = player.getWorld().spawnEntity(spawn, EntityType.PIG);
+			cart.setPassenger(pig);
+			pig.setPassenger(player);
+			sender.sendMessage(ucars.colors.getSuccess()+"PiguCart!");
 			return true;
 		}
 		return false;

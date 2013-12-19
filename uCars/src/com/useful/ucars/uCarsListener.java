@@ -309,6 +309,9 @@ public class uCarsListener implements Listener {
     	Vehicle vehicle = event.getVehicle();
     	Entity passenger = vehicle.getPassenger();
     	Boolean driven = false;
+    	if(passenger == null){
+    		return;
+    	}
     	if (!(passenger instanceof Player)) {
     		while(!(passenger instanceof Player) && passenger.getPassenger() != null){
     			passenger = passenger.getPassenger();
@@ -512,6 +515,14 @@ public class uCarsListener implements Listener {
 		Block normalblock = vehicle.getLocation().getBlock();
 		//Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
 		Entity passenger = vehicle.getPassenger();
+		if(!(passenger instanceof Player)){
+			while(!(passenger instanceof Player) && passenger.getPassenger() != null){
+				passenger = passenger.getPassenger();
+			}
+			if(!(passenger instanceof Player)){
+				return;
+			}
+		}
 		Player player = (Player) passenger;
 		if (vehicle instanceof Minecart) {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
