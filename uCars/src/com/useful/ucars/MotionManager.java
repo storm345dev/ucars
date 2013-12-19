@@ -89,7 +89,7 @@ public class MotionManager {
 	    		}
 	    	}
 	    	vec = new Vector(x,y,z);
-	    	final ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
+	    	final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
 	    	event.setDoDivider(doDivider);
 	    	event.setDivider(divider);
 	    	ucars.plugin.getServer().getScheduler().runTask(ucars.plugin, new Runnable(){
@@ -110,7 +110,7 @@ public class MotionManager {
 	    	x = 0-x;
 	    	z = 0-z;
 	    	vec = new Vector(x,y,z);
-	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec);
+	    	ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
 	    	event.setDoDivider(doDivider);
 	    	event.setDivider(divider);
 	    	ucars.plugin.getServer().getPluginManager().callEvent(event);

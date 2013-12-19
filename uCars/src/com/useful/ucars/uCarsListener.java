@@ -253,7 +253,7 @@ public class uCarsListener implements Listener {
 				while(!(ent instanceof Minecart) && ent.getVehicle() != null){
 					ent = ent.getVehicle();
 				}
-				if(!(ent instanceof Minecart)){ //TODO Go around isACar and make sure it traces stacks
+				if(!(ent instanceof Minecart)){
 					return false;
 				}
 			}
@@ -493,7 +493,7 @@ public class uCarsListener implements Listener {
     	//Attempt pre-1.6 controls
     	
 			Vector playerVelocity = car.getPassenger().getVelocity();
-			ucarUpdateEvent ucarupdate = new ucarUpdateEvent(car, playerVelocity);
+			ucarUpdateEvent ucarupdate = new ucarUpdateEvent(car, playerVelocity, player);
 			plugin.getServer().getPluginManager().callEvent(ucarupdate);
 			return;
 		}
@@ -514,16 +514,10 @@ public class uCarsListener implements Listener {
 		Block underunderblock = underblock.getRelative(BlockFace.DOWN);
 		Block normalblock = vehicle.getLocation().getBlock();
 		//Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
-		Entity passenger = vehicle.getPassenger();
-		if(!(passenger instanceof Player)){
-			while(!(passenger instanceof Player) && passenger.getPassenger() != null){
-				passenger = passenger.getPassenger();
-			}
-			if(!(passenger instanceof Player)){
-				return;
-			}
+		Player player = event.getPlayer();
+		if(player == null){
+			return;
 		}
-		Player player = (Player) passenger;
 		if (vehicle instanceof Minecart) {
 			if (!ucars.config.getBoolean("general.cars.enable")) {
 				return;

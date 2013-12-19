@@ -1,5 +1,6 @@
 package com.useful.ucars;
 
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
@@ -12,9 +13,14 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable{
     public Boolean doDivider = false;;
     public double divider = 1;
     public Boolean cancelled = false;
-	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel) {
+    public Player player = null;
+	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player) {
 		super(vehicle);
 		this.toTravel = toTravel;
+		this.player = player;
+	}
+	public Player getPlayer(){
+		return player;
 	}
 	public Vector getTravelVector(){
 		return this.toTravel;
