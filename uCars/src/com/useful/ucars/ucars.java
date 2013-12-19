@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,14 +28,14 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.comphenix.protocol.Packets;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.useful.uCarsAPI.uCarsAPI;
 
 public class ucars extends JavaPlugin {
@@ -130,20 +131,51 @@ public class ucars extends JavaPlugin {
 			        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
 			        0x1b) {
 			*/
+			((ProtocolManager)this.protocolManager).addPacketListener(new PacketListener(){
+
+				public Plugin getPlugin() {
+					return plugin;
+				}
+
+				public ListeningWhitelist getReceivingWhitelist() {
+					final Set<Integer> toListen = new HashSet<Integer>();
+					toListen.add(PacketType.Play.Client.STEER_VEHICLE.getLegacyId()); //Apparently Legacy is the only one which works...
+					//TODO I know it's deprecated but I cannot find any non-deprecated way in the api
+					@SuppressWarnings("deprecation")
+					final ListeningWhitelist listening = new ListeningWhitelist(ListenerPriority.HIGH, 
+							toListen);
+					return listening;
+				}
+
+				@SuppressWarnings("deprecation")
+				public ListeningWhitelist getSendingWhitelist() {
+					return new ListeningWhitelist(ListenerPriority.MONITOR,
+							new HashSet<Integer>());
+				}
+				
+
+				public void onPacketReceiving(PacketEvent event) {
+					PacketContainer packet = event.getPacket();	
+		            float sideways = packet.getFloat().read(0);
+		            float forwards = packet.getFloat().read(1);  
+		            new MotionManager(event.getPlayer(), forwards, sideways);
+				}
+
+				public void onPacketSending(PacketEvent arg0) {
+					//DOn't worry
+				}
+				});
+			/* old ProtocolLib (BETTER) way to do it...
 			((ProtocolManager)this.protocolManager).addPacketListener(new PacketAdapter(plugin,
 			        ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 
 			        Packets.Client.PLAYER_INPUT) {
 			    @Override
 			    public void onPacketReceiving(PacketEvent event) {
 			        //if (event.getPacketID() == 0x1b) {
-			    	if (event.getPacketID() == Packets.Client.PLAYER_INPUT) {
-			            PacketContainer packet = event.getPacket();	
-			            float sideways = packet.getFloat().read(0);
-			            float forwards = packet.getFloat().read(1);  
-			            new MotionManager(event.getPlayer(), forwards, sideways);
-			        }
+			    	
 			    }
 			});
+			*/
 		} catch (Exception e) {
 			return false;
 		}
