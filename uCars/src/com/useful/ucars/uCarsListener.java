@@ -6,6 +6,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import net.stormdev.ucars.trade.main;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -869,12 +871,12 @@ public class uCarsListener implements Listener {
 			int bid = block.getTypeId();
 			int bidData = block.getData();
 			Boolean fly = false; //Fly is the 'easter egg' slab elevator
-			if(block.getRelative(faceDir).getTypeId()==44 && !(block.getRelative(faceDir).getData() != 0)){
+			if(block.getRelative(faceDir).getType() == Material.STEP && block.getRelative(faceDir).getData() < 1){
 				//If looking at slabs
 				fly = true;
 			}
 			
-			if(block.getTypeId()==44 && !(block.getData() != 0)){
+			if(block.getType()==Material.STEP && !(block.getData() != 0)){
 				//If in a slab block
 				fly = true;
 			}
@@ -1067,7 +1069,7 @@ public class uCarsListener implements Listener {
 					}
 					if(fly && cont){
 						//Make the car ascend (easter egg, slab elevator)
-						Velocity.setY(0.5);
+						Velocity.setY(0.6); //Make a little easier
 						car.setMetadata("car.ascending", new StatValue(null, plugin));
 					}
 					//Move the car and adjust vector to fit car stats
