@@ -99,6 +99,10 @@ public class uCarsCommandExecutor implements CommandExecutor {
 						+ Lang.get("lang.fuel.disabled"));
 				return true;
 			}
+			if(!sender.hasPermission(ucars.config.getString("general.cars.fuel.cmdPerm"))){
+				sender.sendMessage(ucars.colors.getError()+"No permission!");
+				return true;
+			}
 			return ufuel(sender, args);
 		} else if (cmd.getName().equalsIgnoreCase("reloaducars")) {
 			//plugin.onDisable();
