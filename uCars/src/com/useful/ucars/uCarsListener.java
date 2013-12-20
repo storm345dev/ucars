@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import net.stormdev.ucars.trade.main;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -882,18 +883,18 @@ public class uCarsListener implements Listener {
 			}
 			*/
 			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
-			if (plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
-					underblock)
-					|| plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
-							underunderblock)) {
-				double jumpAmount = ucars.config
-						.getDouble("general.cars.jumpAmount");
-				double y = Velocity.getY() + jumpAmount;
-				car.setMetadata("car.falling", new StatValue(0.1, plugin));
-				car.setMetadata("car.fallingPause", new StatValue(1, plugin));
-				Velocity.setY(y);
-				car.setVelocity(Velocity);
-			}
+				if (plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
+						underblock)
+						|| plugin.isBlockEqualToConfigIds("general.cars.jumpBlock",
+								underunderblock)) {
+					double jumpAmount = ucars.config
+							.getDouble("general.cars.jumpAmount");
+					double y = Velocity.getY() + jumpAmount;
+					car.setMetadata("car.falling", new StatValue(0.1, plugin));
+					car.setMetadata("car.fallingPause", new StatValue(1, plugin));
+					Velocity.setY(y);
+					car.setVelocity(Velocity);
+				}
 			}
 			if(ucars.config.getBoolean("general.cars.effectBlocks.enable")){
 				if (plugin.isBlockEqualToConfigIds("general.cars.teleportBlock",
@@ -1062,21 +1063,26 @@ public class uCarsListener implements Listener {
 						//Do ascent
 						Velocity.setY(y);
 						if(calculated){
-						car.setMetadata("car.jumping", new StatValue(null, plugin));
+							car.setMetadata("car.jumping", new StatValue(null, plugin));
 						}
 						else{
 							car.setMetadata("car.jumpFull", new StatValue(null, plugin));
 						}
 					}
-					if(fly && cont){
-						//Make the car ascend (easter egg, slab elevator)
-						Velocity.setY(0.6); //Make a little easier
-						car.setMetadata("car.ascending", new StatValue(null, plugin));
-					}
-					//Move the car and adjust vector to fit car stats
-					car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
 				}
+				if(fly && cont){
+					//Make the car ascend (easter egg, slab elevator)
+					Velocity.setY(0.6); //Make a little easier
+					car.setMetadata("car.ascending", new StatValue(null, plugin));
+				}
+				//Move the car and adjust vector to fit car stats
+				car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
 			} else {
+				if(fly){
+					//Make the car ascend (easter egg, slab elevator)
+					Velocity.setY(0.6); //Make a little easier
+					car.setMetadata("car.ascending", new StatValue(null, plugin));
+				}
 				//Move the car and adjust vector to fit car stats
 				car.setVelocity(calculateCarStats(car, player, Velocity, multiplier));
 			}
