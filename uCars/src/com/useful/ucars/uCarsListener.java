@@ -195,11 +195,6 @@ public class uCarsListener implements Listener {
 			return velocity;
 		}
 		velocity = plugin.getAPI().getTravelVector(car, velocity, currentMult);
-		if (!plugin.ucarsTrade) {
-			return velocity;
-		}
-		velocity = net.stormdev.ucars.trade.main.plugin.carCals.getVelocity(
-				car, velocity, currentMult);
 		return velocity;
 	}
 
@@ -280,13 +275,6 @@ public class uCarsListener implements Listener {
 		}
 		if (!plugin.getAPI().runCarChecks(cart)) {
 			return false;
-		}
-		if (plugin.ucarsTrade) {
-			if (net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)) {
-				return true;
-			} else {
-				return false;
-			}
 		}
 		return true;
 	}
@@ -540,11 +528,6 @@ public class uCarsListener implements Listener {
 					onDeath, plugin);
 			Boolean recalculateHealth = false;
 			// It is a valid car!
-			if (plugin.ucarsTrade) {
-				if (!net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)) {
-					return;
-				}
-			}
 			// START ON TICK CALCULATIONS
 			if (car.hasMetadata("carhealth")) {
 				List<MetadataValue> vals = car.getMetadata("carhealth");
@@ -675,11 +658,6 @@ public class uCarsListener implements Listener {
 					defaultHealth,
 					onDeath, plugin);
 			Boolean recalculateHealth = false;
-			if (plugin.ucarsTrade) {
-				if (!net.stormdev.ucars.trade.main.plugin.carCals.isACar(cart)) {
-					return;
-				}
-			}
 			// It is a valid car!
 			if (car.getVelocity().getY() > 0.01
 					&& !car.hasMetadata("car.falling")
@@ -995,13 +973,6 @@ public class uCarsListener implements Listener {
 							}
 							Boolean validCar = false;
 							UUID carId = car.getUniqueId();
-							if (plugin.ucarsTrade) {
-								if (!raceCar) {
-									if (isACar(car)) {
-										validCar = true;
-									}
-								}
-							}
 							car.remove();
 							String xs = lines[1];
 							String ys = lines[2];
