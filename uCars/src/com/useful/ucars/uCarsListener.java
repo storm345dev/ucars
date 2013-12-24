@@ -194,7 +194,7 @@ public class uCarsListener implements Listener {
 			velocity = new Vector(0, 0, 0);
 			return velocity;
 		}
-		velocity = plugin.getAPI().getTravelVector(car, velocity);
+		velocity = plugin.getAPI().getTravelVector(car, velocity, currentMult);
 		if (!plugin.ucarsTrade) {
 			return velocity;
 		}

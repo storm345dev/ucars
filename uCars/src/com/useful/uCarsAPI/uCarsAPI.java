@@ -169,11 +169,11 @@ public class uCarsAPI {
 		return true;
 	}
 
-	public Vector getTravelVector(Minecart car, Vector travelVector) {
+	public Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {
 		final ArrayList<CarSpeedModifier> mods = new ArrayList<CarSpeedModifier>(
 				carSpeedMods.values());
 		for (CarSpeedModifier m : mods) {
-			travelVector = m.getModifiedSpeed(car, travelVector);
+			travelVector = m.getModifiedSpeed(car, travelVector, currentMult);
 		}
 		return travelVector;
 	}

@@ -11,6 +11,6 @@ import org.bukkit.util.Vector;
  * 
  */
 public interface CarSpeedModifier {
-	public Vector getModifiedSpeed(Minecart car, Vector travelVector);
+	public Vector getModifiedSpeed(Minecart car, Vector travelVector, double currentMultiplier);
 
 }
