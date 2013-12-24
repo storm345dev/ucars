@@ -543,8 +543,6 @@ public class ucars extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		ucars.listener = new uCarsListener(null);
-		getServer().getPluginManager().registerEvents(listener, this);
 		if (getServer().getPluginManager().getPlugin("ProtocolLib") != null) {
 			Boolean success = setupProtocol();
 			if (!success) {
@@ -562,6 +560,8 @@ public class ucars extends JavaPlugin {
 		this.licensedPlayers = new ListStore(new File(getDataFolder()
 				+ File.separator + "licenses.txt"));
 		this.licensedPlayers.load();
+		ucars.listener = new uCarsListener(this);
+		getServer().getPluginManager().registerEvents(listener, this);
 		this.API = new uCarsAPI();
 		getLogger().info("uCars has been enabled!");
 		return;
@@ -577,22 +577,20 @@ public class ucars extends JavaPlugin {
 		return;
 	}
 
-	public Boolean isBlockEqualToConfigIds(String configPath, Block block) {
-		// split by , then split by : then compare!
-		String ids = config.getString(configPath);
-		String[] rawids = ids.split(",");
-		for (String raw : rawids) {
-			String[] parts = raw.split(":");
+	public final Boolean isBlockEqualToConfigIds(final String[] rawIds, Block block) {
+		// split by : then compare!
+		for (String raw : rawIds) {
+			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
 			} else if (parts.length < 2) {
-				int id = Integer.parseInt(parts[0]);
+				final int id = Integer.parseInt(parts[0]);
 				if (id == block.getTypeId()) {
 					return true;
 				}
 			} else {
-				int id = Integer.parseInt(parts[0]);
-				int data = Integer.parseInt(parts[1]);
-				int bdata = block.getData();
+				final int id = Integer.parseInt(parts[0]);
+				final int data = Integer.parseInt(parts[1]);
+				final int bdata = block.getData();
 				if (id == block.getTypeId() && bdata == data) {
 					return true;
 				}
@@ -619,5 +617,10 @@ public class ucars extends JavaPlugin {
 
 	public Boolean isPluginHooked(Plugin plugin) {
 		return getAPI().isPluginHooked(plugin);
+	}
+	
+	public String[] getIdListFromConfig(String path){
+		final String ids = ucars.config.getString(path);
+		return ids.split(",");
 	}
 }
