@@ -11,6 +11,14 @@ import org.bukkit.util.Vector;
  * 
  */
 public interface CarSpeedModifier {
+	/**
+	 * Return the car Speed as a vector
+	 * 
+	 * @param car The Car to manipulate the speed of
+	 * @param travelVector The Vector the car is travelling at
+	 * @param currentMultiplier The rough speed of the car
+	 * @return A manipulated vector of the Car's travel
+	 */
 	public Vector getModifiedSpeed(Minecart car, Vector travelVector, double currentMultiplier);
 
 }
