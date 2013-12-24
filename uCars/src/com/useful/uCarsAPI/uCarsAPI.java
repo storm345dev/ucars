@@ -355,5 +355,14 @@ public class uCarsAPI {
 	public Boolean checkInCar(String player) {
 		return ucars.listener.inACar(player);
 	}
+	
+    /**
+     * Get's the version of uCars
+     * 
+     * @return Return's the version of uCars used
+     */
+	public String getUCarsVersion(){
+		return plugin.getDescription().getVersion();
+	}
 
 }
