@@ -971,7 +971,7 @@ public class uCarsListener implements Listener {
 							if (car.hasMetadata("kart.racing")) {
 								raceCar = true;
 							}
-							Boolean validCar = false;
+							Boolean useTrade = false;
 							UUID carId = car.getUniqueId();
 							car.remove();
 							String xs = lines[1];
@@ -1002,6 +1002,9 @@ public class uCarsListener implements Listener {
 								if (ch.isLoaded()) {
 									ch.load(true);
 								}
+								if(plugin.ucarsTrade){
+									useTrade = true;
+								}
 								car = (Minecart) s.getWorld().spawnEntity(
 										toTele, EntityType.MINECART);
 								final Minecart v = car;
@@ -1019,12 +1022,7 @@ public class uCarsListener implements Listener {
 																v));
 									}
 								};
-								if(plugin.ucarsTrade){
-									if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(car)){
-										validCar = true;
-									}
-								}
-								if (validCar) {
+								if (useTrade) {
 									// Maintain car id
 									car.setMetadata("carhealth", health);
 									net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars
