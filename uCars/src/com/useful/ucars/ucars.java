@@ -623,4 +623,18 @@ public class ucars extends JavaPlugin {
 		final String ids = ucars.config.getString(path);
 		return ids.split(",");
 	}
+	
+	public Plugin getPlugin(String name){
+		try {
+			for(Plugin p:this.hookedPlugins){
+				if(p.getName().equalsIgnoreCase(name)){
+					return p;
+				}
+			}
+		} catch (Exception e) {
+			//Concurrent error
+			return null;
+		}
+		return null;
+	}
 }

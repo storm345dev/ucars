@@ -1,14 +1,12 @@
 package com.useful.ucars;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -41,6 +39,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
+import com.useful.uCarsAPI.CarRespawnReason;
+import com.useful.uCarsAPI.uCarRespawnEvent;
 import com.useful.ucarsCommon.StatValue;
 
 public class uCarsListener implements Listener {
@@ -1010,18 +1010,22 @@ public class uCarsListener implements Listener {
 									car.setMetadata("kart.racing",
 											new StatValue(null, plugin));
 								}
+								health.onDeath = new Runnable() {
+									public void run() {
+										plugin.getServer()
+												.getPluginManager()
+												.callEvent(
+														new ucarDeathEvent(
+																v));
+									}
+								};
+								if(plugin.ucarsTrade){
+									if(net.stormdev.ucars.trade.main.plugin.carCals.isACar(car)){
+										validCar = true;
+									}
+								}
 								if (validCar) {
 									// Maintain car id
-									health.onDeath = new Runnable() {
-										// @Override
-										public void run() {
-											plugin.getServer()
-													.getPluginManager()
-													.callEvent(
-															new ucarDeathEvent(
-																	v));
-										}
-									};
 									car.setMetadata("carhealth", health);
 									net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars
 											.get(carId);
@@ -1033,17 +1037,25 @@ public class uCarsListener implements Listener {
 									net.stormdev.ucars.trade.main.plugin.carSaver
 											.save();
 								}
-								player.sendMessage(ucars.colors.getTp()
-										+ "Teleporting...");
-								car.setPassenger(player);
-								car.setVelocity(Velocity);
-								if (metas != null) {
-									for (MetadataValue val : metas) {
-										player.setMetadata("car.stayIn", val);
-									}
+								uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
+										CarRespawnReason.TELEPORT);
+								plugin.getServer().getPluginManager().callEvent(evnt);
+								if(evnt.isCancelled()){
+									car.remove();
 								}
-								plugin.getAPI().updateUcarMeta(carId,
-										car.getUniqueId());
+								else{
+									player.sendMessage(ucars.colors.getTp()
+											+ "Teleporting...");
+									car.setPassenger(player);
+									car.setVelocity(Velocity);
+									if (metas != null) {
+										for (MetadataValue val : metas) {
+											player.setMetadata("car.stayIn", val);
+										}
+									}
+									plugin.getAPI().updateUcarMeta(carId,
+											car.getUniqueId());
+								}
 							}
 						}
 					}
