@@ -1068,7 +1068,7 @@ public class uCarsListener implements Listener {
 			Boolean cont = true;
 			
 			// check it's not a barrier
-			cont = plugin.isBlockEqualToConfigIds(barriers, block);
+			cont = !plugin.isBlockEqualToConfigIds(barriers, block);
 			
 			Boolean inStairs = false;
 			Material carBlock = car.getLocation().getBlock().getType();
