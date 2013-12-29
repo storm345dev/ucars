@@ -1,11 +1,8 @@
 package com.useful.uCarsAPI;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import net.stormdev.ucars.trade.main;
 
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -49,7 +46,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 */
 	public void hookPlugin(Plugin plugin) {
-		plugin.getLogger().info(
+		ucars.plugin.getLogger().info(
 				"Successfully hooked into by: " + plugin.getName());
 		ucars.plugin.hookedPlugins.add(plugin);
 		return;
@@ -63,7 +60,7 @@ public class uCarsAPI {
 	 *            Your plugin
 	 */
 	public void unHookPlugin(Plugin plugin) {
-		plugin.getLogger().info("Successfully unhooked: " + plugin.getName());
+		ucars.plugin.getLogger().info("Successfully unhooked: " + plugin.getName());
 		ucars.plugin.hookedPlugins.remove(plugin);
 		return;
 	}
