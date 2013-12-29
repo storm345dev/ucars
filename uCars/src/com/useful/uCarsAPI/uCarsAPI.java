@@ -52,6 +52,7 @@ public class uCarsAPI {
 		plugin.getLogger().info(
 				"Successfully hooked into by: " + plugin.getName());
 		ucars.plugin.hookedPlugins.add(plugin);
+		return;
 	}
 
 	/**
@@ -64,6 +65,7 @@ public class uCarsAPI {
 	public void unHookPlugin(Plugin plugin) {
 		plugin.getLogger().info("Successfully unhooked: " + plugin.getName());
 		ucars.plugin.hookedPlugins.remove(plugin);
+		return;
 	}
 
 	/**
@@ -71,8 +73,9 @@ public class uCarsAPI {
 	 * 
 	 */
 	public void unHookPlugins() {
-		plugin.hookedPlugins.removeAll(plugin.hookedPlugins);
+		plugin.hookedPlugins.removeAll(plugin.hookedPlugins); 
 		plugin.getLogger().info("Successfully unhooked all plugins!");
+		return;
 	}
 
 	/**
@@ -124,10 +127,8 @@ public class uCarsAPI {
 		return true;
 	}
 
-	public Boolean runCarChecks(Minecart car) {
-		final ArrayList<CarCheck> checks = new ArrayList<CarCheck>(
-				carChecks.values());
-		for (CarCheck c : checks) {
+	public synchronized Boolean runCarChecks(Minecart car) {
+		for (CarCheck c : carChecks.values()) {
 			if (!c.isACar(car)) {
 				return false;
 			}
@@ -169,10 +170,8 @@ public class uCarsAPI {
 		return true;
 	}
 
-	public Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {
-		final ArrayList<CarSpeedModifier> mods = new ArrayList<CarSpeedModifier>(
-				carSpeedMods.values());
-		for (CarSpeedModifier m : mods) {
+	public synchronized Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {
+		for (CarSpeedModifier m : carSpeedMods.values()) {
 			travelVector = m.getModifiedSpeed(car, travelVector, currentMult);
 		}
 		return travelVector;
