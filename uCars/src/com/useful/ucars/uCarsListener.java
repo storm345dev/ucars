@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import net.stormdev.ucars.trade.main;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -349,13 +351,10 @@ public class uCarsListener implements Listener {
 				// Should NEVER happen(It means they r offline)
 				return false;
 			}
-			if (!p.isInsideVehicle()) {
+			if (p.getVehicle() == null) {
 				return false;
 			}
 			Entity ent = p.getVehicle();
-			if (!(ent instanceof Vehicle)) {
-				return false;
-			}
 			if (!(ent instanceof Minecart)) {
 				while (!(ent instanceof Minecart) && ent.getVehicle() != null) {
 					ent = ent.getVehicle();

@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,12 +30,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
 import com.useful.uCarsAPI.uCarsAPI;
 
 public class ucars extends JavaPlugin {
@@ -144,7 +140,7 @@ public class ucars extends JavaPlugin {
 								PacketContainer packet = event.getPacket();
 								float sideways = packet.getFloat().read(0);
 								float forwards = packet.getFloat().read(1);
-								new MotionManager(event.getPlayer(), forwards,
+								MotionManager.move(event.getPlayer(), forwards,
 										sideways);
 						  }
 					});

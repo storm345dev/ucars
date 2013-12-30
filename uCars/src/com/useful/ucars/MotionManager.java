@@ -1,5 +1,7 @@
 package com.useful.ucars;
 
+import net.stormdev.ucars.trade.main;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -13,7 +15,7 @@ import com.useful.ucarsCommon.StatValue;
 
 public class MotionManager {
 
-	public MotionManager(Player player, float f, float s) {
+	public static void move(Player player, float f, float s) {
 		Vector vec = new Vector();
 		Entity ent = player.getVehicle();
 		if (ent == null) {
@@ -21,6 +23,8 @@ public class MotionManager {
 		}
 		while (!(ent instanceof Minecart) && ent.getVehicle() != null) {
 			ent = ent.getVehicle();
+		}
+		if(!ucars.listener.inACar(player)){
 		}
 		if (!ucars.listener.inACar(player) || !(ent instanceof Minecart)) {
 			return;
