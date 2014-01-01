@@ -323,6 +323,16 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.enable")) {
 				config.set("general.cars.enable", true);
 			}
+			else{
+				//Existing config
+				if(!config.contains("misc.configVersion")){
+					//Config part of old format and mark as so to convert it later
+					config.set("misc.configVersion", 1.0);
+				}
+			}
+            if(!config.contains("misc.configVersion")){
+				config.set("misc.configVersion", 1.1);
+			}
 			if (!config.contains("general.permissions.enable")) {
 				config.set("general.permissions.enable", true);
 			}
@@ -333,40 +343,40 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.effectBlocks.enable", true);
 			}
 			if (!config.contains("general.cars.lowBoost")) {
-				config.set("general.cars.lowBoost", "263");
+				config.set("general.cars.lowBoost", "COAL");
 			}
 			if (!config.contains("general.cars.medBoost")) {
-				config.set("general.cars.medBoost", "265");
+				config.set("general.cars.medBoost", "IRON_INGOT");
 			}
 			if (!config.contains("general.cars.highBoost")) {
-				config.set("general.cars.highBoost", "264");
+				config.set("general.cars.highBoost", "DIAMOND");
 			}
 			if (!config.contains("general.cars.blockBoost")) {
-				config.set("general.cars.blockBoost", "41");
+				config.set("general.cars.blockBoost", "GOLD_BLOCK");
 			}
 			if (!config.contains("general.cars.HighblockBoost")) {
-				config.set("general.cars.HighblockBoost", "57");
+				config.set("general.cars.HighblockBoost", "DIAMOND_BLOCK");
 			}
 			if (!config.contains("general.cars.ResetblockBoost")) {
-				config.set("general.cars.ResetblockBoost", "133");
+				config.set("general.cars.ResetblockBoost", "EMERALD_BLOCK");
 			}
 			if (!config.contains("general.cars.turret")) {
 				config.set("general.cars.turret", false);
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
-				config.set("general.cars.jumpBlock", "42");
+				config.set("general.cars.jumpBlock", "IRON_BLOCK");
 			}
 			if (!config.contains("general.cars.jumpAmount")) {
 				config.set("general.cars.jumpAmount", (double) 60);
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
-				config.set("general.cars.teleportBlock", "159:2");
+				config.set("general.cars.teleportBlock", "STAINED_CLAY:2");
 			}
 			if (!config.contains("general.cars.trafficLights.enable")) {
 				config.set("general.cars.trafficLights.enable", true);
 			}
 			if (!config.contains("general.cars.trafficLights.waitingBlock")) {
-				config.set("general.cars.trafficLights.waitingBlock", "155");
+				config.set("general.cars.trafficLights.waitingBlock", "QUARTZ_BLOCK");
 			}
 			if (!config.contains("general.cars.hitBy.enable")) {
 				config.set("general.cars.hitBy.enable", false);
@@ -384,8 +394,8 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.roadBlocks.enable", false);
 			}
 			if (!config.contains("general.cars.roadBlocks.ids")) {
-				config.set("general.cars.roadBlocks.ids",
-						"35:15,35:8,35:0,35:7");
+				config.set("general.cars.roadBlocks.ids", new String[]{
+						"WOOL:15","WOOL:8","WOOL:0","WOOL:7"});
 			}
 			if (!config.contains("general.cars.licenses.enable")) {
 				config.set("general.cars.licenses.enable", false);
@@ -397,7 +407,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.fuel.price", (double) 2);
 			}
 			if (!config.contains("general.cars.fuel.check")) {
-				config.set("general.cars.fuel.check", "288:0");
+				config.set("general.cars.fuel.check", "FEATHER");
 			}
 			if (!config.contains("general.cars.fuel.cmdPerm")) {
 				config.set("general.cars.fuel.cmdPerm", "ucars.ucars");
@@ -409,16 +419,19 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.fuel.items.enable", false);
 			}
 			if (!config.contains("general.cars.fuel.items.ids")) {
-				config.set("general.cars.fuel.items.ids", "5,263:0,263:1");
+				config.set("general.cars.fuel.items.ids", new String[]{
+						"WOOD","COAL:0","COAL:1"});
 			}
 			if (!config.contains("general.cars.fuel.sellFuel")) {
 				config.set("general.cars.fuel.sellFuel", true);
 			}
 			if (!config.contains("general.cars.barriers")) {
-				config.set("general.cars.barriers", "139,85,107,113");
+				config.set("general.cars.barriers", new String[]{
+						"COBBLE_WALL","FENCE","FENCE_GATE","NETHER_FENCE"});
 			}
 			if (!config.contains("general.cars.speedMods")) {
-				config.set("general.cars.speedMods", "88:0-10,19:0-20");
+				config.set("general.cars.speedMods", new String[]{
+						"SOUL_SAND:0-10","SPONGE:0-20"});
 			}
 			if (!config.contains("general.cars.placePerm.enable")) {
 				config.set("general.cars.placePerm.enable", false);
@@ -505,7 +518,13 @@ public class ucars extends JavaPlugin {
 			}
 		} catch (Exception e) {
 		}
-
+		//TODO Before saving, convert old configs
+		double latestConfigVersion = 1.1;
+		double configVersion = config.getDouble("misc.configVersion");
+        while(configVersion<latestConfigVersion){
+        	configVersion+=0.1; //Add 0.1 to config version
+        	config = ConfigVersionConverter.convert(config, configVersion); //Convert to next increment in config versioning
+        }
 		saveConfig();
 		try {
 			lang.save(langFile);
@@ -573,6 +592,7 @@ public class ucars extends JavaPlugin {
 		return;
 	}
 
+	//TODO Make use new format
 	public final Boolean isBlockEqualToConfigIds(final String[] rawIds, Block block) {
 		// split by : then compare!
 		for (String raw : rawIds) {

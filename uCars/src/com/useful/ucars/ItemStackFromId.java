@@ -2,6 +2,7 @@ package com.useful.ucars;
 
 import org.bukkit.inventory.ItemStack;
 
+//TODO Make use new format
 public class ItemStackFromId {
 	public static ItemStack get(String raw) {
 		String[] parts = raw.split(":");
