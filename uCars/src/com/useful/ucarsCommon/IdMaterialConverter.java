@@ -3,13 +3,6 @@ package com.useful.ucarsCommon;
 import org.bukkit.Material;
 import com.google.common.collect.HashBiMap;
  
-/* Written by Adam753 for anyone who needs it.
- * Feel free to use or distribute as you need; I'm not going to sue anyone.
- *
- * I wrote this class for people whose existing plugins/methods will be broken by the 1.7 update.
- * You should always try to use the Material enum where possible, as IDs are no longer core to Bukkit.
- * PM me on bukkit.org with any issues.
- */
 public abstract class IdMaterialConverter {
         private static HashBiMap<Integer, Material> materials = setupMap();
        
