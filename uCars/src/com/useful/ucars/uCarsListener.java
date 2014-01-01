@@ -424,6 +424,9 @@ public class uCarsListener implements Listener {
 				driven = false;
 			}
 		}
+		if(!driven){
+			return; //Forget extra physics, takes too much strain with extra entities
+		}
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
 		// Block underunderblock = underblock.getRelative(BlockFace.DOWN);
@@ -529,9 +532,6 @@ public class uCarsListener implements Listener {
 						health = (CarHealthData) val;
 					}
 				}
-			}
-			if (driven) {
-				driven = inACar(((Player) passenger));
 			}
 			// Calculate health based on location
 			if (normalblock.getType().equals(Material.WATER)
