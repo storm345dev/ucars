@@ -1,6 +1,7 @@
 package com.useful.ucarsCommon;
  
 import org.bukkit.Material;
+
 import com.google.common.collect.HashBiMap;
  
 public abstract class IdMaterialConverter {
@@ -14,7 +15,8 @@ public abstract class IdMaterialConverter {
                 return materials.inverse().get(pMat);
         }
        
-        public static HashBiMap<Integer, Material> setupMap() {
+        @SuppressWarnings("deprecation")
+		public static HashBiMap<Integer, Material> setupMap() {
                 HashBiMap<Integer, Material> retmap = HashBiMap.create();
                
                 retmap.put(0, Material.AIR);
@@ -112,7 +114,7 @@ public abstract class IdMaterialConverter {
                 retmap.put(92, Material.CAKE_BLOCK);
                 retmap.put(93, Material.DIODE_BLOCK_OFF);
                 retmap.put(94, Material.DIODE_BLOCK_ON);
-                retmap.put(95, Material.LOCKED_CHEST);
+                retmap.put(95, Material.LOCKED_CHEST); //Deprecated, oh well
                 retmap.put(96, Material.TRAP_DOOR);
                 retmap.put(97, Material.MONSTER_EGGS);
                 retmap.put(98, Material.SMOOTH_BRICK);
