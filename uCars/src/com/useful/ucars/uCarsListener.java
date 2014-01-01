@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import net.stormdev.ucars.trade.main;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -68,49 +66,50 @@ public class uCarsListener implements Listener {
 	
 	private String fuelBypassPerm = "ufuel.bypass";
 	
-    private String[] roadBlocks = new String[]{}; //Road blocks
-    private String[] trafficLightRawIds = new String[]{}; //Traffic lights
-    private String[] blockBoost = new String[]{}; //Gold booster blocks
-    private String[] highBlockBoost = new String[]{}; //Diamond booster blocks
-    private String[] resetBlockBoost = new String[]{}; //Emerald booster blocks
-    private String[] jumpBlock = new String[]{}; //Jump blocks (Iron)
-    private String[] teleportBlock = new String[]{}; //Teleport blocks (purple clay)
-    private String[] barriers = new String[]{};
+    private List<String> roadBlocks = new ArrayList<String>(); //Road blocks
+    private List<String> trafficLightRawIds = new ArrayList<String>(); //Traffic lights
+    private List<String> blockBoost = new ArrayList<String>(); //Gold booster blocks
+    private List<String> highBlockBoost = new ArrayList<String>(); //Diamond booster blocks
+    private List<String> resetBlockBoost = new ArrayList<String>(); //Emerald booster blocks
+    private List<String> jumpBlock = new ArrayList<String>(); //Jump blocks (Iron)
+    private List<String> teleportBlock = new ArrayList<String>(); //Teleport blocks (purple clay)
+    private List<String> barriers = new ArrayList<String>();
     
     private ConcurrentHashMap<String, Double> speedMods = new ConcurrentHashMap<String, Double>();
 
 	public uCarsListener(ucars plugin) {
 		this.plugin = ucars.plugin;
 		ignoreJump = new ArrayList<String>();
-		ignoreJump.add("0"); //Air
-		ignoreJump.add("10"); //Lava
-        ignoreJump.add("11"); //Lava
-        ignoreJump.add("9"); //Water
-        ignoreJump.add("8"); //Water
-        ignoreJump.add("139"); //Cobble wall
-        ignoreJump.add("85"); //fence
-        ignoreJump.add("113"); //Nether fence
-        ignoreJump.add("70"); //Stone pressurepad
-        ignoreJump.add("72"); //Wood pressurepad
-		ignoreJump.add("132"); // tripwires
-		ignoreJump.add("50"); // torches
-		ignoreJump.add("76"); // redstone torches
-		ignoreJump.add("75"); // redstone off torches
-		ignoreJump.add("93"); // repeater off
-		ignoreJump.add("94"); // repeater on
-		ignoreJump.add("149"); // comparator off
-		ignoreJump.add("106"); // vines
-		ignoreJump.add("31"); // Tall grass
-		ignoreJump.add("77"); // stone button
-		ignoreJump.add("143"); // wood button
-		ignoreJump.add("107"); // fence gate
-		ignoreJump.add("69"); // lever
-		ignoreJump.add("157"); // activator rail
-		ignoreJump.add("78"); // snow
-		ignoreJump.add("151"); // daylight detector
-		ignoreJump.add("63"); // sign
-		ignoreJump.add("68"); // sign on the side of a block
-		ignoreJump.add("171"); // carpet
+		ignoreJump.add("AIR"); //Air
+		ignoreJump.add("LAVA"); //Lava
+        ignoreJump.add("STATIONARY_LAVA"); //Lava
+        ignoreJump.add("WATER"); //Water
+        ignoreJump.add("STATIONARY_WATER"); //Water
+        ignoreJump.add("COBBLE_WALL"); //Cobble wall
+        ignoreJump.add("FENCE"); //fence
+        ignoreJump.add("NETHER_FENCE"); //Nether fence
+        ignoreJump.add("STONE_PLATE"); //Stone pressurepad
+        ignoreJump.add("WOOD_PLATE"); //Wood pressurepad
+		ignoreJump.add("TRIPWIRE"); // tripwires
+		ignoreJump.add("TRIPWIRE_HOOK"); // tripwires
+		ignoreJump.add("TORCH"); // torches
+		ignoreJump.add("REDSTONE_TORCH_ON"); // redstone torches
+		ignoreJump.add("REDSTONE_TORCH_OFF"); // redstone off torches
+		ignoreJump.add("DIODE_BLOCK_OFF"); // repeater off
+		ignoreJump.add("DIODE_BLOCK_ON"); // repeater on
+		ignoreJump.add("REDSTONE_COMPARATOR_OFF"); // comparator off
+		ignoreJump.add("REDSTONE_COMPARATOR_ON"); // comparator on
+		ignoreJump.add("VINE"); // vines
+		ignoreJump.add("LONG_GRASS"); // Tall grass
+		ignoreJump.add("STONE_BUTTON"); // stone button
+		ignoreJump.add("WOOD_BUTTON"); // wood button
+		ignoreJump.add("FENCE_GATE"); // fence gate
+		ignoreJump.add("LEVER"); // lever
+		ignoreJump.add("SNOW"); // snow
+		ignoreJump.add("DAYLIGHT_DETECTOR"); // daylight detector
+		ignoreJump.add("SIGN_POST"); // sign
+		ignoreJump.add("WALL_SIGN"); // sign on the side of a block
+		ignoreJump.add("CARPET"); // carpet
 		
 		usePerms = ucars.config.getBoolean("general.permissions.enable");
 		carsEnabled = ucars.config.getBoolean("general.cars.enable");
@@ -139,47 +138,40 @@ public class uCarsListener implements Listener {
 		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
 		
 		if(roadBlocksEnabled){
-			String idsRaw = ucars.config
-					.getString("general.cars.roadBlocks.ids");
-			String[] array = idsRaw.split(",");
-		    ArrayList<String> ids = new ArrayList<String>();
-			for (String tid : array) {
-				ids.add(tid);
-			}
-			ids.add(ucars.config.getString("general.cars.blockBoost"));
-			ids.add(ucars.config.getString("general.cars.HighblockBoost"));
-			ids.add(ucars.config.getString("general.cars.ResetblockBoost"));
-			ids.add(ucars.config.getString("general.cars.jumpBlock"));
-			ids.add("0");
-			ids.add("10");
-			ids.add("11");
-			ids.add("8");
-			ids.add("9");
-			String[] arr = new String[ids.size()];
-			roadBlocks = ids.toArray(arr);
+		    List<String> ids = ucars.config
+					.getStringList("general.cars.roadBlocks.ids");
+			ids.addAll(ucars.config.getStringList("general.cars.blockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.HighblockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.ResetblockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.jumpBlock"));
+			ids.add("AIR");
+			ids.add("LAVA");
+			ids.add("STATIONARY_LAVA");
+			ids.add("WATER");
+			ids.add("STATIONARY_WATER");
+			roadBlocks = ids;
 		}
 		if(trafficLightsEnabled){
-			trafficLightRawIds = plugin.getIdListFromConfig("general.cars.trafficLights.waitingBlock");
+			trafficLightRawIds = ucars.config.getStringList("general.cars.trafficLights.waitingBlock");
 		}
 		if(effectBlocksEnabled){
-			blockBoost = plugin.getIdListFromConfig("general.cars.blockBoost");
-			highBlockBoost = plugin.getIdListFromConfig("general.cars.HighblockBoost");
-			resetBlockBoost = plugin.getIdListFromConfig("general.cars.ResetblockBoost");
-			jumpBlock = plugin.getIdListFromConfig("general.cars.jumpBlock");
-			teleportBlock = plugin.getIdListFromConfig("general.cars.teleportBlock");
+			blockBoost = ucars.config.getStringList("general.cars.blockBoost");
+			highBlockBoost = ucars.config.getStringList("general.cars.HighblockBoost");
+			resetBlockBoost = ucars.config.getStringList("general.cars.ResetblockBoost");
+			jumpBlock = ucars.config.getStringList("general.cars.jumpBlock");
+			teleportBlock = ucars.config.getStringList("general.cars.teleportBlock");
 		}
 		
-		barriers = plugin.getIdListFromConfig("general.cars.barriers"); //Load specified barriers
+		barriers = ucars.config.getStringList("general.cars.barriers"); //Load specified barriers
 		
 		//SpeedMods
-		String sm = ucars.config.getString("general.cars.speedMods");
-		String[] units = sm.split(",");
+		List<String> units = ucars.config.getStringList("general.cars.speedMods");
 		for (String unit : units) {
 			String[] sections = unit.split("-");
 			try {
-				String rawid = sections[0];
+				String rawMat = sections[0];
 				double mult = Double.parseDouble(sections[1]);
-				speedMods.put(rawid, mult);
+				speedMods.put(rawMat, mult);
 			} catch (NumberFormatException e) {
 				//Invalid speed mod
 			}
@@ -263,16 +255,18 @@ public class uCarsListener implements Listener {
 	 */
 	public boolean isACar(Minecart cart) {
 		Location loc = cart.getLocation();
-		float id = loc.getBlock().getTypeId();
-		if (id == 27 || id == 66 || id == 28 || id == 157) {
-			return false;
-		}
-		id = loc.getBlock().getRelative(BlockFace.DOWN).getTypeId();
-		if (id == 27 || id == 66 || id == 28 || id == 157) {
-			return false;
-		}
-		id = loc.getBlock().getRelative(BlockFace.DOWN, 2).getTypeId();
-		if (id == 27 || id == 66 || id == 28 || id == 157) {
+		Block b = loc.getBlock();
+		String mat = b.getType().name().toUpperCase();
+		String underMat = b.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
+		String underUnderMat = b.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
+		List<String> checks = new ArrayList<String>();
+		checks.add("POWERED_RAIL");
+		checks.add("RAILS");
+		checks.add("DETECTOR_RAIL");
+		checks.add("ACTIVATOR_RAIL");
+		if(checks.contains(mat) 
+				|| checks.contains(underMat) 
+				|| checks.contains(underUnderMat)){
 			return false;
 		}
 		if (!plugin.getAPI().runCarChecks(cart)) {
@@ -776,10 +770,10 @@ public class uCarsListener implements Listener {
 			} catch (Exception e1) {
 				return;
 			}
-			int underid = under.getBlock().getTypeId();
+			String underMat = under.getBlock().getType().name().toUpperCase();
 			int underdata = under.getBlock().getData();
 			// calculate speedmods
-			String key = underid+":"+underdata;
+			String key = underMat+":"+underdata;
 			if(speedMods.containsKey(key)){
 				if(!ucars.carBoosts.containsKey(player.getName())){
 					multiplier = speedMods.get(key);
@@ -802,14 +796,12 @@ public class uCarsListener implements Listener {
 					return;
 				}
 			}
-			if (normalblock.getTypeId() != 0 //Air
-					&& normalblock.getTypeId() != 8 //Water
-					&& normalblock.getTypeId() != 9 //Water
-					&& normalblock.getTypeId() != 44 //Slab
-					&& normalblock.getTypeId() != 43 //Double slab
-					&& normalblock.getTypeId() != 70 //Rail
-					&& normalblock.getTypeId() != 72 //Rail
-					&& normalblock.getTypeId() != 31 //?
+			if (normalblock.getType() != Material.AIR //Air
+					&& normalblock.getType() != Material.WATER //Water
+					&& normalblock.getType() != Material.STATIONARY_WATER //Water
+					&& normalblock.getType() != Material.STEP //Slab
+					&& normalblock.getType() != Material.DOUBLE_STEP //Double slab
+					&& normalblock.getType() != Material.LONG_GRASS //Long grass
 					&& !normalblock.getType().name().toLowerCase()
 							.contains("stairs")) {
 				// Stuck in a block
@@ -875,7 +867,7 @@ public class uCarsListener implements Listener {
 					&& !player.hasPermission(fuelBypassPerm)) {
 				// item fuel - Not for laggy servers!!!
 				double fuel = 0;
-				List<ItemStack> items = plugin.ufuelitems;
+				ArrayList<ItemStack> items = plugin.ufuelitems;
 				Inventory inv = player.getInventory();
 				for (ItemStack item : items) {
 					if (inv.contains(item.getType(), 1)) {
@@ -897,21 +889,19 @@ public class uCarsListener implements Listener {
 						ItemStack item = inv.getItem(i);
 						Boolean ignore = false;
 						try {
-							item.getTypeId();
+							item.getType();
 						} catch (Exception e) {
 							ignore = true;
 						}
 						if (!ignore) {
 							if (!taken) {
-								for (ItemStack titem : items) {
-									if (titem.getTypeId() == item.getTypeId()) {
-										taken = true;
-										if (item.getAmount() < 2) {
-											last = true;
-											toUse = i;
-										}
-										item.setAmount((item.getAmount() - 1));
+								if(plugin.isItemOnList(items, item)){
+									taken = true;
+									if (item.getAmount() < 2) {
+										last = true;
+										toUse = i;
 									}
+									item.setAmount((item.getAmount() - 1));
 								}
 							}
 						}
@@ -926,8 +916,8 @@ public class uCarsListener implements Listener {
 				double newy = Velocity.getY() + 2d;
 				Velocity.setY(newy);
 			}
-			int bid = block.getTypeId();
-			int bidData = block.getData();
+			Material bType = block.getType();
+			int bData = block.getData();
 			Boolean fly = false; // Fly is the 'easter egg' slab elevator
 			if (normalblock.getRelative(faceDir).getType() == Material.STEP) {
 				// If looking at slabs
@@ -1061,9 +1051,8 @@ public class uCarsListener implements Listener {
 			// actually jump
 			Location theNewLoc = block.getLocation();
 			Location bidUpLoc = block.getLocation().add(0, 1, 0);
-			int bidU = bidUpLoc.getBlock().getTypeId();
+			Material bidU = bidUpLoc.getBlock().getType();
 			Boolean cont = true;
-			
 			// check it's not a barrier
 			cont = !plugin.isBlockEqualToConfigIds(barriers, block);
 			
@@ -1077,9 +1066,11 @@ public class uCarsListener implements Listener {
 			}
 			// Make cars jump if needed
 			if (inStairs ||
-					 (!ignoreJump.contains(""+bid) && cont && modY)) { //Should jump
-				if (bidU == 0 || bidU == 10 || bidU == 11 || bidU == 8
-						|| bidU == 9 || bidU == 44 || bidU == 43 || inStairs) { //Clear air above
+					 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
+				if (bidU == Material.AIR || bidU == Material.LAVA 
+						|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
+						|| bidU == Material.STATIONARY_WATER || bidU == Material.STEP 
+						|| bidU == Material.DOUBLE_STEP || inStairs) { //Clear air above
 					theNewLoc.add(0, 1.5d, 0);
 					Boolean calculated = false;
 					double y = 7;
@@ -1303,13 +1294,14 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		if (event.getPlayer().getItemInHand().getTypeId() == 328) {
+		if (event.getPlayer().getItemInHand().getType() == Material.MINECART) {
 			// Its a minecart!
-			int iar = block.getTypeId();
-			if (iar == 66 || iar == 28 || iar == 27) {
+			Material iar = block.getType();
+			if (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
+					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL) {
 				return;
 			}
-			if (!PlaceManager.placeableOn(iar, block.getData())) {
+			if (!PlaceManager.placeableOn(iar.name().toUpperCase(), block.getData())) {
 				return;
 			}
 			if (!ucars.config.getBoolean("general.cars.enable")) {
@@ -1363,27 +1355,9 @@ public class uCarsListener implements Listener {
 		}
 		if (inACar(event.getPlayer())) {
 			if (ucars.config.getBoolean("general.cars.fuel.enable")) {
-				String[] parts = ucars.config.getString(
-						"general.cars.fuel.check").split(":");
-				int id = Integer.parseInt(parts[0]);
-				int data = 0;
-				Boolean hasdata = false;
-				if (parts.length > 1) {
-					hasdata = true;
-					data = Integer.parseInt(parts[1]);
-				}
-				if (event.getPlayer().getItemInHand().getTypeId() == id) {
-					Boolean valid = true;
-					if (hasdata) {
-						int tdata = (event.getPlayer().getItemInHand()
-								.getData().getData());
-						if (!(tdata == data)) {
-							valid = false;
-						}
-					}
-					if (valid) {
-						event.getPlayer().performCommand("ufuel view");
-					}
+				if (plugin.isItemEqualToConfigIds(ucars.config.getStringList(
+						"general.cars.fuel.check"), event.getPlayer().getItemInHand())) {
+					event.getPlayer().performCommand("ufuel view");
 				}
 			}
 		}
@@ -1393,7 +1367,7 @@ public class uCarsListener implements Listener {
 		// int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
 		// int MedBoostId = ucars.config.getInt("general.cars.medBoost");
 		// int HighBoostId = ucars.config.getInt("general.cars.highBoost");
-		int bid = event.getPlayer().getItemInHand().getTypeId(); // booster id
+		String bid = event.getPlayer().getItemInHand().getType().name().toUpperCase(); // booster id
 		int bdata = event.getPlayer().getItemInHand().getDurability();
 		if (ItemStackFromId.equals(LowBoostRaw, bid, bdata)) {
 			if (inACar(event.getPlayer())) {

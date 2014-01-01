@@ -47,7 +47,7 @@ public class ucars extends JavaPlugin {
 	public static Colors colors;
 	public Boolean protocolLib = false;
 	public Object protocolManager = null;
-	public List<ItemStack> ufuelitems = new ArrayList<ItemStack>();
+	public ArrayList<ItemStack> ufuelitems = new ArrayList<ItemStack>();
 	public ListStore licensedPlayers = null;
 	public uCarsCommandExecutor cmdExecutor = null;
 	public ArrayList<Plugin> hookedPlugins = new ArrayList<Plugin>();
@@ -518,7 +518,7 @@ public class ucars extends JavaPlugin {
 			}
 		} catch (Exception e) {
 		}
-		//TODO Before saving, convert old configs
+		//Before saving, convert old configs
 		double latestConfigVersion = 1.1;
 		double configVersion = config.getDouble("misc.configVersion");
         while(configVersion<latestConfigVersion){
@@ -531,8 +531,7 @@ public class ucars extends JavaPlugin {
 		} catch (IOException e1) {
 			getLogger().info("Error parsing lang file!");
 		}
-		String idsraw = ucars.config.getString("general.cars.fuel.items.ids");
-		String[] ids = idsraw.split(",");
+		List<String> ids = ucars.config.getStringList("general.cars.fuel.items.ids");
 		ufuelitems = new ArrayList<ItemStack>();
 		for (String raw : ids) {
 			ItemStack stack = ItemStackFromId.get(raw);
@@ -591,25 +590,69 @@ public class ucars extends JavaPlugin {
 		getLogger().info("uCars has been disabled!");
 		return;
 	}
-
-	//TODO Make use new format
-	public final Boolean isBlockEqualToConfigIds(final String[] rawIds, Block block) {
+    public static String getIdList(final String configKey){
+    	final List<String> s = config.getStringList(configKey);
+    	String msg = "";
+    	for(String str:s){
+    		if(msg.length() < 1){
+    			msg = str;
+    			continue; //Next iteration
+    		}
+    		msg+=", "+str; //Append it
+    	}
+    	return msg;
+    }
+	public final Boolean isBlockEqualToConfigIds(final String configKey, Block block){
+		return isBlockEqualToConfigIds(config.getStringList(configKey), block);
+	}
+	public final Boolean isBlockEqualToConfigIds(List<String> rawIds, Block block) {
 		// split by : then compare!
 		for (String raw : rawIds) {
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
 			} else if (parts.length < 2) {
-				final int id = Integer.parseInt(parts[0]);
-				if (id == block.getTypeId()) {
+				if (parts[0].equalsIgnoreCase(block.getType().name())) {
 					return true;
 				}
 			} else {
-				final int id = Integer.parseInt(parts[0]);
+				final String mat = parts[0];
 				final int data = Integer.parseInt(parts[1]);
-				final int bdata = block.getData();
-				if (id == block.getTypeId() && bdata == data) {
+				final int bdata = block.getData(); //TODO Alternative to .getData()
+				if (mat.equalsIgnoreCase(block.getType().name()) && bdata == data) {
 					return true;
 				}
+			}
+		}
+		return false;
+	}
+	public final Boolean isItemEqualToConfigIds(List<String> rawIds, ItemStack item) {
+		// split by : then compare!
+		for (String raw : rawIds) {
+			final String[] parts = raw.split(":");
+			if (parts.length < 1) {
+			} else if (parts.length < 2) {
+				if (parts[0].equalsIgnoreCase(item.getType().name())) {
+					return true;
+				}
+			} else {
+				final String mat = parts[0];
+				final int data = Integer.parseInt(parts[1]);
+				final int bdata = item.getDurability();
+				if (mat.equalsIgnoreCase(item.getType().name()) && bdata == data) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	public final Boolean isItemOnList(ArrayList<ItemStack> items, ItemStack item) {
+		// split by : then compare!
+		for (ItemStack raw : items) {
+			final String mat = raw.getType().name().toUpperCase();
+			final int data = raw.getDurability();
+			final int bdata = item.getDurability();
+			if (mat.equalsIgnoreCase(item.getType().name()) && bdata == data) {
+				return true;
 			}
 		}
 		return false;
@@ -633,11 +676,6 @@ public class ucars extends JavaPlugin {
 
 	public Boolean isPluginHooked(Plugin plugin) {
 		return getAPI().isPluginHooked(plugin);
-	}
-	
-	public String[] getIdListFromConfig(String path){
-		final String ids = ucars.config.getString(path);
-		return ids.split(",");
 	}
 	
 	public Plugin getPlugin(String name){

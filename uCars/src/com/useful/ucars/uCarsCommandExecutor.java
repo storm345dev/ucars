@@ -26,47 +26,47 @@ public class uCarsCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("ucars")) {
+			//TODO Make it get them differently to support lists
 			sender.sendMessage(ucars.colors.getInfo() + "Ucars v"
 					+ plugin.getDescription().getVersion()
 					+ " -by storm345- is working!");
 			sender.sendMessage(ucars.colors.getTitle() + "[Low Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.rightClickWith")
-					+ ucars.config.getString("general.cars.lowBoost"));
+					+ ucars.getIdList("general.cars.lowBoost"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Medium Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.rightClickWith")
-					+ ucars.config.getString("general.cars.medBoost"));
+					+ ucars.getIdList("general.cars.medBoost"));
 			sender.sendMessage(ucars.colors.getTitle() + "[High Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.rightClickWith")
-					+ ucars.config.getString("general.cars.highBoost"));
+					+ ucars.getIdList("general.cars.highBoost"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Medium block Boost:]" + ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config.getString("general.cars.blockBoost"));
+					+ ucars.getIdList("general.cars.blockBoost"));
 			sender.sendMessage(ucars.colors.getTitle() + "[High block Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config.getString("general.cars.HighblockBoost"));
+					+ ucars.getIdList("general.cars.HighblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Reset block Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config.getString("general.cars.ResetblockBoost"));
+					+ ucars.getIdList("general.cars.ResetblockBoost"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Jump block:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config.getString("general.cars.jumpBlock"));
+					+ ucars.getIdList("general.cars.jumpBlock"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Teleport block:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config.getString("general.cars.teleportBlock"));
+					+ ucars.getIdList("general.cars.teleportBlock"));
 			sender.sendMessage(ucars.colors.getTitle()
 					+ "[Traffic light waiting block:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.driveOver")
-					+ ucars.config
-							.getString("general.cars.trafficLights.waitingBlock"));
+					+ ucars.getIdList("general.cars.trafficLights.waitingBlock"));
 			sender.sendMessage(ucars.colors.getTitle() + "[Default speed:]"
 					+ ucars.colors.getInfo()
 					+ ucars.config.getDouble("general.cars.defSpeed"));
@@ -82,7 +82,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 							.getBoolean("general.cars.fuel.items.enable")) {
 				sender.sendMessage(ucars.colors.getTitle() + "[Fuel items:]"
 						+ ucars.colors.getInfo()
-						+ ucars.config.getDouble("general.cars.fuel.items.ids"));
+						+ ucars.getIdList("general.cars.fuel.items.ids"));
 			}
 			return true;
 		} else if (cmd.getName().equalsIgnoreCase("ufuel")) {
