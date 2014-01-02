@@ -411,8 +411,8 @@ public class uCarsListener implements Listener {
 		// start vehicleupdate mechs
 		Vehicle vehicle = event.getVehicle();
 		Entity passenger = vehicle.getPassenger();
-		Boolean driven = false;
-		if (passenger == null) {
+		Boolean driven = true;
+		if (passenger == null || !(vehicle instanceof Minecart)) {
 			return;
 		}
 		if (!(passenger instanceof Player)) {
