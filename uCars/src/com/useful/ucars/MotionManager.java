@@ -1,7 +1,5 @@
 package com.useful.ucars;
 
-import net.stormdev.ucars.trade.main;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -55,9 +53,13 @@ public class MotionManager {
 		double y = -0.35; // rough gravity of minecraft
 		double d = 27;
 		Boolean doDivider = false;
+		Boolean doAction = false;
 		double divider = 0.5; // x of the (1) speed
 		if (turning) {
 			if (side < 0) {// do left action
+				doAction = true;
+				car.setMetadata("car.action", new StatValue(true, ucars.plugin));
+				/* Turrets removed
 				if (ucars.config.getBoolean("general.cars.turret")) {
 					Vector arrowVel = plaD.clone();
 					arrowVel.setY(-0.01);
@@ -94,8 +96,9 @@ public class MotionManager {
 									}, 10l);
 						}
 					}
+					
 				}
-
+				*/
 			} else if (side > 0) {// do right action
 				doDivider = true;
 				car.setMetadata("car.braking",
@@ -108,6 +111,11 @@ public class MotionManager {
 			if (!doDivider) {
 				if (car.hasMetadata("car.braking")) {
 					car.removeMetadata("car.braking", ucars.plugin);
+				}
+			}
+			if(!doAction){
+				if(car.hasMetadata("car.action")){
+					car.removeMetadata("car.action", ucars.plugin);
 				}
 			}
 			vec = new Vector(x, y, z);
