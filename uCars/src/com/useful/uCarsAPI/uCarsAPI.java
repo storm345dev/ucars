@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import com.useful.ucars.ucars;
