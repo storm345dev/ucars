@@ -254,6 +254,9 @@ public class uCarsListener implements Listener {
 	 * Checks if a minecart is a car (Public for traincarts support)
 	 */
 	public boolean isACar(Minecart cart) {
+		if(cart.hasMetadata("ucars.ignore")){
+			return false; //Not a car
+		}
 		Location loc = cart.getLocation();
 		Block b = loc.getBlock();
 		String mat = b.getType().name().toUpperCase();
