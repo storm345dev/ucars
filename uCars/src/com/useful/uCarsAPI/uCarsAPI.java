@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import com.useful.ucars.ucars;
@@ -23,6 +23,7 @@ public class uCarsAPI {
 
 	private ucars plugin = null;
 	private Map<Plugin, CarCheck> carChecks = new HashMap<Plugin, CarCheck>();
+	private Map<Plugin, ItemCarCheck> itemCarChecks = new HashMap<Plugin, ItemCarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 
@@ -109,6 +110,26 @@ public class uCarsAPI {
 		carChecks.put(plugin, carCheck);
 		return true;
 	}
+	
+	/**
+	 * Registers an item isACar() check for your plugin, only one check is allowed
+	 * per hooked plugin. Trying to add more than one check will result in
+	 * overriding the original
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @param carCheck
+	 *            The CarCheck to perform
+	 * @return True if registered, False if not because plugin isn't hooked
+	 * @since v17
+	 */
+	public Boolean registerItemCarCheck(Plugin plugin, ItemCarCheck carCheck) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		itemCarChecks.put(plugin, carCheck);
+		return true;
+	}
 
 	/**
 	 * Removes a carCheck registered by a plugin
@@ -124,10 +145,35 @@ public class uCarsAPI {
 		carChecks.remove(plugin);
 		return true;
 	}
+	
+	/**
+	 * Removes an item carCheck registered by a plugin
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @return True if unregistered, False if not because plugin isn't hooked
+	 * @since v17
+	 */
+	public Boolean unRegisterItemCarCheck(Plugin plugin) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		itemCarChecks.remove(plugin);
+		return true;
+	}
 
 	public synchronized Boolean runCarChecks(Minecart car) {
 		for (CarCheck c : carChecks.values()) {
 			if (!c.isACar(car)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public synchronized Boolean runCarChecks(ItemStack carStack) {
+		for (ItemCarCheck c : itemCarChecks.values()) {
+			if (!c.isACar(carStack)) {
 				return false;
 			}
 		}
