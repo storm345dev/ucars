@@ -1327,6 +1327,9 @@ public class uCarsListener implements Listener {
 								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
+            if(!plugin.API.runCarChecks(event.getPlayer().getItemInHand())){
+				return;
+			}
 			Location loc = block.getLocation().add(0, 1.5, 0);
 			loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 			final Entity car = event.getPlayer().getWorld()
