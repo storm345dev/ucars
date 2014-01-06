@@ -686,46 +686,8 @@ public class uCarsListener implements Listener {
 				}
 			}
 			Location loc = car.getLocation();
-			if (trafficLightsEnabled) {
-				if (plugin.isBlockEqualToConfigIds(
-						trafficLightRawIds, underblock)
-						|| plugin.isBlockEqualToConfigIds(
-								trafficLightRawIds,
-								underunderblock)) {
-					Boolean found = false;
-					Boolean on = false;
-					int radius = 3;
-					int radiusSquared = radius * radius;
-					for (int x = -radius; x <= radius && !found; x++) {
-						for (int z = -radius; z <= radius && !found; z++) {
-							if ((x * x) + (z * z) <= radiusSquared) {
-								double locX = loc.getX() + x;
-								double locZ = loc.getZ() + z;
-								for (int y = (int) Math.round((loc.getY() - 3)); y < (loc
-										.getY() + 4) && !found; y++) {
-									Location light = new Location(
-											loc.getWorld(), locX, y, locZ);
-									if (light.getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
-										if (trafficlightSignOn(light.getBlock())) {
-											found = true;
-											on = false;
-										}
-									} else if (light.getBlock().getType() == Material.REDSTONE_TORCH_ON) {
-										if (trafficlightSignOn(light.getBlock())) {
-											found = true;
-											on = true;
-										}
-									}
-								}
-							}
-						}
-					}
-					if (found) {
-						if (!on) {
-							return;
-						}
-					}
-				}
+			if (atTrafficLight(car, underblock, underunderblock, loc)){
+				return;
 			}
 			// Calculate default effect blocks
 			if (effectBlocksEnabled) {
@@ -1560,6 +1522,51 @@ public class uCarsListener implements Listener {
 		cart.remove();
 		loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
 		return;
+	}
+	
+	public Boolean atTrafficLight(Minecart car, Block underblock, Block underunderblock, Location loc){
+		if (trafficLightsEnabled) {
+			if (plugin.isBlockEqualToConfigIds(
+					trafficLightRawIds, underblock)
+					|| plugin.isBlockEqualToConfigIds(
+							trafficLightRawIds,
+							underunderblock)) {
+				Boolean found = false;
+				Boolean on = false;
+				int radius = 3;
+				int radiusSquared = radius * radius;
+				for (int x = -radius; x <= radius && !found; x++) {
+					for (int z = -radius; z <= radius && !found; z++) {
+						if ((x * x) + (z * z) <= radiusSquared) {
+							double locX = loc.getX() + x;
+							double locZ = loc.getZ() + z;
+							for (int y = (int) Math.round((loc.getY() - 3)); y < (loc
+									.getY() + 4) && !found; y++) {
+								Location light = new Location(
+										loc.getWorld(), locX, y, locZ);
+								if (light.getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
+									if (trafficlightSignOn(light.getBlock())) {
+										found = true;
+										on = false;
+									}
+								} else if (light.getBlock().getType() == Material.REDSTONE_TORCH_ON) {
+									if (trafficlightSignOn(light.getBlock())) {
+										found = true;
+										on = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				if (found) {
+					if (!on) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

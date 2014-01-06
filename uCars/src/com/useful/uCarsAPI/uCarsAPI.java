@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -406,6 +409,21 @@ public class uCarsAPI {
      */
 	public String getUCarsVersion(){
 		return plugin.getDescription().getVersion();
+	}
+	
+	/**
+	 * Returns if the car should be waiting at traffic lights
+	 * 
+	 * @param car The car to check
+	 * @return True if it should stop, false else
+	 * 
+	 * @since v17
+	 */
+	public Boolean atTrafficLight(Minecart car){
+		Location loc = car.getLocation();
+		Block under = loc.getBlock().getRelative(BlockFace.DOWN);
+		Block underunder = under.getRelative(BlockFace.DOWN);
+		return ucars.listener.atTrafficLight(car, under, underunder, loc);
 	}
 
 }
