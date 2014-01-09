@@ -86,6 +86,11 @@
             <artifactId>ProtocolLib</artifactId>
             <version>3.1.0</version>
         </dependency>
+	   <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.30</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>
