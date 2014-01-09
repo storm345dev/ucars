@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="main/java/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/Vault.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/ProtocolLib.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/bukkit.jar"/>
@@ -9,7 +9,11 @@
 			<attribute name="javadoc_location" value="http://jd.bukkit.org/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre6"/>
 	<classpathentry kind="lib" path="C:/Users/Edward/Documents/Bukkit Servers/plugintestserver/plugins/uCarsTrade/uCarsTrade.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
