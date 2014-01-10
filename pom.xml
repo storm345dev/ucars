@@ -74,7 +74,7 @@
         </repository>
         <repository>
 	       <id>stormdev-repo</id>
-	       <url>http://repository-storm345dev.forge.cloudbees.com/snapshot</url>
+	       <url>http://repository-storm345dev.forge.cloudbees.com/release</url>
         </repository>
     </repositories>
     <dependencies>
