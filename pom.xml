@@ -98,7 +98,7 @@
         <dependency>
             <groupId>net.stormdev</groupId>
             <artifactId>uCarsTrade</artifactId>
-            <version>latest</version>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
     <distributionManagement>
