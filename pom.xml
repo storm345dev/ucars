@@ -41,6 +41,7 @@
         	  	 <excludePackageNames>
         	  	 com.useful.ucars:com.useful.ucarsCommon
         	  	 </excludePackageNames>
+        	  	 <stylesheetfile>https://dl.dropboxusercontent.com/u/50672767/ucars/doc/stylesheet.css</stylesheetfile>
       		  </configuration>
      		 </plugin>
             <plugin>
