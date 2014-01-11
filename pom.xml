@@ -39,10 +39,7 @@
       		  <configuration>
         	  	<show>public</show>
         	  	 <excludePackageNames>
-        	  	 com.useful.ucars
-        	  	 :com.useful.ucarsCommon
-        	  	 :com.useful.ucars.*
-        	  	 :com.useful.ucarsCommon.*
+        	  	 com.useful.ucars:com.useful.ucarsCommon
         	  	 </excludePackageNames>
       		  </configuration>
      		 </plugin>
