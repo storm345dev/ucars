@@ -1,0 +1,42 @@
+name: uCars
+main: com.useful.ucars.ucars
+version: 17.0
+softdepend: [Vault]
+depend: [ProtocolLib]
+commands:
+   ucars:
+        description: This gives ucars info
+        usage: /<command>
+        permission: ucars.ucars
+        permission-message: You don't have access to this command
+        default: true
+   pigucart:
+        description: Spawns a minecart with a pig riding it and you riding the pig
+        usage: /<command>
+        permission: ucars.pigucart
+        permission-message: You don't have access to this command
+        default: op
+   reloaducars:
+        description: This reloads the config
+        usage: /<command>
+        permission: ucars.reloaducars
+        permission-message: You don't have access to this command
+        default: op
+   ufuel:
+        description: This buys/sells the specified amount of ufuel
+        usage: /<command> [Buy <Amount>], [View], [Sell <Amount>]
+        permission: ucars.ucars
+        permission-message: You don't have access to this command
+        default: true
+   ulicense:
+        description: This obtains a ulicense to drive a car
+        usage: /<command> (stage)
+        permission: ucars.ucars
+        permission-message: You don't have access to this command
+        default: true
+   cars:
+        description: This allows for car management (remove etc...)
+        usage: /<command> [Remove]
+        permission: ucars.carscmd
+        permission-message: You don't have access to this command
+        default: op
