@@ -435,8 +435,8 @@ public class uCarsListener implements Listener {
 				ucarUpdateEvent evt = (ucarUpdateEvent) vehicle.getMetadata("car.vec").get(0).value();
 				evt.player = ((Player)passenger); //Make sure player is correct
 				ucars.plugin.getServer().getPluginManager().callEvent(evt);
+				return;
 			}
-			return;
 		}
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
