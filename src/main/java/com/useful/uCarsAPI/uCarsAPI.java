@@ -241,6 +241,27 @@ public class uCarsAPI {
 		}
 		return ucarsMeta.get(entityId);
 	}
+	
+	/**
+	 * Sets a uCar to use a control scheme where the car motion is not based of user input, but is 
+	 * played out through the server to ensure absolute fair speeds between players.
+	 * 
+	 * -uCarMeta is removed each time the server restarts so use for temporary
+	 * buffs such as speed-buffs or upgrades (If you track and save them)
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @param id
+	 *            Id of the uCar entity (ID can be changed without your notice
+	 *            So don't use this for tracking cars)
+	 * @return True is successful and False if plugin is not hooked or
+	 *         unsuccessful
+	 *         
+	 * @since v17
+	 */
+	public boolean setUseRaceControls(UUID id, Plugin plugin){
+		return adduCarsMeta(plugin, id, "car.controls", new StatValue("race", ucars.plugin));
+	}
 
 	/**
 	 * Sets uCarMeta for a car

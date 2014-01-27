@@ -430,6 +430,14 @@ public class uCarsListener implements Listener {
 		if(!driven){
 			return; //Forget extra physics, takes too much strain with extra entities
 		}
+		if(!(event instanceof ucarUpdateEvent)){
+			if(vehicle.hasMetadata("car.vec")){
+				ucarUpdateEvent evt = (ucarUpdateEvent) vehicle.getMetadata("car.vec").get(0).value();
+				evt.player = ((Player)passenger); //Make sure player is correct
+				ucars.plugin.getServer().getPluginManager().callEvent(evt);
+			}
+			return;
+		}
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
 		// Block underunderblock = underblock.getRelative(BlockFace.DOWN);
@@ -618,6 +626,9 @@ public class uCarsListener implements Listener {
 		}
 		Boolean modY = true;
 		Vehicle vehicle = event.getVehicle();
+		
+		vehicle.removeMetadata("car.vec", ucars.plugin);
+		
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
 		Block underblock = under.getBlock();

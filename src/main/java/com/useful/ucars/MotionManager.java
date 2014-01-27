@@ -23,7 +23,7 @@ public class MotionManager {
 		if (!ucars.listener.inACar(player) || !(ent instanceof Minecart)) {
 			return;
 		}
-		Minecart car = (Minecart) ent;
+		final Minecart car = (Minecart) ent;
 		// Location loc = car.getLocation();
 		// Vector carD = loc.getDirection();
 		Vector plaD = player.getEyeLocation().getDirection();
@@ -118,12 +118,12 @@ public class MotionManager {
 			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
+			final Vector v = vec;
 			ucars.plugin.getServer().getScheduler()
 					.runTask(ucars.plugin, new Runnable() {
 
 						public void run() {
-							ucars.plugin.getServer().getPluginManager()
-									.callEvent(event);
+							ControlInput.input(car, v, event);
 						}
 					});
 			return;
@@ -142,7 +142,7 @@ public class MotionManager {
 			ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
-			ucars.plugin.getServer().getPluginManager().callEvent(event);
+			ControlInput.input(car, vec, event);
 			return;
 		}
 	}

@@ -54,6 +54,7 @@ public class ucars extends JavaPlugin {
 	public Boolean ucarsTrade = false;
 	public static uCarsListener listener = null;
 	protected uCarsAPI API = null;
+	public static boolean forceRaceControls = false;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -466,6 +467,10 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.health.crashDamage")) {
 				config.set("general.cars.health.crashDamage", 0.0);
 			}
+			if (!config.contains("general.cars.forceRaceControlSystem")) {
+				config.set("general.cars.forceRaceControlSystem", false);
+			}
+			forceRaceControls = config.getBoolean("general.cars.forceRaceControlSystem");
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
 			}
