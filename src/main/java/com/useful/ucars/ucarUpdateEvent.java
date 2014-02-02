@@ -14,11 +14,24 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 	public double divider = 1;
 	public Boolean cancelled = false;
 	public Player player = null;
+	private int readCount = 0;
 
 	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player) {
 		super(vehicle);
 		this.toTravel = toTravel;
 		this.player = player;
+	}
+	
+	public void setRead(int r){
+		this.readCount = r;
+	}
+	
+	public void incrementRead(){
+		readCount++;
+	}
+	
+	public int getReadCount(){
+		return readCount;
 	}
 
 	public Player getPlayer() {

@@ -434,6 +434,11 @@ public class uCarsListener implements Listener {
 			if(vehicle.hasMetadata("car.vec")){
 				ucarUpdateEvent evt = (ucarUpdateEvent) vehicle.getMetadata("car.vec").get(0).value();
 				evt.player = ((Player)passenger); //Make sure player is correct
+				evt.incrementRead();
+				vehicle.removeMetadata("car.vec", ucars.plugin);
+				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null);
+				et.setRead(evt.getReadCount());
+				vehicle.setMetadata("car.vec", new StatValue(et, ucars.plugin));
 				ucars.plugin.getServer().getPluginManager().callEvent(evt);
 				return;
 			}
@@ -627,7 +632,9 @@ public class uCarsListener implements Listener {
 		Boolean modY = true;
 		Vehicle vehicle = event.getVehicle();
 		
-		vehicle.removeMetadata("car.vec", ucars.plugin);
+		if(event.getReadCount() > 2){
+			vehicle.removeMetadata("car.vec", ucars.plugin);
+		}
 		
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
