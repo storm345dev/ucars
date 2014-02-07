@@ -995,17 +995,21 @@ public class uCarsListener implements Listener {
 									}
 								};
 								if (useTrade) {
-									// Maintain car id
-									car.setMetadata("carhealth", health);
-									net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars
-											.get(carId);
-									c.id = car.getUniqueId();
-									net.stormdev.ucars.trade.main.plugin.carSaver.cars
-											.remove(carId);
-									net.stormdev.ucars.trade.main.plugin.carSaver.cars
-											.put(car.getUniqueId(), c);
-									net.stormdev.ucars.trade.main.plugin.carSaver
-											.save();
+									try {
+										// Maintain car id
+										car.setMetadata("carhealth", health);
+										net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars
+												.get(carId);
+										c.id = car.getUniqueId();
+										net.stormdev.ucars.trade.main.plugin.carSaver.cars
+												.remove(carId);
+										net.stormdev.ucars.trade.main.plugin.carSaver.cars
+												.put(car.getUniqueId(), c);
+										net.stormdev.ucars.trade.main.plugin.carSaver
+												.save();
+									} catch (Exception e) {
+										//Outdated with uCarsTrade
+									}
 								}
 								uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 										CarRespawnReason.TELEPORT);
