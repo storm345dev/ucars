@@ -1347,14 +1347,17 @@ public class uCarsListener implements Listener {
 				}
 			}
 		}
-		String LowBoostRaw = ucars.config.getString("general.cars.lowBoost");
-		String MedBoostRaw = ucars.config.getString("general.cars.medBoost");
-		String HighBoostRaw = ucars.config.getString("general.cars.highBoost");
+		List<String> LowBoostRaw = ucars.config.getStringList("general.cars.lowBoost");
+		List<String> MedBoostRaw = ucars.config.getStringList("general.cars.medBoost");
+		List<String> HighBoostRaw = ucars.config.getStringList("general.cars.highBoost");
 		// int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
 		// int MedBoostId = ucars.config.getInt("general.cars.medBoost");
 		// int HighBoostId = ucars.config.getInt("general.cars.highBoost");
-		String bid = event.getPlayer().getItemInHand().getType().name().toUpperCase(); // booster id
-		int bdata = event.getPlayer().getItemInHand().getDurability();
+		ItemStack inHand = event.getPlayer().getItemInHand();
+		String bid = inHand.getType().name().toUpperCase(); // booster material name
+		int bdata = inHand.getDurability();
+		ItemStack remove = inHand.clone();
+		remove.setAmount(1);
 		if (ItemStackFromId.equals(LowBoostRaw, bid, bdata)) {
 			if (inACar(event.getPlayer())) {
 				boolean boosting = carBoost(event.getPlayer().getName(), 10,
@@ -1363,7 +1366,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(ItemStackFromId.get(LowBoostRaw));
+								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
@@ -1385,7 +1388,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(ItemStackFromId.get(MedBoostRaw));
+								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()
@@ -1407,7 +1410,7 @@ public class uCarsListener implements Listener {
 					if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 						// they r in survival
 						event.getPlayer().getInventory()
-								.removeItem(ItemStackFromId.get(HighBoostRaw));
+								.removeItem(remove);
 					}
 					event.getPlayer().sendMessage(
 							ucars.colors.getSuccess()

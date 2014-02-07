@@ -1,5 +1,7 @@
 package com.useful.ucars;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,6 +28,7 @@ public class ItemStackFromId {
 	}
 
 	public static Boolean equals(String rawid, String materialName, int tdata) {
+		ucars.plugin.getLogger().info("In: "+rawid+" Material: "+materialName+" Data: "+tdata);
 		String[] parts = rawid.split(":");
 		String m = parts[0];
 		int data = 0;
@@ -46,5 +49,15 @@ public class ItemStackFromId {
 			}
 		}
 		return false;
+	}
+	
+	public static Boolean equals(List<String> rawids, String materialName, int tdata) {
+		boolean match = false;
+		for(String id:rawids){
+			if(match || equals(id, materialName, tdata)){
+				match = true;
+			}
+		}
+		return match;
 	}
 }
