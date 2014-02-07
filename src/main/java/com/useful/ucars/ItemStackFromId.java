@@ -28,7 +28,6 @@ public class ItemStackFromId {
 	}
 
 	public static Boolean equals(String rawid, String materialName, int tdata) {
-		ucars.plugin.getLogger().info("In: "+rawid+" Material: "+materialName+" Data: "+tdata);
 		String[] parts = rawid.split(":");
 		String m = parts[0];
 		int data = 0;
