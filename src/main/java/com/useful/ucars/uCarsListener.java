@@ -994,7 +994,7 @@ public class uCarsListener implements Listener {
 																v));
 									}
 								};
-								if (useTrade) {
+								if (useTrade && !car.hasMetadata("kart.racing")) {
 									try {
 										// Maintain car id
 										car.setMetadata("carhealth", health);
