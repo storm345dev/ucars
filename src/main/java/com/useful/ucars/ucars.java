@@ -301,7 +301,7 @@ public class ucars extends JavaPlugin {
 			if (!lang.contains("lang.licenses.controls")) {
 				lang.set(
 						"lang.licenses.controls",
-						"1) Look where you would like to go. 2) Use the 'w' key to go forward and 's' to go backwards. 3) Use the 'd' key to slow down/brake and the 'a' key to shoot a turret (if turret enabled)!");
+						"1) Look where you would like to go. 2) Use the 'w' key to go forward and 's' to go backwards. 3) Use the 'd' key to slow down/brake and the 'a' key to activate any action assgined to the car!");
 			}
 			if (!lang.contains("lang.licenses.effects")) {
 				lang.set(
@@ -362,7 +362,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.ResetblockBoost", "EMERALD_BLOCK");
 			}
 			if (!config.contains("general.cars.turret")) {
-				config.set("general.cars.turret", false);
+				config.set("general.cars.turret", null); //Remove if set
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", "IRON_BLOCK");
