@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
@@ -642,7 +643,7 @@ public class uCarsListener implements Listener {
 		Block underunderblock = underblock.getRelative(BlockFace.DOWN);
 		Block normalblock = vehicle.getLocation().getBlock();
 		// Block up = normalblock.getLocation().add(0, 1, 0).getBlock();
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		if (player == null) {
 			return;
 		}
@@ -938,14 +939,32 @@ public class uCarsListener implements Listener {
 					if (s != null) {
 						String[] lines = s.getLines();
 						if (lines[0].equalsIgnoreCase("[Teleport]")) {
-							car.eject();
 							Boolean raceCar = false;
 							if (car.hasMetadata("kart.racing")) {
 								raceCar = true;
 							}
-							Boolean useTrade = false;
+							car.setMetadata("safeExit.ignore", new StatValue(null, plugin));
+							car.eject();
+							
 							UUID carId = car.getUniqueId();
+							net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.getCar(carId);
+							c.id = car.getUniqueId();
+							net.stormdev.ucars.trade.main.plugin.carSaver.removeCar(carId);
+							
 							car.remove();
+							
+							final Minecart ca = car;
+							Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
+
+								@Override
+								public void run() {
+									if(ca != null){
+										ca.remove(); //For uCarsTrade
+									}
+									return;
+								}}, 2l);
+							
+							Boolean useTrade = false;
 							String xs = lines[1];
 							String ys = lines[2];
 							String zs = lines[3];
@@ -998,15 +1017,7 @@ public class uCarsListener implements Listener {
 									try {
 										// Maintain car id
 										car.setMetadata("carhealth", health);
-										net.stormdev.ucars.utils.Car c = net.stormdev.ucars.trade.main.plugin.carSaver.cars
-												.get(carId);
-										c.id = car.getUniqueId();
-										net.stormdev.ucars.trade.main.plugin.carSaver.cars
-												.remove(carId);
-										net.stormdev.ucars.trade.main.plugin.carSaver.cars
-												.put(car.getUniqueId(), c);
-										net.stormdev.ucars.trade.main.plugin.carSaver
-												.save();
+										net.stormdev.ucars.trade.main.plugin.carSaver.setCar(car.getUniqueId(), c);
 									} catch (Exception e) {
 										//Outdated with uCarsTrade
 									}
@@ -1021,6 +1032,14 @@ public class uCarsListener implements Listener {
 									player.sendMessage(ucars.colors.getTp()
 											+ "Teleporting...");
 									car.setPassenger(player);
+									final Minecart ucar = car;
+									Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
+
+										@Override
+										public void run() {
+											ucar.setPassenger(player); //For the sake of uCarsTrade
+											return;
+										}}, 2l);
 									car.setVelocity(Velocity);
 									if (metas != null) {
 										for (MetadataValue val : metas) {
