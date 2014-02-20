@@ -344,40 +344,40 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.effectBlocks.enable", true);
 			}
 			if (!config.contains("general.cars.lowBoost")) {
-				config.set("general.cars.lowBoost", "COAL");
+				config.set("general.cars.lowBoost", new String[]{"COAL"});
 			}
 			if (!config.contains("general.cars.medBoost")) {
-				config.set("general.cars.medBoost", "IRON_INGOT");
+				config.set("general.cars.medBoost", new String[]{"IRON_INGOT"});
 			}
 			if (!config.contains("general.cars.highBoost")) {
-				config.set("general.cars.highBoost", "DIAMOND");
+				config.set("general.cars.highBoost", new String[]{"DIAMOND"});
 			}
 			if (!config.contains("general.cars.blockBoost")) {
-				config.set("general.cars.blockBoost", "GOLD_BLOCK");
+				config.set("general.cars.blockBoost", new String[]{"GOLD_BLOCK"});
 			}
 			if (!config.contains("general.cars.HighblockBoost")) {
-				config.set("general.cars.HighblockBoost", "DIAMOND_BLOCK");
+				config.set("general.cars.HighblockBoost", new String[]{"DIAMOND_BLOCK"});
 			}
 			if (!config.contains("general.cars.ResetblockBoost")) {
-				config.set("general.cars.ResetblockBoost", "EMERALD_BLOCK");
+				config.set("general.cars.ResetblockBoost", new String[]{"EMERALD_BLOCK"});
 			}
 			if (!config.contains("general.cars.turret")) {
 				config.set("general.cars.turret", null); //Remove if set
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
-				config.set("general.cars.jumpBlock", "IRON_BLOCK");
+				config.set("general.cars.jumpBlock", new String[]{"IRON_BLOCK"});
 			}
 			if (!config.contains("general.cars.jumpAmount")) {
 				config.set("general.cars.jumpAmount", (double) 60);
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
-				config.set("general.cars.teleportBlock", "STAINED_CLAY:2");
+				config.set("general.cars.teleportBlock", new String[]{"STAINED_CLAY:2"});
 			}
 			if (!config.contains("general.cars.trafficLights.enable")) {
 				config.set("general.cars.trafficLights.enable", true);
 			}
 			if (!config.contains("general.cars.trafficLights.waitingBlock")) {
-				config.set("general.cars.trafficLights.waitingBlock", "QUARTZ_BLOCK");
+				config.set("general.cars.trafficLights.waitingBlock", new String[]{"QUARTZ_BLOCK"});
 			}
 			if (!config.contains("general.cars.hitBy.enable")) {
 				config.set("general.cars.hitBy.enable", false);
@@ -408,7 +408,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.fuel.price", (double) 2);
 			}
 			if (!config.contains("general.cars.fuel.check")) {
-				config.set("general.cars.fuel.check", "FEATHER");
+				config.set("general.cars.fuel.check", new String[]{"FEATHER"});
 			}
 			if (!config.contains("general.cars.fuel.cmdPerm")) {
 				config.set("general.cars.fuel.cmdPerm", "ucars.ucars");
