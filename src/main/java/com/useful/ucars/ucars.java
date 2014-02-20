@@ -368,7 +368,7 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.jumpBlock", new String[]{"IRON_BLOCK"});
 			}
 			if (!config.contains("general.cars.jumpAmount")) {
-				config.set("general.cars.jumpAmount", (double) 60);
+				config.set("general.cars.jumpAmount", (double) 30);
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
 				config.set("general.cars.teleportBlock", new String[]{"STAINED_CLAY:2"});
