@@ -1561,12 +1561,16 @@ public class uCarsListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.MONITOR)
 	void carDeath(ucarDeathEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
 		Minecart cart = event.getCar();
+		if(cart.hasMetadata("car.destroyed")){
+			return;
+		}
+		cart.setMetadata("car.destroyed", new StatValue(true, ucars.plugin));
 		cart.eject();
 		Location loc = cart.getLocation();
 		cart.remove();
