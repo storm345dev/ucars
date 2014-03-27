@@ -1539,7 +1539,7 @@ public class uCarsListener implements Listener {
 		}
 		double damage = ucars.config
 				.getDouble("general.cars.health.punchDamage");
-		if (damage > 0) {
+		if (event.getDamage() > 0 && damage > 0) {
 			double max = ucars.config.getDouble("general.cars.health.default");
 			double left = health.getHealth() - damage;
 			ChatColor color = ChatColor.YELLOW;
