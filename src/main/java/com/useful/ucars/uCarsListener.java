@@ -1558,6 +1558,9 @@ public class uCarsListener implements Listener {
 			car.setMetadata("carhealth", health);
 			event.setCancelled(true);
 			event.setDamage(0);
+		} else{
+			event.setCancelled(true);
+			event.setDamage(0);
 		}
 	}
 
