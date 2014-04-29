@@ -1,5 +1,6 @@
 package com.useful.ucars;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
@@ -139,10 +140,17 @@ public class MotionManager {
 			x = 0 - x;
 			z = 0 - z;
 			vec = new Vector(x, y, z);
-			ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
+			final Vector v = vec;
+			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
-			ControlInput.input(car, vec, event);
+			Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
+
+				@Override
+				public void run() {
+					ControlInput.input(car, v, event);
+					return;
+				}});
 			return;
 		}
 	}
