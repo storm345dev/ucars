@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -137,12 +138,19 @@ public class ucars extends JavaPlugin {
 			((ProtocolManager) this.protocolManager).addPacketListener(
 					  new PacketAdapter(this, PacketType.Play.Client.STEER_VEHICLE) {
 						  @Override
-						  public void onPacketReceiving(PacketEvent event) {
+						  public void onPacketReceiving(final PacketEvent event) {
 								PacketContainer packet = event.getPacket();
-								float sideways = packet.getFloat().read(0);
-								float forwards = packet.getFloat().read(1);
-								MotionManager.move(event.getPlayer(), forwards,
-										sideways);
+								final float sideways = packet.getFloat().read(0);
+								final float forwards = packet.getFloat().read(1);
+								Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
+
+									@Override
+									public void run() {
+										MotionManager.move(event.getPlayer(), forwards,
+												sideways);
+										return;
+									}});
+								
 						  }
 					});
 		} catch (Exception e) {
