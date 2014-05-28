@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import net.stormdev.ucarstrade.cars.DrivenCar;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -956,13 +954,6 @@ public class uCarsListener implements Listener {
 							
 							UUID carId = car.getUniqueId();
 							
-							Object c = null; //uCarsTrade thing
-							if(ucars.plugin.ucarsTrade){
-								c = net.stormdev.ucars.trade.main.plugin.carSaver.getCarInUse(carId);
-								((net.stormdev.ucarstrade.cars.DrivenCar)c).setId(car.getUniqueId());
-								net.stormdev.ucars.trade.main.plugin.carSaver.carNoLongerInUse(carId);
-							}
-							
 							car.remove();
 							
 							final Minecart ca = car;
@@ -1021,16 +1012,6 @@ public class uCarsListener implements Listener {
 																v));
 									}
 								};
-								if (ucars.plugin.ucarsTrade && !raceCar && car != null) {
-									try {
-										// Maintain car id
-										car.setMetadata("carhealth", health);
-										((DrivenCar) c).setId(car.getUniqueId());
-										net.stormdev.ucars.trade.main.plugin.carSaver.carNowInUse((DrivenCar) c);
-									} catch (Exception e) {
-										//Outdated with uCarsTrade
-									}
-								}
 								uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 										CarRespawnReason.TELEPORT);
 								plugin.getServer().getPluginManager().callEvent(evnt);
