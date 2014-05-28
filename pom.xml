@@ -112,7 +112,7 @@
         <dependency>
             <groupId>net.stormdev</groupId>
             <artifactId>uCarsTrade</artifactId>
-            <version>LATEST</version>
+            <version>5.1</version>
         </dependency>
     </dependencies>
     <distributionManagement>

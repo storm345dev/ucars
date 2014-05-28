@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import net.stormdev.ucarstrade.cars.DrivenCar;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -956,9 +958,9 @@ public class uCarsListener implements Listener {
 							
 							Object c = null; //uCarsTrade thing
 							if(ucars.plugin.ucarsTrade){
-								c = net.stormdev.ucars.trade.main.plugin.carSaver.getCar(carId);
-								((net.stormdev.ucars.utils.Car)c).id = car.getUniqueId();
-								net.stormdev.ucars.trade.main.plugin.carSaver.removeCar(carId);
+								c = net.stormdev.ucars.trade.main.plugin.carSaver.getCarInUse(carId);
+								((net.stormdev.ucarstrade.cars.DrivenCar)c).setId(car.getUniqueId());
+								net.stormdev.ucars.trade.main.plugin.carSaver.carNoLongerInUse(carId);
 							}
 							
 							car.remove();
@@ -1023,7 +1025,8 @@ public class uCarsListener implements Listener {
 									try {
 										// Maintain car id
 										car.setMetadata("carhealth", health);
-										net.stormdev.ucars.trade.main.plugin.carSaver.setCar(car.getUniqueId(), ((net.stormdev.ucars.utils.Car)c));
+										((DrivenCar) c).setId(car.getUniqueId());
+										net.stormdev.ucars.trade.main.plugin.carSaver.carNowInUse((DrivenCar) c);
 									} catch (Exception e) {
 										//Outdated with uCarsTrade
 									}
