@@ -797,7 +797,7 @@ public class uCarsListener implements Listener {
 					&& !normalblock.getType().name().toLowerCase()
 							.contains("stairs")) {
 				// Stuck in a block
-				car.setVelocity(new Vector(0, 1, 0));
+				car.setVelocity(new Vector(0, 1.1, 0));
 			}
 			Location before = car.getLocation();
 			float dir = player.getLocation().getYaw();
@@ -1072,7 +1072,7 @@ public class uCarsListener implements Listener {
 					double y = 7;
 					if (block.getType().name().toLowerCase().contains("step")) {
 						calculated = true;
-						y = 5;
+						y = 6;
 					}
 					if (carBlock.name().toLowerCase().contains("step")) { // In
 																			// a
@@ -1083,7 +1083,7 @@ public class uCarsListener implements Listener {
 																			// to
 																			// jump
 						calculated = true;
-						y = 5;
+						y = 6;
 					}
 					if (carBlock.name().toLowerCase()
 							.contains(Pattern.quote("stairs"))
