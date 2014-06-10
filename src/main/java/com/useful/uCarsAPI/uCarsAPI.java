@@ -1,5 +1,6 @@
 package com.useful.uCarsAPI;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class uCarsAPI {
 	private Map<Plugin, CarCheck> carChecks = new HashMap<Plugin, CarCheck>();
 	private Map<Plugin, ItemCarCheck> itemCarChecks = new HashMap<Plugin, ItemCarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
+	private Map<Plugin, CarAccelerationModifier> carAccelMods = new HashMap<Plugin, CarAccelerationModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 
 	public uCarsAPI() {
@@ -215,6 +217,50 @@ public class uCarsAPI {
 		}
 		carSpeedMods.remove(plugin);
 		return true;
+	}
+	
+	/**
+	 * Registers a car acceleration modifier to your plugin, only one is
+	 * allowed per hooked plugin. Trying to add more than one check will result
+	 * in overriding the original
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @param accMod
+	 *            The Acceleration Mod to add
+	 * @return True if registered, False if not because plugin isn't hooked
+	 */
+	public Boolean registerAccelerationMod(Plugin plugin, CarAccelerationModifier accMod) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carAccelMods.put(plugin, accMod);
+		return true;
+	}
+
+	/**
+	 * Removes an acceleration mod registered by a plugin
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @return True if unregistered, False if not because plugin isn't hooked
+	 */
+	public Boolean unRegisterAccelerationMod(Plugin plugin) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carAccelMods.remove(plugin);
+		return true;
+	}
+	
+	public float getAcceleration(Player driver, float currentMult) {
+		if(carAccelMods.size() < 1){
+			return currentMult;
+		}
+		for (CarAccelerationModifier m : new ArrayList<CarAccelerationModifier>(carAccelMods.values())) {
+			currentMult = m.getAccelerationDecimal(driver, currentMult);
+		}
+		return currentMult;
 	}
 
 	public synchronized Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {

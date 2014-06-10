@@ -56,6 +56,7 @@ public class ucars extends JavaPlugin {
 	public static uCarsListener listener = null;
 	protected uCarsAPI API = null;
 	public static boolean forceRaceControls = false;
+	public static boolean smoothDrive = true;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -348,6 +349,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.defSpeed")) {
 				config.set("general.cars.defSpeed", (double) 30);
 			}
+			if (!config.contains("general.cars.smooth")) {
+				config.set("general.cars.smooth", true);
+			}
 			if (!config.contains("general.cars.effectBlocks.enable")) {
 				config.set("general.cars.effectBlocks.enable", true);
 			}
@@ -590,6 +594,7 @@ public class ucars extends JavaPlugin {
 		ucars.listener = new uCarsListener(this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		this.API = new uCarsAPI();
+		smoothDrive = config.getBoolean("general.cars.smooth");
 		getLogger().info("uCars has been enabled!");
 		return;
 	}
