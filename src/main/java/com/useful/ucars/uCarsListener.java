@@ -474,7 +474,7 @@ public class uCarsListener implements Listener {
 					&& !car.hasMetadata("car.falling")
 					&& !car.hasMetadata("car.ascending")) { // Fix jumping bug
 															// in most occasions
-				if (car.hasMetadata("car.jumping")) { //TODO
+				if (car.hasMetadata("car.jumping")) {
 					vel.setY(2.5);
 					car.removeMetadata("car.jumping", plugin);
 				} else if (car.hasMetadata("car.jumpFull")) {
@@ -502,24 +502,19 @@ public class uCarsListener implements Listener {
 				}
 				else{ //At the peak of ascent
 					car.setMetadata("car.falling", new StatValue(0.01, plugin));
-					car.setMetadata("car.fallingPause", new StatValue(1, plugin));
+					//car.setMetadata("car.fallingPause", new StatValue(1, plugin));
 				}
 				
 			}
 			if (car.hasMetadata("car.falling")) {
-				if(car.hasMetadata("car.fallingPause")){
-					car.removeMetadata("car.fallingPause", plugin);
-				}
-				else{
-					double gravity = (Double) car.getMetadata("car.falling").get(0).value();
-					double newGravity = gravity + (gravity * 0.6);
-					car.removeMetadata("car.falling", plugin);
-					if ((gravity <= 0.6)) {
-						car.setMetadata("car.falling", new StatValue(
-								newGravity, ucars.plugin));
-						vel.setY(-(gravity * 1.333 + 0.2d));
-						car.setVelocity(vel);
-					}
+				double gravity = (Double) car.getMetadata("car.falling").get(0).value();
+				double newGravity = gravity + (gravity * 0.6);
+				car.removeMetadata("car.falling", plugin);
+				if ((gravity <= 0.6)) {
+					car.setMetadata("car.falling", new StatValue(
+							newGravity, ucars.plugin));
+					vel.setY(-(gravity * 1.333 + 0.2d));
+					car.setVelocity(vel);
 				}
 			}
 
@@ -923,8 +918,8 @@ public class uCarsListener implements Listener {
 				if (plugin.isBlockEqualToConfigIds(jumpBlock,
 						underblock)
 						|| plugin.isBlockEqualToConfigIds(
-								jumpBlock, underunderblock)) { //TODO
-					double y = Velocity.getY() + uCar_jump_amount;
+								jumpBlock, underunderblock)) {
+					double y = uCar_jump_amount;
 					car.setMetadata("car.jumpUp", new StatValue(uCar_jump_amount, plugin));
 					Velocity.setY(y);
 					car.setVelocity(Velocity);
