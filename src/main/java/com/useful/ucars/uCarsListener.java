@@ -1067,7 +1067,7 @@ public class uCarsListener implements Listener {
 					double y = 7;
 					if (block.getType().name().toLowerCase().contains("step")) {
 						calculated = true;
-						y = 6;
+						y = 8;
 					}
 					if (carBlock.name().toLowerCase().contains("step")) { // In
 																			// a
@@ -1078,7 +1078,7 @@ public class uCarsListener implements Listener {
 																			// to
 																			// jump
 						calculated = true;
-						y = 6;
+						y = 8;
 					}
 					if (carBlock.name().toLowerCase()
 							.contains(Pattern.quote("stairs"))
@@ -1110,7 +1110,7 @@ public class uCarsListener implements Listener {
 				}
 				if (fly && cont) {
 					// Make the car ascend (easter egg, slab elevator)
-					Velocity.setY(0.6); // Make a little easier
+					Velocity.setY(0.8); // Make a little easier
 					car.setMetadata("car.ascending",
 							new StatValue(null, plugin));
 				}
@@ -1120,7 +1120,7 @@ public class uCarsListener implements Listener {
 			} else {
 				if (fly) {
 					// Make the car ascend (easter egg, slab elevator)
-					Velocity.setY(0.6); // Make a little easier
+					Velocity.setY(0.8); // Make a little easier
 					car.setMetadata("car.ascending",
 							new StatValue(null, plugin));
 				}
