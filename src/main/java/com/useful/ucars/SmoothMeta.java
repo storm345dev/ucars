@@ -30,6 +30,10 @@ public class SmoothMeta {
 		speedFactor += (getA()*diff);
 	}
 	
+	public void resetAcel(){
+		speedFactor = 0;
+	}
+	
 	private void updateTime(){
 		long now = System.currentTimeMillis();
 		if((now-lastTime)>500){ //Havent moved in over 1.5s
