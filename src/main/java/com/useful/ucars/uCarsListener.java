@@ -655,8 +655,8 @@ public class uCarsListener implements Listener {
 				return;
 			}
 			try {
-				if (!licenseEnabled
-						&& plugin.licensedPlayers.contains(player.getName())) {
+				if (licenseEnabled
+						&& !plugin.licensedPlayers.contains(player.getName())) {
 					player.sendMessage(ucars.colors.getError()
 							+ Lang.get("lang.licenses.noLicense"));
 					return;
