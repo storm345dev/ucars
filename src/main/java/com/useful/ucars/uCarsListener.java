@@ -18,6 +18,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
@@ -1246,16 +1247,16 @@ public class uCarsListener implements Listener {
 		if (!(speed > 0)) {
 			return;
 		}
+		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
+			return;
+		}
 		if (ucars.config.getBoolean("general.cars.hitBy.enableMonsterDamage")) {
-			if (ent instanceof Monster) {
+			if (ent instanceof Monster || (ucars.config.getBoolean("general.cars.hitBy.enableAllMonsterDamage") && ent instanceof Damageable)) {
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
 				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-				((Monster) ent).damage(0.75 * (speed * 100));
+				((Damageable) ent).damage(0.75 * (speed * 100));
 			}
-		}
-		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
-			return;
 		}
 		if (!(ent instanceof Player)) {
 			return;
