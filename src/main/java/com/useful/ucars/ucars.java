@@ -302,6 +302,9 @@ public class ucars extends JavaPlugin {
 			if (!lang.contains("lang.licenses.next")) {
 				lang.set("lang.licenses.next", "Now do %command% to continue!");
 			}
+			if (!lang.contains("lang.licenses.nocheat")) {
+				lang.set("lang.licenses.nocheat", "You need to do all the stages of ulicense to obtain a license! You need to do %command%!");
+			}
 			if (!lang.contains("lang.licenses.basics")) {
 				lang.set(
 						"lang.licenses.basics",

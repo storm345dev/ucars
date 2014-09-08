@@ -15,6 +15,8 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.useful.ucarsCommon.StatValue;
+
 public class uCarsCommandExecutor implements CommandExecutor {
 	private Plugin plugin;
 
@@ -147,9 +149,10 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			}
 			return false;
 		} else if (cmd.getName().equalsIgnoreCase("ulicense")) {
-			if (!ucars.config.getBoolean("general.cars.licenses.enable")) {
+			if (!ucars.config.getBoolean("general.cars.licenses.enable") || !(sender instanceof Player)) {
 				return true;
 			}
+			Player player = (Player) sender;
 			int stage = 1;
 			if (args.length > 0) {
 				try {
@@ -158,6 +161,9 @@ public class uCarsCommandExecutor implements CommandExecutor {
 					return false;
 				}
 			}
+			
+			String noSkip = Lang.get("lang.licenses.nocheat");
+			
 			if (stage == 1) {
 				sender.sendMessage(ucars.colors.getInfo()
 						+ Lang.get("lang.licenses.basics"));
@@ -165,21 +171,39 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				next = next.replaceAll(Pattern.quote("%command%"),
 						"/ulicense 2");
 				sender.sendMessage(ucars.colors.getTitle() + next);
+				player.setMetadata("ulicense1", new StatValue(true, ucars.plugin));
 			} else if (stage == 2) {
+				if(!player.hasMetadata("ulicense1")){
+					noSkip = noSkip.replaceAll(Pattern.quote("%command%"), "/ulicense");
+					sender.sendMessage(ucars.colors.getError()+noSkip);
+					return true;
+				}
 				sender.sendMessage(ucars.colors.getInfo()
 						+ Lang.get("lang.licenses.controls"));
 				String next = Lang.get("lang.licenses.next");
 				next = next.replaceAll(Pattern.quote("%command%"),
 						"/ulicense 3");
 				sender.sendMessage(ucars.colors.getTitle() + next);
+				player.setMetadata("ulicense2", new StatValue(true, ucars.plugin));
 			} else if (stage == 3) {
+				if(!player.hasMetadata("ulicense2")){
+					noSkip = noSkip.replaceAll(Pattern.quote("%command%"), "/ulicense 2");
+					sender.sendMessage(ucars.colors.getError()+noSkip);
+					return true;
+				}
 				sender.sendMessage(ucars.colors.getInfo()
 						+ Lang.get("lang.licenses.effects"));
 				String next = Lang.get("lang.licenses.next");
 				next = next.replaceAll(Pattern.quote("%command%"),
 						"/ulicense 4");
 				sender.sendMessage(ucars.colors.getTitle() + next);
+				player.setMetadata("ulicense3", new StatValue(true, ucars.plugin));
 			} else if (stage == 4) {
+				if(!player.hasMetadata("ulicense3")){
+					noSkip = noSkip.replaceAll(Pattern.quote("%command%"), "/ulicense 3");
+					sender.sendMessage(ucars.colors.getError()+noSkip);
+					return true;
+				}
 				sender.sendMessage(ucars.colors.getInfo()
 						+ Lang.get("lang.licenses.itemBoosts"));
 				if (sender instanceof Player) {
