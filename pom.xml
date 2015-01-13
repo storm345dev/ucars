@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.useful</groupId>
     <artifactId>uCars</artifactId>
-    <version>18</version>
+    <version>19</version>
     <name>uCars</name>
     <url>https://github.com/USERNAME/TEMPLATE</url>
     <issueManagement>
@@ -92,13 +92,13 @@
         </repository>
     </repositories>
     <dependencies>
+    	<!-- 
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>LATEST</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
