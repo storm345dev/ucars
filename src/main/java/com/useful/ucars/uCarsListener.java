@@ -709,7 +709,7 @@ public class uCarsListener implements Listener {
 				}
 			}
 			Location loc = car.getLocation();
-			if (atTrafficLight(car, underblock, underunderblock, loc)){
+			if (!ucars.playersIgnoreTrafficLights && atTrafficLight(car, underblock, underunderblock, loc)){
 				return;
 			}
 			// Calculate default effect blocks
@@ -1567,7 +1567,15 @@ public class uCarsListener implements Listener {
 					trafficLightRawIds, underblock)
 					|| plugin.isBlockEqualToConfigIds(
 							trafficLightRawIds,
-							underunderblock)) {
+							underunderblock)
+							|| plugin.isBlockEqualToConfigIds(
+									trafficLightRawIds,
+									underunderblock.getRelative(BlockFace.DOWN))
+									|| plugin.isBlockEqualToConfigIds(
+											trafficLightRawIds,
+											underunderblock.getRelative(BlockFace.DOWN, 2))
+											) {
+				
 				Boolean found = false;
 				Boolean on = false;
 				int radius = 3;

@@ -57,6 +57,7 @@ public class ucars extends JavaPlugin {
 	protected uCarsAPI API = null;
 	public static boolean forceRaceControls = false;
 	public static boolean smoothDrive = true;
+	public static boolean playersIgnoreTrafficLights = false;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -489,6 +490,10 @@ public class ucars extends JavaPlugin {
 				config.set("general.cars.forceRaceControlSystem", false);
 			}
 			forceRaceControls = config.getBoolean("general.cars.forceRaceControlSystem");
+			if (!config.contains("general.cars.playersIgnoreTrafficLights")) {
+				config.set("general.cars.playersIgnoreTrafficLights", false);
+			}
+			playersIgnoreTrafficLights = config.getBoolean("general.cars.playersIgnoreTrafficLights");
 			if (!config.contains("colorScheme.success")) {
 				config.set("colorScheme.success", "&a");
 			}
