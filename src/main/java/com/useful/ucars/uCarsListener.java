@@ -1680,9 +1680,9 @@ public class uCarsListener implements Listener {
 			int x,y,z;
 			if(otherLoc.matches(".+,.+,.+")){
 				try {
-					x = getCoord(parts[0], block.getX());
-					y = getCoord(parts[1], block.getY());
-					z = getCoord(parts[2], block.getZ());
+					x = getCoord(parts[0], sign.getX());
+					y = getCoord(parts[1], sign.getY());
+					z = getCoord(parts[2], sign.getZ());
 				} catch (Exception e1) { //Badly formatted
 					return;
 				}
