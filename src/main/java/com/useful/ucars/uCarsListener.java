@@ -29,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -384,6 +385,12 @@ public class uCarsListener implements Listener {
 		}
 		if (ChatColor.stripColor(lines[0]).equalsIgnoreCase("[Teleport]")) {
 			lines[0] = "[Teleport]";
+		}
+		if(ChatColor.stripColor(lines[0]).equalsIgnoreCase("[wir]")){
+			if(!event.getPlayer().hasPermission("wirelessredstone")){
+				event.getPlayer().sendMessage(ChatColor.RED+"Sorry you need the permisson 'wirelessredstone' to do this!");
+				lines[0] = "";
+			}
 		}
 		return;
 	}
@@ -1559,6 +1566,50 @@ public class uCarsListener implements Listener {
 		cart.remove();
 		loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.MINECART));
 		return;
+	}
+	
+	@EventHandler
+	void wirelessRedstone(BlockRedstoneEvent event){
+		Block block = event.getBlock();
+		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
+			return;
+		}
+		boolean on = block.isBlockPowered();
+		Sign sign = null;
+		for(BlockFace dir:BlockFace.values()){
+			Block bd = block.getRelative(dir);
+			if(bd.getState() instanceof Sign){
+				sign = (Sign) bd.getState();
+			}
+		}
+		if(sign == null){
+			return;
+		}
+		
+		if(sign.getLine(0) == null || !sign.getLine(0).equalsIgnoreCase("[wir]")){ //Not wireless redstone
+			return;
+		}
+		String otherLoc = sign.getLine(1);
+		if(otherLoc == null || !otherLoc.matches("\\d+,\\d+,\\d+")){
+			return; //Invalid sign
+		}
+		String[] parts = otherLoc.split(",");
+		try {
+			int x = Integer.parseInt(parts[0]);
+			int y = Integer.parseInt(parts[1]);
+			int z = Integer.parseInt(parts[2]);
+			
+			Block otherBlock = block.getWorld().getBlockAt(x, y, z);
+			if(on){ //Set to redstone block
+				otherBlock.setType(Material.REDSTONE_TORCH_ON);
+			}
+			else { //Set to glass
+				otherBlock.setType(Material.AIR);
+			}
+		} catch (Exception e) {
+			//Not integers
+			return;
+		}
 	}
 	
 	public Boolean atTrafficLight(Minecart car, Block underblock, Block underunderblock, Location loc){
