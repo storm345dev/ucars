@@ -21,6 +21,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -1590,21 +1591,120 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		String otherLoc = sign.getLine(1);
-		if(otherLoc == null || !otherLoc.matches("\\d+,\\d+,\\d+")){
+		if(otherLoc == null){ //Match positive and negative numbers
 			return; //Invalid sign
 		}
 		String[] parts = otherLoc.split(",");
+		if(parts.length < 3){
+			return;
+		}
 		try {
-			int x = Integer.parseInt(parts[0]);
-			int y = Integer.parseInt(parts[1]);
-			int z = Integer.parseInt(parts[2]);
+			int x,y,z;
+			if(otherLoc.matches("-*\\d+,-*\\d+,-*\\d+")){
+				x = Integer.parseInt(parts[0]);
+				y = Integer.parseInt(parts[1]);
+				z = Integer.parseInt(parts[2]);
+			}
+			else {
+				//Invalid pattern
+				return;
+			}
 			
 			Block otherBlock = block.getWorld().getBlockAt(x, y, z);
+			otherBlock.getLocation().getChunk(); //Make sure it's loaded
 			if(on){ //Set to redstone block
-				otherBlock.setType(Material.REDSTONE_TORCH_ON);
+				otherBlock.setType(Material.REDSTONE_BLOCK);
 			}
 			else { //Set to glass
 				otherBlock.setType(Material.AIR);
+			}
+		} catch (Exception e) {
+			//Not integers
+			return;
+		}
+	}
+	
+	private int getCoord(String in, int current) throws Exception{
+		if(in.matches("-*\\d+")){
+			try {
+				return Integer.parseInt(in);
+			} catch (Exception e) {
+				//Not an int
+				throw new Exception();
+			}
+		}
+		else if(in.matches("~-*\\d+") && in.length() > 1){
+			try {
+				return Integer.parseInt(in.substring(1))+current;
+			} catch (Exception e) {
+				//Not an int
+				throw new Exception();
+			}
+		}
+		else {
+			//Not formatted right
+			throw new Exception();
+		}
+	}
+	
+	@EventHandler
+	void trafficIndicators(BlockRedstoneEvent event){
+		Block block = event.getBlock();
+		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
+			return;
+		}
+		boolean on = block.isBlockPowered();
+		Sign sign = null;
+		for(BlockFace dir:BlockFace.values()){
+			Block bd = block.getRelative(dir);
+			if(bd.getState() instanceof Sign){
+				sign = (Sign) bd.getState();
+			}
+		}
+		if(sign == null){
+			return;
+		}
+		
+		if(sign.getLine(1) == null || !sign.getLine(1).equalsIgnoreCase("[trafficlight]")){ //Not wireless redstone
+			return;
+		}
+		String otherLoc = sign.getLine(2);
+		if(otherLoc == null){ //Match positive and negative numbers
+			return; //Invalid sign
+		}
+		String[] parts = otherLoc.split(",");
+		if(parts.length < 3){
+			return;
+		}
+		try {
+			int x,y,z;
+			if(otherLoc.matches(".+,.+,.+")){
+				try {
+					x = getCoord(parts[0], block.getX());
+					y = getCoord(parts[1], block.getX());
+					z = getCoord(parts[2], block.getX());
+				} catch (Exception e1) { //Badly formatted
+					return;
+				}
+			}
+			else {
+				//Invalid pattern
+				return;
+			}
+			
+			Block otherBlock = block.getWorld().getBlockAt(x, y, z);
+			for(Entity e:otherBlock.getLocation().getChunk().getEntities()){
+				if(e.getLocation().distanceSquared(otherBlock.getLocation()) < 4){ //Within 2 blocks of the loc given
+					if(e instanceof ItemFrame){
+						ItemFrame ifr = (ItemFrame) e;
+						if(on){
+							ifr.setItem(new ItemStack(Material.EMERALD_BLOCK));
+						}
+						else {
+							ifr.setItem(new ItemStack(Material.REDSTONE_BLOCK));
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			//Not integers
