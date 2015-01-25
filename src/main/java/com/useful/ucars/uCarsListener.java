@@ -1655,7 +1655,7 @@ public class uCarsListener implements Listener {
 		}
 		boolean on = block.isBlockPowered();
 		Sign sign = null;
-		for(BlockFace dir:BlockFace.values()){
+		for(BlockFace dir:dirs()){
 			Block bd = block.getRelative(dir);
 			if(bd.getState() instanceof Sign){
 				sign = (Sign) bd.getState();
@@ -1763,6 +1763,19 @@ public class uCarsListener implements Listener {
 			}
 		}
 		return false;
+	}
+	
+	private static BlockFace[] dirs(){
+		return new BlockFace[]{
+				BlockFace.NORTH,
+				BlockFace.EAST,
+				BlockFace.SOUTH,
+				BlockFace.WEST,
+				BlockFace.NORTH_WEST,
+				BlockFace.NORTH_EAST,
+				BlockFace.SOUTH_EAST,
+				BlockFace.NORTH_WEST,
+		};
 	}
 
 }
