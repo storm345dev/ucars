@@ -113,8 +113,8 @@ public class uCarsListener implements Listener {
 		ignoreJump.add("DAYLIGHT_DETECTOR"); // daylight detector
 		ignoreJump.add("SIGN_POST"); // sign
 		ignoreJump.add("WALL_SIGN"); // sign on the side of a block
-		ignoreJump.add("CARPET"); // carpet
-		
+		/*ignoreJump.add("CARPET"); // carpet
+*/		
 		usePerms = ucars.config.getBoolean("general.permissions.enable");
 		carsEnabled = ucars.config.getBoolean("general.cars.enable");
 		defaultHealth = ucars.config.getDouble("general.cars.health.default");
@@ -1070,6 +1070,7 @@ public class uCarsListener implements Listener {
 				if (bidU == Material.AIR || bidU == Material.LAVA 
 						|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
 						|| bidU == Material.STATIONARY_WATER || bidU == Material.STEP 
+						|| bidU == Material.CARPET
 						|| bidU == Material.DOUBLE_STEP || inStairs) { //Clear air above
 					theNewLoc.add(0, 1.5d, 0);
 					Boolean calculated = false;
