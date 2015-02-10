@@ -1194,6 +1194,15 @@ public class uCarsListener implements Listener {
 		if (cart.getPassenger() == null) { //Don't both to calculate with PiguCarts, etc...
 			return;
 		}
+		
+		Entity passenger = cart.getPassenger();
+		while (passenger.getPassenger() != null) {
+			passenger = passenger.getPassenger();
+		}
+		if(passenger.equals(ent)){
+			return; //Player being hit is in the car
+		}
+		
 		double x = cart.getVelocity().getX();
 		double y = cart.getVelocity().getY();
 		double z = cart.getVelocity().getZ();
@@ -1737,7 +1746,7 @@ public class uCarsListener implements Listener {
 						if ((x * x) + (z * z) <= radiusSquared) {
 							double locX = loc.getX() + x;
 							double locZ = loc.getZ() + z;
-							for (int y = (int) Math.round((loc.getY() - 3)); y < (loc
+							for (int y = (int) Math.round((loc.getY() - 4)); y < (loc
 									.getY() + 4) && !found; y++) {
 								Location light = new Location(
 										loc.getWorld(), locX, y, locZ);
