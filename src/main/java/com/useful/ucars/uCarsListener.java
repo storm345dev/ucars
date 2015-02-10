@@ -1203,6 +1203,23 @@ public class uCarsListener implements Listener {
 			return; //Player being hit is in the car
 		}
 		
+		if(ent.hasMetadata("hitByLast")){
+			try {
+				long l = (Long) ent.getMetadata("hitByLast").get(0).value();
+				long pastTime = System.currentTimeMillis() - l;
+				if(pastTime < 500){
+					return; //Don't get hit by more than once at a time
+				}
+				else {
+					ent.removeMetadata("hitByLast", ucars.plugin);
+				}
+			} catch (Exception e) {
+				ent.removeMetadata("hitByLast", ucars.plugin);
+			}
+		}
+		ent.removeMetadata("hitByLast", ucars.plugin);
+		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
+		
 		double x = cart.getVelocity().getX();
 		double y = cart.getVelocity().getY();
 		double z = cart.getVelocity().getZ();
