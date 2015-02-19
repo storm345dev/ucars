@@ -26,6 +26,7 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -1224,10 +1225,13 @@ public class uCarsListener implements Listener {
 		ent.removeMetadata("hitByLast", ucars.plugin);
 		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double speed = cart.getVelocity().length();
+		double speed = cart.getVelocity().length() * 3.5;
+		if(passenger instanceof Villager){ //NPC car from UT
+			speed = cart.getVelocity().length()*1.6;
+		}
 		
 		double damage = hitby_crash_damage;
-		double pDmg = (damage * speed * 3);
+		double pDmg = (damage * speed * 2);
 		
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
@@ -1280,6 +1284,9 @@ public class uCarsListener implements Listener {
 		}
 		if (ucars.config.getBoolean("general.cars.hitBy.enableMonsterDamage")) {
 			if (ent instanceof Monster || (ucars.config.getBoolean("general.cars.hitBy.enableAllMonsterDamage") && ent instanceof Damageable)) {
+				if(ent instanceof Villager && ent.getVehicle() != null && passenger instanceof Villager){
+					return;
+				}
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
 				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
