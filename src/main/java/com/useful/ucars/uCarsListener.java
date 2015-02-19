@@ -1303,6 +1303,9 @@ public class uCarsListener implements Listener {
 		if(pDmg < 1){
 			pDmg = 1;
 		}
+		if(pDmg > (hitby_crash_damage * 2)){
+			pDmg = hitby_crash_damage * 2;
+		}
 		p.damage(pDmg);
 		return;
 	}
