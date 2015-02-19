@@ -1220,7 +1220,7 @@ public class uCarsListener implements Listener {
 		ent.removeMetadata("hitByLast", ucars.plugin);
 		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double speed = cart.getVelocity().length();
+		double speed = cart.getVelocity().length() * 0.1;
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
 				// @Override
