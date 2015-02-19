@@ -1227,7 +1227,7 @@ public class uCarsListener implements Listener {
 		double speed = cart.getVelocity().length();
 		
 		double damage = hitby_crash_damage;
-		double pDmg = (damage * speed * 2);
+		double pDmg = (damage * speed * 3);
 		
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
