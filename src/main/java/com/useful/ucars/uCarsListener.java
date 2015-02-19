@@ -1220,22 +1220,7 @@ public class uCarsListener implements Listener {
 		ent.removeMetadata("hitByLast", ucars.plugin);
 		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double x = cart.getVelocity().getX();
-		double y = cart.getVelocity().getY();
-		double z = cart.getVelocity().getZ();
-		if (x < 0) {
-			x = -x;
-		}
-		if (y < 0) {
-			y = -y;
-		}
-		if (z < 0) {
-			z = -z;
-		}
-		if (x < 0.3 && z < 0.3) {
-			return;
-		}
-		double speed = (x * z) / 2;
+		double speed = cart.getVelocity().length();
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
 				// @Override
@@ -1279,7 +1264,7 @@ public class uCarsListener implements Listener {
 			}
 			cart.setMetadata("carhealth", health);
 		}
-		if (!(speed > 0)) {
+		if (speed <= 0) {
 			return;
 		}
 		if (!ucars.config.getBoolean("general.cars.hitBy.enable")) {
@@ -1305,7 +1290,11 @@ public class uCarsListener implements Listener {
 		p.sendMessage(ucars.colors.getInfo()
 				+ Lang.get("lang.messages.hitByCar"));
 		double damage = crash_damage;
-		p.damage((int) (damage * speed));
+		double pDmg = (damage * speed);
+		if(pDmg < 1){
+			pDmg = 1;
+		}
+		p.damage(pDmg);
 		return;
 	}
 
