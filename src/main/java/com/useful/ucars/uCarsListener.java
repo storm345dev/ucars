@@ -1232,6 +1232,15 @@ public class uCarsListener implements Listener {
 		
 		double damage = hitby_crash_damage;
 		double pDmg = (damage * speed * 2);
+		if(pDmg < 1){
+			pDmg = 1;
+		}
+		if(pDmg > (hitby_crash_damage * 1.5)){
+			pDmg = hitby_crash_damage * 1.5;
+		}
+		if(pDmg > 8){
+			pDmg = 8;
+		}
 		
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
@@ -1307,15 +1316,6 @@ public class uCarsListener implements Listener {
 		/*p.sendMessage("Speed: "+speed);
 		p.sendMessage("Crash dmg def: "+hitby_crash_damage);
 		p.sendMessage("Damage to do: "+pDmg);*/
-		if(pDmg < 1){
-			pDmg = 1;
-		}
-		if(pDmg > (hitby_crash_damage * 1.5)){
-			pDmg = hitby_crash_damage * 1.5;
-		}
-		if(pDmg > 8){
-			pDmg = 8;
-		}
 		p.damage(pDmg);
 		return;
 	}
