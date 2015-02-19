@@ -67,6 +67,7 @@ public class uCarsListener implements Listener {
 	private double damage_cactus = 5;
 	private double uCar_jump_amount = 20;
 	private double crash_damage = 0;
+	private double hitby_crash_damage = 0;
 	
 	private String fuelBypassPerm = "ufuel.bypass";
 	
@@ -133,6 +134,9 @@ public class uCarsListener implements Listener {
 				.getDouble("general.cars.jumpAmount");
 		crash_damage = ucars.config
 				.getDouble("general.cars.health.crashDamage");
+		
+		hitby_crash_damage = ucars.config
+				.getDouble("general.cars.hitBy.damage");
 		
 		licenseEnabled = ucars.config.getBoolean("general.cars.licenses.enable");
 		roadBlocksEnabled = ucars.config.getBoolean("general.cars.roadBlocks.enable");
@@ -1220,10 +1224,10 @@ public class uCarsListener implements Listener {
 		ent.removeMetadata("hitByLast", ucars.plugin);
 		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double speed = cart.getVelocity().length() * 0.15;
+		double speed = cart.getVelocity().length();
 		
-		double damage = crash_damage;
-		double pDmg = (damage * speed);
+		double damage = hitby_crash_damage;
+		double pDmg = (damage * speed * 2);
 		
 		if (speed > 0) {
 			Runnable onDeath = new Runnable() {
@@ -1293,6 +1297,9 @@ public class uCarsListener implements Listener {
 		p.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
 		p.sendMessage(ucars.colors.getInfo()
 				+ Lang.get("lang.messages.hitByCar"));
+		/*p.sendMessage("Speed: "+speed);
+		p.sendMessage("Crash dmg def: "+hitby_crash_damage);
+		p.sendMessage("Damage to do: "+pDmg);*/
 		if(pDmg < 1){
 			pDmg = 1;
 		}
