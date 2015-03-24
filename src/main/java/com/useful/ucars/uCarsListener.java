@@ -45,6 +45,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
 import com.useful.uCarsAPI.CarRespawnReason;
+import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
 import com.useful.ucarsCommon.StatValue;
 
@@ -1296,6 +1297,12 @@ public class uCarsListener implements Listener {
 				if(ent instanceof Villager && ent.getVehicle() != null && passenger instanceof Villager){
 					return;
 				}
+				uCarCrashEvent evt = new uCarCrashEvent(cart, ent, pDmg);
+				if(evt.isCancelled()){
+					return;
+				}
+				pDmg = evt.getDamageToBeDoneToTheEntity();
+				
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
 				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
@@ -1309,6 +1316,14 @@ public class uCarsListener implements Listener {
 		if (inACar(p)) {
 			return;
 		}
+		
+		uCarCrashEvent evt = new uCarCrashEvent(cart, p, pDmg);
+		Bukkit.getPluginManager().callEvent(evt);
+		if(evt.isCancelled()){
+			return;
+		}
+		pDmg = evt.getDamageToBeDoneToTheEntity();
+		
 		double mult = ucars.config.getDouble("general.cars.hitBy.power") / 5;
 		p.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
 		p.sendMessage(ucars.colors.getInfo()
