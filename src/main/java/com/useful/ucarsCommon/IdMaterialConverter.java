@@ -114,7 +114,6 @@ public abstract class IdMaterialConverter {
                 retmap.put(92, Material.CAKE_BLOCK);
                 retmap.put(93, Material.DIODE_BLOCK_OFF);
                 retmap.put(94, Material.DIODE_BLOCK_ON);
-                retmap.put(95, Material.LOCKED_CHEST); //Deprecated, oh well
                 retmap.put(96, Material.TRAP_DOOR);
                 retmap.put(97, Material.MONSTER_EGGS);
                 retmap.put(98, Material.SMOOTH_BRICK);
