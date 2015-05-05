@@ -20,11 +20,16 @@ public class ControlInput {
 			player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
 		}
 		else {
-			Object o = player.getMetadata("ucars.smooth").get(0).value();
-			if(o instanceof SmoothMeta){
-				smooth = (SmoothMeta) o;
-			}
-			else {
+			try {
+				Object o = player.getMetadata("ucars.smooth").get(0).value();
+				if(o instanceof SmoothMeta){
+					smooth = (SmoothMeta) o;
+				}
+				else {
+					smooth = new SmoothMeta(accMod);
+					player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+				}
+			} catch (Exception e) {
 				smooth = new SmoothMeta(accMod);
 				player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
 			}
