@@ -28,7 +28,6 @@ public class uCarsCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd,
 			String commandLabel, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("ucars")) {
-			//TODO Make it get them differently to support lists
 			sender.sendMessage(ucars.colors.getInfo() + "Ucars v"
 					+ plugin.getDescription().getVersion()
 					+ " -by storm345- is working!");

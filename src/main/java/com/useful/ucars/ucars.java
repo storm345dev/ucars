@@ -34,6 +34,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.FieldAccessException;
 import com.useful.uCarsAPI.uCarsAPI;
 
 public class ucars extends JavaPlugin {
@@ -144,12 +145,13 @@ public class ucars extends JavaPlugin {
 								PacketContainer packet = event.getPacket();
 								final float sideways = packet.getFloat().read(0);
 								final float forwards = packet.getFloat().read(1);
+								final boolean jumping = packet.getBooleans().read(0);
 								Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
 
 									@Override
 									public void run() {
 										MotionManager.move(event.getPlayer(), forwards,
-												sideways);
+												sideways, jumping);
 										return;
 									}});
 								

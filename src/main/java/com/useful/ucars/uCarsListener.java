@@ -1326,6 +1326,7 @@ public class uCarsListener implements Listener {
 			 */
 			event.getPlayer().sendMessage(
 					ucars.colors.getInfo() + Lang.get("lang.messages.place"));
+			event.getPlayer().sendMessage(ucars.colors.getInfo()+"You can also use 'jump' to change driving mode!");
 			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
 				ItemStack placed = event.getPlayer().getItemInHand();
 				placed.setAmount(placed.getAmount() - 1);
