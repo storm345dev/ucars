@@ -9,6 +9,17 @@ import org.bukkit.util.Vector;
 import com.useful.ucarsCommon.StatValue;
 
 public class MotionManager {
+	
+	public static double[] rotateVector2dDegrees(double x, double y, double degrees){
+		return rotateVector2dRadians(x, y, Math.toRadians(degrees));
+	}
+	
+	public static double[] rotateVector2dRadians(double x, double y, double radians){
+	    double[] result = new double[2];
+	    result[0] = x * Math.cos(radians) - y * Math.sin(radians);
+	    result[1] = x * Math.sin(radians) + y * Math.cos(radians);
+	    return result;
+	}
 
 	public static void move(Player player, float f, float s) {
 		Vector vec = new Vector();
