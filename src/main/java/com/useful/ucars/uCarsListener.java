@@ -48,6 +48,7 @@ import org.bukkit.util.Vector;
 import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucarsCommon.StatValue;
 
 public class uCarsListener implements Listener {
@@ -415,6 +416,11 @@ public class uCarsListener implements Listener {
 			}
 		}
 		return;
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST) //Called first
+	public void playerJoinControlsUnlock(PlayerJoinEvent event){
+		ControlSchemeManager.setControlsLocked(event.getPlayer(), false);
 	}
 
 	/*

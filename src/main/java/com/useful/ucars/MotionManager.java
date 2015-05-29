@@ -52,10 +52,15 @@ public class MotionManager {
 		if(jumping){
 			if(!player.hasMetadata("ucarsToggleControls")){
 				player.setMetadata("ucarsToggleControls", new StatValue(true, ucars.plugin));
-				ControlSchemeManager.toggleControlScheme(player);
-				if(ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
-					car.removeMetadata("ucarsSteeringDir", ucars.plugin);
-					car.setMetadata("ucarsSteeringDir", new StatValue(plaD.normalize(), ucars.plugin));
+				if(ControlSchemeManager.isControlsLocked(player)){
+					player.sendMessage(ucars.colors.getError()+"Cannot toggle control scheme right now! (It's been locked by another plugin)");
+				}
+				else {
+					ControlSchemeManager.toggleControlScheme(player);
+					if(ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
+						car.removeMetadata("ucarsSteeringDir", ucars.plugin);
+						car.setMetadata("ucarsSteeringDir", new StatValue(plaD.normalize(), ucars.plugin));
+					}
 				}
 			}
 		}
