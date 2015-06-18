@@ -1,16 +1,17 @@
 package com.useful.ucars;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 public class CarHealthData implements MetadataValue {
 	double health = 5;
-	Runnable onDeath = null;
 	Plugin plugin = null;
 
-	public CarHealthData(double health, Runnable onDeath, Plugin plugin) {
+	public CarHealthData(double health, Plugin plugin) {
 		this.health = health;
-		this.onDeath = onDeath;
 		this.plugin = plugin;
 	}
 
@@ -62,7 +63,6 @@ public class CarHealthData implements MetadataValue {
 	// @Override
 	public void invalidate() {
 		health = 0;
-		die();
 		return;
 	}
 
@@ -71,10 +71,18 @@ public class CarHealthData implements MetadataValue {
 		return health;
 	}
 
-	public void damage(double amount) {
+	public void damage(double amount, Minecart entity) {
 		health = this.health - amount;
 		if (health <= 0) {
-			die();
+			die(entity);
+		}
+		return;
+	}
+	
+	public void damage(double amount, Minecart entity, Player whoHurt) {
+		health = this.health - amount;
+		if (health <= 0) {
+			die(entity, whoHurt);
 		}
 		return;
 	}
@@ -86,9 +94,20 @@ public class CarHealthData implements MetadataValue {
 	public double getHealth() {
 		return this.health;
 	}
+	
+	public void die(Minecart m, Player whoHurt){
+		if(m == null || !m.isValid() || m.isDead()){
+			return;
+		}
+		Bukkit.getPluginManager().callEvent(new ucarDeathEvent(m, whoHurt));
+		return;
+	}
 
-	public void die() {
-		this.onDeath.run();
+	public void die(Minecart m){
+		if(m == null || !m.isValid() || m.isDead()){
+			return;
+		}
+		Bukkit.getPluginManager().callEvent(new ucarDeathEvent(m));
 		return;
 	}
 }

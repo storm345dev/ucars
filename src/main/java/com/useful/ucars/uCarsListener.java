@@ -562,7 +562,7 @@ public class uCarsListener implements Listener {
 							+ Material.WATER.name().toLowerCase() + "]"
 							+ color + " (" + left + ")");
 				}
-				health.damage(damage);
+				health.damage(damage, car);
 				recalculateHealth = true;
 			}
 		}
@@ -584,7 +584,7 @@ public class uCarsListener implements Listener {
 							+ Material.LAVA.name().toLowerCase() + "]"
 							+ color + " (" + left + ")");
 				}
-				health.damage(damage);
+				health.damage(damage, car);
 				recalculateHealth = true;
 			}
 		}
@@ -810,7 +810,7 @@ public class uCarsListener implements Listener {
 				player.sendMessage(ChatColor.RED + "-" + damage + "["
 						+ Material.CACTUS.name().toLowerCase() + "]"
 						+ color + " (" + left + ")");
-				health.damage(damage);
+				health.damage(damage, car);
 				recalculateHealth = true;
 			}
 		}
@@ -986,7 +986,6 @@ public class uCarsListener implements Listener {
 								car.setMetadata("kart.racing",
 										new StatValue(null, plugin));
 							}
-							health.onDeath = defaultDeathHandler(car);
 							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
 							plugin.getServer().getPluginManager().callEvent(evnt);
@@ -1221,7 +1220,7 @@ public class uCarsListener implements Listener {
 							.sendMessage(ChatColor.RED + "-" + dmg + "[crash]"
 									+ color + " (" + left + ")");
 				}
-				health.damage(dmg);
+				health.damage(dmg, cart);
 			}
 			updateCarHealthHandler(cart, health);
 		}
@@ -1503,7 +1502,7 @@ public class uCarsListener implements Listener {
 			}
 			player.sendMessage(ChatColor.RED + "-" + damage + ChatColor.YELLOW
 					+ "[" + player.getName() + "]" + color + " (" + left + ")");
-			health.damage(damage);
+			health.damage(damage, car, player);
 			updateCarHealthHandler(car, health);
 			event.setCancelled(true);
 			event.setDamage(0);
@@ -1750,23 +1749,25 @@ public class uCarsListener implements Listener {
 			try {
 				List<MetadataValue> vals = car.getMetadata("carhealth");
 				for (MetadataValue val : vals) {
-					if (val instanceof CarHealthData) {
-						health = (CarHealthData) val;
+					if (val.value() != null && val.value() instanceof CarHealthData) {
+						health = (CarHealthData) val.value();
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
+				car.removeMetadata("carhealth", ucars.plugin);
 				health = null;
 			}
 		}
 		if(health == null){ //Not yet set on cart
 			health = new CarHealthData(
 					defaultHealth,
-					defaultDeathHandler(car), plugin);
+					plugin);
 		}
 		return health;
 	}
 	
-	public Runnable defaultDeathHandler(final Minecart cart){
+	/*public Runnable defaultDeathHandler(final Minecart cart){
 		return new Runnable() {
 			// @Override
 			public void run() {
@@ -1774,6 +1775,6 @@ public class uCarsListener implements Listener {
 						.callEvent(new ucarDeathEvent(cart));
 			}
 		};
-	}
+	}*/
 
 }
