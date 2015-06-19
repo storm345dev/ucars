@@ -65,7 +65,7 @@ public class uCarsListener implements Listener {
 	private Boolean fuelUseItems = false;
 	
 	private double defaultSpeed = 30;
-	private double defaultHealth = 10;
+	private static double defaultHealth = 10;
 	private double damage_water = 0;
 	private double damage_lava = 10;
 	private double damage_cactus = 5;
@@ -1765,6 +1765,34 @@ public class uCarsListener implements Listener {
 					plugin);
 		}
 		return health;
+	}
+	
+	public static void showCarDamageMessage(Player player, double damage, String cause, double remainingHealth){
+		double max = defaultHealth;
+		ChatColor color = ChatColor.YELLOW;
+		if (remainingHealth > (max * 0.66)) {
+			color = ChatColor.GREEN;
+		}
+		if (remainingHealth < (max * 0.33)) {
+			color = ChatColor.RED;
+		}
+		player.sendMessage(ChatColor.RED + "-" + damage + "["
+				+ cause + "]"
+				+ color + " (" + ((int)remainingHealth) + ")");
+	}
+	
+	public static void showCarDamageMessage(Player player, double damage, double remainingHealth){
+		double max = defaultHealth;
+		ChatColor color = ChatColor.YELLOW;
+		if (remainingHealth > (max * 0.66)) {
+			color = ChatColor.GREEN;
+		}
+		if (remainingHealth < (max * 0.33)) {
+			color = ChatColor.RED;
+		}
+		player.sendMessage(ChatColor.RED + "-" + damage + "["
+				+ "Car Health" + "]"
+				+ color + " (" + ((int)remainingHealth) + ")");
 	}
 	
 	/*public Runnable defaultDeathHandler(final Minecart cart){
