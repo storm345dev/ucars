@@ -1202,6 +1202,8 @@ public class uCarsListener implements Listener {
 			pDmg = 8;
 		}
 		
+		Entity driver = getDrivingPassengerOfCar(veh);
+		
 		if (speed > 0) {
 			CarHealthData health = getCarHealthHandler(cart);
 			double dmg = crash_damage;
@@ -1244,7 +1246,12 @@ public class uCarsListener implements Listener {
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
 				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-				((Damageable) ent).damage(pDmg);
+				if(driver != null){
+					((Damageable) ent).damage(pDmg, driver);
+				}
+				else {
+					((Damageable) ent).damage(pDmg);
+				}
 			}
 		}
 		if (!(ent instanceof Player)) {
@@ -1269,7 +1276,7 @@ public class uCarsListener implements Listener {
 		/*p.sendMessage("Speed: "+speed);
 		p.sendMessage("Crash dmg def: "+hitby_crash_damage);
 		p.sendMessage("Damage to do: "+pDmg);*/
-		p.damage(pDmg);
+		p.damage(pDmg, driver);
 		return;
 	}
 
