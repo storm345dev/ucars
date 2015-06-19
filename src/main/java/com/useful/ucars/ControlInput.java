@@ -9,14 +9,15 @@ import com.useful.ucarsCommon.StatValue;
 
 public class ControlInput {
 	
-	public static float getAccel(Player player){ //Returns a multiplier to multiply with the x and z of the movement vector so the car appears to accelerate smoothly
-		if(!ucars.smoothDrive){ //Return "1" (No multiplier) if accelerating vehicles is disabled
-			return 1;
+	public static CarDirection getCurrentDriveDir(Player player){
+		if(!ucars.smoothDrive){
+			return CarDirection.FORWARDS;
 		}
 		float accMod = uCarsAPI.getAPI().getAcceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+		float decMod = uCarsAPI.getAPI().getDeceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
 		SmoothMeta smooth = null; //Metadata saved to the player for tracking their acceleration
 		if(!player.hasMetadata("ucars.smooth")){ //Setting the metadata onto the player if it's not already set
-			smooth = new SmoothMeta(accMod);
+			smooth = new SmoothMeta(accMod, decMod);
 			player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
 		}
 		else { //Metadata already set, lets attempt to read it
@@ -26,12 +27,44 @@ public class ControlInput {
 					smooth = (SmoothMeta) o;
 				}
 				else { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
-					smooth = new SmoothMeta(accMod);
+					smooth = new SmoothMeta(accMod, decMod);
 					player.removeMetadata("ucars.smooth", ucars.plugin);
 					player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
 				}
 			} catch (Exception e) { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
-				smooth = new SmoothMeta(accMod);
+				smooth = new SmoothMeta(accMod, decMod);
+				player.removeMetadata("ucars.smooth", ucars.plugin);
+				player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+			}
+		}
+		
+		return smooth.getDirection();
+	}
+	
+	public static float getAccel(Player player, CarDirection dir){ //Returns a multiplier to multiply with the x and z of the movement vector so the car appears to accelerate smoothly
+		if(!ucars.smoothDrive){ //Return "1" (No multiplier) if accelerating vehicles is disabled
+			return 1;
+		}
+		float accMod = uCarsAPI.getAPI().getAcceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+		float decMod = uCarsAPI.getAPI().getDeceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+		SmoothMeta smooth = null; //Metadata saved to the player for tracking their acceleration
+		if(!player.hasMetadata("ucars.smooth")){ //Setting the metadata onto the player if it's not already set
+			smooth = new SmoothMeta(accMod, decMod);
+			player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+		}
+		else { //Metadata already set, lets attempt to read it
+			try {
+				Object o = player.getMetadata("ucars.smooth").get(0).value(); //Get the smooth meta set on the player
+				if(o instanceof SmoothMeta){
+					smooth = (SmoothMeta) o;
+				}
+				else { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
+					smooth = new SmoothMeta(accMod, decMod);
+					player.removeMetadata("ucars.smooth", ucars.plugin);
+					player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+				}
+			} catch (Exception e) { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
+				smooth = new SmoothMeta(accMod, decMod);
 				player.removeMetadata("ucars.smooth", ucars.plugin);
 				player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
 			}
@@ -39,7 +72,7 @@ public class ControlInput {
 		
 		smooth.updateAccelerationFactor(accMod); //Update onto the Acceleration meta (Which does all the calculation for smooth accelerating) what the API wants in terms of accelerating speed - Allows it to be dynamic
 		
-		return smooth.getFactor(); //Get the acceleration factor
+		return smooth.getFactor(dir); //Get the acceleration factor
 	}
 	
 	public static void input(Minecart car, Vector travel, ucarUpdateEvent event){ //Take our inputted

@@ -15,11 +15,13 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 	public Boolean cancelled = false;
 	public Player player = null;
 	private int readCount = 0;
+	private CarDirection dir;
 
-	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player) {
+	public ucarUpdateEvent(Vehicle vehicle, Vector toTravel, Player player, CarDirection dir) {
 		super(vehicle);
 		this.toTravel = toTravel;
 		this.player = player;
+		this.dir = dir;
 	}
 	
 	public void setRead(int r){
@@ -75,6 +77,14 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 
 	public void setCancelled(boolean arg0) {
 		this.cancelled = arg0;
+	}
+
+	public CarDirection getDir() {
+		return dir;
+	}
+
+	public void setDir(CarDirection dir) {
+		this.dir = dir;
 	}
 
 }

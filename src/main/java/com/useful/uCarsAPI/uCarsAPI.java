@@ -30,6 +30,7 @@ public class uCarsAPI {
 	private Map<Plugin, ItemCarCheck> itemCarChecks = new HashMap<Plugin, ItemCarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
 	private Map<Plugin, CarAccelerationModifier> carAccelMods = new HashMap<Plugin, CarAccelerationModifier>();
+	private Map<Plugin, CarDecelerationModifier> carDecelMods = new HashMap<Plugin, CarDecelerationModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
 
 	public uCarsAPI() {
@@ -217,6 +218,50 @@ public class uCarsAPI {
 		}
 		carSpeedMods.remove(plugin);
 		return true;
+	}
+	
+	/**
+	 * Registers a car deceleration modifier to your plugin, only one is
+	 * allowed per hooked plugin. Trying to add more than one check will result
+	 * in overriding the original
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @param decMod
+	 *            The Acceleration Mod to add
+	 * @return True if registered, False if not because plugin isn't hooked
+	 */
+	public Boolean registerDecelerationMod(Plugin plugin, CarDecelerationModifier accMod) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carDecelMods.put(plugin, accMod);
+		return true;
+	}
+
+	/**
+	 * Removes an deceleration mod registered by a plugin
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @return True if unregistered, False if not because plugin isn't hooked
+	 */
+	public Boolean unRegisterDecelerationMod(Plugin plugin) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carDecelMods.remove(plugin);
+		return true;
+	}
+	
+	public float getDeceleration(Player driver, float currentMult) {
+		if(carDecelMods.size() < 1){
+			return currentMult;
+		}
+		for (CarDecelerationModifier m : new ArrayList<CarDecelerationModifier>(carDecelMods.values())) {
+			currentMult = m.getAccelerationDecimal(driver, currentMult);
+		}
+		return currentMult;
 	}
 	
 	/**

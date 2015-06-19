@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -393,6 +394,18 @@ public class uCarsListener implements Listener {
 		}
 		return passenger;
 	}
+	
+	@EventHandler
+	void carExit(VehicleExitEvent event){
+		if(event.getVehicle().hasMetadata("safeExit.ignore")){
+			return;
+		}
+		if(!(event.getVehicle() instanceof Minecart) || !isACar((Minecart) event.getVehicle())){
+			return;
+		}
+		
+		event.getExited().removeMetadata("ucars.smooth", ucars.plugin);;
+	}
 
 	/*
 	 * Standardises the text on some effect signs
@@ -465,7 +478,7 @@ public class uCarsListener implements Listener {
 				evt.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
 				evt.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
 				vehicle.removeMetadata("car.vec", ucars.plugin); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
-				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null); //Clone of the other event, except no player object attached
+				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
 				vehicle.setMetadata("car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
 				ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
@@ -596,13 +609,13 @@ public class uCarsListener implements Listener {
 		if (plugin.protocolLib) {
 			return;
 		}
-		// Attempt pre-protocollib controls (Broken in MC 1.6.0 and probably above)
+		/*// Attempt pre-protocollib controls (Broken in MC 1.6.0 and probably above)
 
 		Vector playerVelocity = car.getPassenger().getVelocity();
 		ucarUpdateEvent ucarupdate = new ucarUpdateEvent(car,
-				playerVelocity, player);
+				playerVelocity, player, CarDirection.NONE);
 		plugin.getServer().getPluginManager().callEvent(ucarupdate);
-		return;
+		return;*/
 	}
 
 	/*
@@ -725,7 +738,7 @@ public class uCarsListener implements Listener {
 															// controls for
 															// 1.6
 		if(ucars.smoothDrive){ //If acceleration is enabled
-			float a = ControlInput.getAccel(event.getPlayer()); //Find out the multiplier to use for accelerating the car 'naturally'
+			float a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
 			travel.setX(travel.getX() * a); //Multiple only x
 			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
 		}

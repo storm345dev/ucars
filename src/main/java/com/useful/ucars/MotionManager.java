@@ -87,15 +87,20 @@ public class MotionManager {
 			}
 		}
 		
-		if (f == 0) {
+		CarDirection dir = CarDirection.NONE;
+		
+		if(f == 0 && !ucars.smoothDrive){
 			return;
 		}
+		
 		Boolean forwards = true; // if true, forwards, else backwards
 		int side = 0; // -1=left, 0=straight, 1=right
 		Boolean turning = false;
 		if (f < 0) {
+			dir = CarDirection.BACKWARDS;
 			forwards = false;
-		} else {
+		} else if (f > 0){
+			dir = CarDirection.FORWARDS;
 			forwards = true;
 		}
 		if (s > 0) {
@@ -119,7 +124,7 @@ public class MotionManager {
 					car.setMetadata("car.action", new StatValue(true, ucars.plugin));
 				}
 				else {
-					carDirection = rotateXZVector3dDegrees(carDirection, -rotMod);
+					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? rotMod : -rotMod);
 				}
 			} else if (side > 0) {// do right action
 				if(!keyboardSteering){
@@ -128,7 +133,7 @@ public class MotionManager {
 						new StatValue(true, ucars.plugin));
 				}
 				else {
-					carDirection = rotateXZVector3dDegrees(carDirection, rotMod);
+					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -rotMod : rotMod);
 				}
 			}
 		}
@@ -151,7 +156,7 @@ public class MotionManager {
 				}
 			}
 			vec = new Vector(x, y, z);
-			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
+			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player, dir);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
 			final Vector v = vec;
@@ -176,7 +181,7 @@ public class MotionManager {
 			z = 0 - z;
 			vec = new Vector(x, y, z);
 			final Vector v = vec;
-			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player);
+			final ucarUpdateEvent event = new ucarUpdateEvent(car, vec, player, dir);
 			event.setDoDivider(doDivider);
 			event.setDivider(divider);
 			Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
