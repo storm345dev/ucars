@@ -60,7 +60,7 @@ public class MotionManager {
 					ControlSchemeManager.toggleControlScheme(player);
 					if(!ucars.turningCircles && ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
 						car.removeMetadata("ucarsSteeringDir", ucars.plugin);
-						car.setMetadata("ucarsSteeringDir", new StatValue(plaD.normalize(), ucars.plugin));
+						car.setMetadata("ucarsSteeringDir", new StatValue(plaD.clone().setY(0).normalize(), ucars.plugin));
 					}
 				}
 			}
@@ -83,7 +83,7 @@ public class MotionManager {
 			carDirection = null;
 		}
 		if(carDirection == null){
-			carDirection = plaD.normalize();
+			carDirection = plaD.clone().setY(0).normalize();
 		}
 		if(keyboardSteering || ucars.turningCircles){
 			try {
@@ -94,7 +94,7 @@ public class MotionManager {
 				carDirection = null;
 			}
 			if(carDirection == null){
-				carDirection = plaD.normalize();
+				carDirection = plaD.clone().setY(0).normalize();
 			}
 		}
 		
