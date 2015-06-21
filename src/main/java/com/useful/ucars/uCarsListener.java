@@ -49,6 +49,7 @@ import org.bukkit.util.Vector;
 import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucarsCommon.StatValue;
 

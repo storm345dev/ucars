@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
+import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucarsCommon.StatValue;
 
 public class uCarsCommandExecutor implements CommandExecutor {
