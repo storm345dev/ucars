@@ -6,6 +6,7 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlScheme;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucarsCommon.StatValue;
@@ -57,7 +58,7 @@ public class MotionManager {
 				}
 				else {
 					ControlSchemeManager.toggleControlScheme(player);
-					if(ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
+					if(!ucars.turningCircles && ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
 						car.removeMetadata("ucarsSteeringDir", ucars.plugin);
 						car.setMetadata("ucarsSteeringDir", new StatValue(plaD.normalize(), ucars.plugin));
 					}
@@ -74,7 +75,17 @@ public class MotionManager {
 		boolean keyboardSteering = controls.equals(ControlScheme.KEYBOARD);
 		
 		Vector carDirection = null;
-		if(keyboardSteering){
+		try {
+			if(car.hasMetadata("ucarsSteeringDir")){
+				carDirection = (Vector) car.getMetadata("ucarsSteeringDir").get(0).value();
+			}
+		} catch (Exception e) {
+			carDirection = null;
+		}
+		if(carDirection == null){
+			carDirection = plaD.normalize();
+		}
+		if(keyboardSteering || ucars.turningCircles){
 			try {
 				if(car.hasMetadata("ucarsSteeringDir")){
 					carDirection = (Vector) car.getMetadata("ucarsSteeringDir").get(0).value();
@@ -116,7 +127,7 @@ public class MotionManager {
 		Boolean doDivider = false;
 		Boolean doAction = false;
 		double divider = 0.5; // x of the (1) speed
-		double rotMod = 5;
+		double rotMod = uCarsAPI.getAPI().getMaxCarTurnAmountDegrees(car, 5);
 		if (turning) {
 			if (side < 0) {// do left action
 				if(!keyboardSteering){
@@ -137,12 +148,32 @@ public class MotionManager {
 				}
 			}
 		}
-		if(keyboardSteering){
+		if(!keyboardSteering && ucars.turningCircles){
+			//Rotate 'carDirection' vector according to where they're looking; max of rotMod degrees
+			float pYaw = (float) Math.toDegrees(Math.atan2(plaD.getX() , -plaD.getZ())); //Calculate yaw from 'player direction' vector
+			float cYaw = (float) Math.toDegrees(Math.atan2(carDirection.getX() , -carDirection.getZ())); //Calculate yaw from 'carDirection' vector
+			float yawDiff = pYaw - cYaw;
+			if(yawDiff <= -180){
+				yawDiff += 360;
+			}
+			else if(yawDiff > 180){
+				yawDiff -= 360;
+			}
+			/*Bukkit.broadcastMessage(yawDiff+"");*/
+			if(yawDiff < -rotMod){
+				yawDiff = (float) -rotMod;
+			}
+			else if(yawDiff > rotMod){
+				yawDiff = (float) rotMod;
+			}
+			carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -yawDiff : yawDiff);
+		}
+		if(keyboardSteering || ucars.turningCircles){
 			car.removeMetadata("ucarsSteeringDir", ucars.plugin);
 			car.setMetadata("ucarsSteeringDir", new StatValue(carDirection.normalize(), ucars.plugin));
 			plaD = carDirection;
 		}
-		if (forwards) { // Mouse controls please
+		if (forwards) {
 			double x = plaD.getX() / d;
 			double z = plaD.getZ() / d;
 			if (!doDivider) {
@@ -169,7 +200,7 @@ public class MotionManager {
 					});
 			return;
 		}
-		if (!forwards) { // Mouse controls please
+		if (!forwards) {
 			double x = plaD.getX() / d;
 			double z = plaD.getZ() / d;
 			if (!doDivider) {

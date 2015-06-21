@@ -29,6 +29,7 @@ public class uCarsAPI {
 	private Map<Plugin, CarCheck> carChecks = new HashMap<Plugin, CarCheck>();
 	private Map<Plugin, ItemCarCheck> itemCarChecks = new HashMap<Plugin, ItemCarCheck>();
 	private Map<Plugin, CarSpeedModifier> carSpeedMods = new HashMap<Plugin, CarSpeedModifier>();
+	private Map<Plugin, CarTurningModifier> carRotMods = new HashMap<Plugin, CarTurningModifier>();
 	private Map<Plugin, CarAccelerationModifier> carAccelMods = new HashMap<Plugin, CarAccelerationModifier>();
 	private Map<Plugin, CarDecelerationModifier> carDecelMods = new HashMap<Plugin, CarDecelerationModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
@@ -185,6 +186,23 @@ public class uCarsAPI {
 		}
 		return true;
 	}
+	
+	/**
+	 * Registers an car turning mod for your plugin so you can manipulate the amount the car turns per tick
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @param mod
+	 *            The turningMod to add
+	 * @return True if registered, False if not because plugin isn't hooked
+	 */
+	public Boolean registerTurningMod(Plugin plugin, CarTurningModifier mod) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carRotMods.put(plugin, mod);
+		return true;
+	}
 
 	/**
 	 * Registers an car speed mod check for your plugin, only one speed mod is
@@ -202,6 +220,21 @@ public class uCarsAPI {
 			return false;
 		}
 		carSpeedMods.put(plugin, speedMod);
+		return true;
+	}
+	
+	/**
+	 * Removes a turning mod registered by a plugin
+	 * 
+	 * @param plugin
+	 *            Your plugin
+	 * @return True if unregistered, False if not because plugin isn't hooked
+	 */
+	public Boolean unRegisterTurningMod(Plugin plugin) {
+		if (!isPluginHooked(plugin)) {
+			return false;
+		}
+		carRotMods.remove(plugin);
 		return true;
 	}
 
@@ -306,6 +339,14 @@ public class uCarsAPI {
 			currentMult = m.getAccelerationDecimal(driver, currentMult);
 		}
 		return currentMult;
+	}
+	
+	public synchronized double getMaxCarTurnAmountDegrees(Minecart car, double normalAmount){
+		double m = normalAmount;
+		for (CarTurningModifier mod : carRotMods.values()) {
+			m = mod.getModifiedTurningSpeed(car, m);
+		}
+		return m;
 	}
 
 	public synchronized Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {

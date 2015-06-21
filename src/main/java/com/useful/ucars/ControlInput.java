@@ -71,6 +71,7 @@ public class ControlInput {
 		}
 		
 		smooth.updateAccelerationFactor(accMod); //Update onto the Acceleration meta (Which does all the calculation for smooth accelerating) what the API wants in terms of accelerating speed - Allows it to be dynamic
+		smooth.updateDecelerationFactor(decMod);
 		
 		return smooth.getFactor(dir); //Get the acceleration factor
 	}

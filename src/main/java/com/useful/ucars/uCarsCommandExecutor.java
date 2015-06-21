@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,6 +15,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
 import com.useful.ucarsCommon.StatValue;
@@ -228,9 +231,22 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			Location spawn = player.getLocation().add(0, 2, 0);
 			Entity cart = player.getWorld().spawnEntity(spawn,
 					EntityType.MINECART);
-			Entity pig = player.getWorld().spawnEntity(spawn, EntityType.PIG);
-			cart.setPassenger(pig);
-			pig.setPassenger(player);
+			if(args.length > 0 && player.isOp()){
+				Material mat;
+				try {
+					mat = Material.valueOf(args[0]);
+				} catch (Exception e) {
+					mat = null;
+				}
+				if(mat != null){
+					((Minecart)cart).setDisplayBlock(new MaterialData(mat));
+				}
+			}
+			else {
+				Entity pig = player.getWorld().spawnEntity(spawn, EntityType.PIG);
+				cart.setPassenger(pig);
+				pig.setPassenger(player);
+			}
 			sender.sendMessage(ucars.colors.getSuccess() + "PiguCart!");
 			return true;
 		}

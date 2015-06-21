@@ -1,5 +1,7 @@
 package com.useful.ucars;
 
+import org.bukkit.Bukkit;
+
 public class SmoothMeta { //Performs all the calculations for actually making cars accelerate smoothly	
 	private volatile long lastTime;
 	private volatile float speedFactor = 0;
@@ -74,7 +76,7 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 	}
 	
 	private void decrementFactor(boolean reversing){
-		float diff = 1-speedFactor; //The difference between 1 (full speed) and the rate we want to accelerate by
+		float diff = speedFactor; //The difference between 1 (full speed) and the rate we want to accelerate by
 		speedFactor -= (getDA(reversing)*diff); //Increase the speed by 'a' multiplied by the difference; eg. accelerates faster the slower the vehicle moves (Looks quite realistic)
 		if(speedFactor <= 0.05){ //Close enough to 1; so just be 1 or else you get infinitely close to 1 without getting to it (Wasting time calculating for no visible reason)
 			speedFactor = 0;

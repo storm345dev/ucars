@@ -59,6 +59,7 @@ public class ucars extends JavaPlugin {
 	public static boolean forceRaceControls = false;
 	public static boolean smoothDrive = true;
 	public static boolean playersIgnoreTrafficLights = false;
+	public static boolean turningCircles = true;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -358,6 +359,10 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.smooth")) {
 				config.set("general.cars.smooth", true);
 			}
+			if (!config.contains("general.cars.turningCircles")) {
+				config.set("general.cars.turningCircles", true);
+			}
+			turningCircles = config.getBoolean("general.cars.turningCircles");
 			if (!config.contains("general.cars.effectBlocks.enable")) {
 				config.set("general.cars.effectBlocks.enable", true);
 			}
