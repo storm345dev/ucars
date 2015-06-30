@@ -1,6 +1,5 @@
 package com.useful.ucars;
 
-import org.bukkit.Bukkit;
 
 public class SmoothMeta { //Performs all the calculations for actually making cars accelerate smoothly	
 	private volatile long lastTime;
@@ -14,6 +13,10 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 		this.speedFactor = 0;
 		this.accFac = accFac;
 		this.decFac = decFac;
+	}
+	
+	public float getCurrentSpeedFactor(){
+		return this.speedFactor;
 	}
 	
 	public CarDirection getDirection(){

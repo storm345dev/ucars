@@ -49,7 +49,6 @@ import org.bukkit.util.Vector;
 import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
-import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucarsCommon.StatValue;
 
@@ -738,10 +737,40 @@ public class uCarsListener implements Listener {
 															// fixes
 															// controls for
 															// 1.6
+		float a = 1;
 		if(ucars.smoothDrive){ //If acceleration is enabled
-			float a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+			a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
 			travel.setX(travel.getX() * a); //Multiple only x
 			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
+		}
+		
+		Vector dirVec = travel.clone().setY(0).normalize();
+		/*try {
+			dirVec = (Vector) (car.hasMetadata("ucarsSteeringDir") ? car.getMetadata("ucarsSteeringDir").get(0).value() : travel.clone().normalize());
+		} catch (Exception e2) {
+			dirVec = travel.clone().normalize();
+		}*/
+		if(dirVec.lengthSquared() > 0.01 && /*dirVec.lengthSquared() > 0.1 && Math.abs(a) > 0.2 && */event.getDir() != null && !event.getDir().equals(CarDirection.NONE)){
+			Location dirLoc = new Location(car.getWorld(), 0, 0, 0); //Make sure car always faces the RIGHT "forwards"
+			if(event.getDir().equals(CarDirection.BACKWARDS)){
+				dirVec = dirVec.multiply(-1);
+			}
+			dirLoc.setDirection(dirVec);
+			Bukkit.broadcastMessage(dirLoc.getYaw()+"");
+			float yaw = dirLoc.getYaw()+90;
+			/*if(event.getDir().equals(CarDirection.BACKWARDS)){
+				yaw += 180;
+			}*/
+			if(a < 0){
+				yaw -= 180;
+			}
+			while(yaw < 0){
+				yaw = 360 + yaw;
+			}
+			while(yaw >= 360){
+				yaw = yaw - 360;
+			}
+			CartOrientationUtil.setYaw(car, yaw);
 		}
 		
 		double multiplier = defaultSpeed;
@@ -1343,6 +1372,14 @@ public class uCarsListener implements Listener {
 			loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 			final Minecart car = (Minecart) event.getPlayer().getWorld()
 					.spawnEntity(loc, EntityType.MINECART);
+			float yaw = event.getPlayer().getLocation().getYaw()+90;
+			if(yaw < 0){
+				yaw = 360 + yaw;
+			}
+			else if(yaw >= 360){
+				yaw = yaw - 360;
+			}
+			CartOrientationUtil.setYaw(car, yaw);
 			updateCarHealthHandler(car, getCarHealthHandler(car));
 			/*
 			 * Location carloc = car.getLocation();

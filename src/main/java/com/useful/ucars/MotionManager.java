@@ -152,6 +152,9 @@ public class MotionManager {
 			//Rotate 'carDirection' vector according to where they're looking; max of rotMod degrees
 			float pYaw = (float) Math.toDegrees(Math.atan2(plaD.getX() , -plaD.getZ())); //Calculate yaw from 'player direction' vector
 			float cYaw = (float) Math.toDegrees(Math.atan2(carDirection.getX() , -carDirection.getZ())); //Calculate yaw from 'carDirection' vector
+			if(ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) && ControlInput.getCurrentAccel(player) > 0){
+				pYaw += 180;
+			}
 			float yawDiff = pYaw - cYaw;
 			if(yawDiff <= -180){
 				yawDiff += 360;
@@ -171,7 +174,7 @@ public class MotionManager {
 		if(keyboardSteering || ucars.turningCircles){
 			car.removeMetadata("ucarsSteeringDir", ucars.plugin);
 			car.setMetadata("ucarsSteeringDir", new StatValue(carDirection.normalize(), ucars.plugin));
-			plaD = carDirection;
+			plaD = carDirection.clone();
 		}
 		if (forwards) {
 			double x = plaD.getX() / d;
