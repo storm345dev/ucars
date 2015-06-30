@@ -756,7 +756,6 @@ public class uCarsListener implements Listener {
 				dirVec = dirVec.multiply(-1);
 			}
 			dirLoc.setDirection(dirVec);
-			Bukkit.broadcastMessage(dirLoc.getYaw()+"");
 			float yaw = dirLoc.getYaw()+90;
 			/*if(event.getDir().equals(CarDirection.BACKWARDS)){
 				yaw += 180;
