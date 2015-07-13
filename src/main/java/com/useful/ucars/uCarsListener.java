@@ -770,6 +770,11 @@ public class uCarsListener implements Listener {
 				yaw = yaw - 360;
 			}
 			CartOrientationUtil.setYaw(car, yaw);
+			WrapperPlayServerEntityLook p = new WrapperPlayServerEntityLook();
+			p.setEntityID(car.getEntityId());
+			p.setYaw(yaw);
+			p.setPitch(car.getLocation().getPitch());
+			p.sendPacket(player);
 		}
 		
 		double multiplier = defaultSpeed;
