@@ -1202,9 +1202,14 @@ public class uCarsListener implements Listener {
 		if (!isACar(cart)) {
 			return;
 		}
-		Entity ent = event.getEntity();
+		Entity ent = event.getEntity(); //copCar
 		if((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npc"))
 				|| (cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))){
+			event.setCancelled(true);
+			event.setCollisionCancelled(false);
+			return;
+		}
+		if(cart.hasMetadata("copCar")){ 
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
@@ -1219,6 +1224,14 @@ public class uCarsListener implements Listener {
 		}
 		if(passenger.equals(ent)){
 			return; //Player being hit is in the car
+		}
+		
+		if(ent.hasMetadata("copCar") || (ent.getVehicle() != null && ent.getVehicle().hasMetadata("copCar"))){
+			if(!(passenger instanceof Player)){
+				event.setCancelled(true);
+				event.setCollisionCancelled(false);
+				return;
+			}
 		}
 		
 		if(ent.hasMetadata("hitByLast")){
