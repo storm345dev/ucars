@@ -1203,6 +1203,12 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Entity ent = event.getEntity();
+		if((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npc"))
+				|| (cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))){
+			event.setCancelled(true);
+			event.setCollisionCancelled(false);
+			return;
+		}
 		if (cart.getPassenger() == null) { //Don't both to calculate with PiguCarts, etc...
 			return;
 		}
