@@ -276,10 +276,12 @@ public class uCarsListener implements Listener {
 		String underMat = b.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
 		String underUnderMat = b.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
 		List<String> checks = new ArrayList<String>();
-		checks.add("POWERED_RAIL");
-		checks.add("RAILS");
-		checks.add("DETECTOR_RAIL");
-		checks.add("ACTIVATOR_RAIL");
+		if(ucars.ignoreRails){
+			checks.add("POWERED_RAIL");
+			checks.add("RAILS");
+			checks.add("DETECTOR_RAIL");
+			checks.add("ACTIVATOR_RAIL");
+		}
 		if(checks.contains(mat) 
 				|| checks.contains(underMat) 
 				|| checks.contains(underUnderMat)){
@@ -1312,7 +1314,11 @@ public class uCarsListener implements Listener {
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
 				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-				if(driver != null){
+				
+				if(driver != null && driver.equals(ent)){
+					
+				}
+				else if(driver != null){
 					((Damageable) ent).damage(pDmg, driver);
 				}
 				else {
@@ -1361,8 +1367,8 @@ public class uCarsListener implements Listener {
 		if (event.getPlayer().getItemInHand().getType() == Material.MINECART) {
 			// Its a minecart!
 			Material iar = block.getType();
-			if (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
-					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL) {
+			if (ucars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
+					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
 			if (!PlaceManager.placeableOn(iar.name().toUpperCase(), block.getData())) {

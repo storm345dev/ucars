@@ -47,6 +47,7 @@ public class ucars extends JavaPlugin {
 	public static Boolean vault = false;
 	public static Economy economy = null;
 	public static Colors colors;
+	public static boolean ignoreRails = true;
 	public Boolean protocolLib = false;
 	public Object protocolManager = null;
 	public ArrayList<ItemStack> ufuelitems = new ArrayList<ItemStack>();
@@ -386,6 +387,12 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.turret")) {
 				config.set("general.cars.turret", null); //Remove if set
+			}
+			if (!config.contains("general.cars.ignoreVehiclesOnRails")) {
+				config.set("general.cars.ignoreVehiclesOnRails", true);
+			}
+			else {
+				ucars.ignoreRails = config.getBoolean("general.cars.ignoreVehiclesOnRails");
 			}
 			if (!config.contains("general.cars.jumpBlock")) {
 				config.set("general.cars.jumpBlock", new String[]{"IRON_BLOCK"});
