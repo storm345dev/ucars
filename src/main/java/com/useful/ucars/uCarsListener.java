@@ -1287,8 +1287,8 @@ public class uCarsListener implements Listener {
 						color = ChatColor.RED;
 					}
 					((Player) cart.getPassenger())
-							.sendMessage(ChatColor.RED + "-" + dmg + "[crash]"
-									+ color + " (" + left + ")");
+							.sendMessage(ChatColor.RED + "-" + ((int)dmg) + "[crash]"
+									+ color + " (" + ((int)left) + ")");
 				}
 				health.damage(dmg, cart);
 			}

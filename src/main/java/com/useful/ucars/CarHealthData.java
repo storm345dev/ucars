@@ -72,7 +72,7 @@ public class CarHealthData implements MetadataValue {
 	}
 
 	public void damage(double amount, Minecart entity) {
-		health = this.health - amount;
+		health = ((int)this.health - amount);
 		if (health <= 0) {
 			die(entity);
 		}
@@ -80,7 +80,7 @@ public class CarHealthData implements MetadataValue {
 	}
 	
 	public void damage(double amount, Minecart entity, Player whoHurt) {
-		health = this.health - amount;
+		health = ((int)this.health - amount);
 		if (health <= 0) {
 			die(entity, whoHurt);
 		}
@@ -88,7 +88,7 @@ public class CarHealthData implements MetadataValue {
 	}
 
 	public void setHealth(double amount) {
-		this.health = amount;
+		this.health = ((int)amount);
 	}
 
 	public double getHealth() {
