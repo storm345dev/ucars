@@ -34,7 +34,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.FieldAccessException;
 import com.useful.uCarsAPI.uCarsAPI;
 
 public class ucars extends JavaPlugin {
@@ -61,6 +60,7 @@ public class ucars extends JavaPlugin {
 	public static boolean smoothDrive = true;
 	public static boolean playersIgnoreTrafficLights = false;
 	public static boolean turningCircles = true;
+	public static boolean fireUpdateEvent = false;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -402,6 +402,12 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.teleportBlock")) {
 				config.set("general.cars.teleportBlock", new String[]{"STAINED_CLAY:2"});
+			}
+			if(!config.contains("general.cars.fireUpdateEvent")){
+				config.set("general.cars.fireUpdateEvent", fireUpdateEvent);
+			}
+			else {
+				fireUpdateEvent = config.getBoolean("general.cars.fireUpdateEvent");
 			}
 			if (!config.contains("general.cars.trafficLights.enable")) {
 				config.set("general.cars.trafficLights.enable", true);

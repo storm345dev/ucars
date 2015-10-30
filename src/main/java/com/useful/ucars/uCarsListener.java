@@ -483,7 +483,14 @@ public class uCarsListener implements Listener {
 				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
 				vehicle.setMetadata("car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
-				ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
+				/*ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
+*/
+				if(!ucars.fireUpdateEvent){
+					onUcarUpdate(evt);
+				}
+				else {
+					ucars.plugin.getServer().getPluginManager().callEvent(evt);
+				}
 				/*return;*/
 			}
 		}	
@@ -675,6 +682,10 @@ public class uCarsListener implements Listener {
 		}
 		
 		//Valid vehicle!
+		
+		/*Block next = car.getLocation().clone().add(event.getTravelVector().clone().setY(0)).getBlock();
+		Block underNext = next.getRelative(BlockFace.DOWN);
+		Block underunderNext = next.getRelative(BlockFace.DOWN, 2);*/
 		
 		CarHealthData health = this.getCarHealthHandler(car);
 		Boolean recalculateHealth = false;

@@ -119,7 +119,12 @@ public class ControlInput {
 		StatValue controlScheme = api.getUcarMeta(ucars.plugin, "car.controls", car.getUniqueId());
 		if(controlScheme == null && !ucars.forceRaceControls){
 			//Default control scheme
-			ucars.plugin.getServer().getPluginManager().callEvent(event);
+			if(!ucars.fireUpdateEvent){
+				ucars.listener.onUcarUpdate(event);
+			}
+			else {
+				ucars.plugin.getServer().getPluginManager().callEvent(event);
+			}
 			return;
 		}
 		else if (ucars.forceRaceControls || ((String)controlScheme.getValue()).equalsIgnoreCase("race")){
