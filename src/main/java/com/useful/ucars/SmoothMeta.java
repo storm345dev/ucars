@@ -15,6 +15,11 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 		this.decFac = decFac;
 	}
 	
+	
+	public void setCurrentSpeedFactor(float sf){
+		this.speedFactor = sf;
+	}
+	
 	public float getCurrentSpeedFactor(){
 		return this.speedFactor;
 	}

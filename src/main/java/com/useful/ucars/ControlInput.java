@@ -73,6 +73,43 @@ public class ControlInput {
 		return smooth.getCurrentSpeedFactor();
 	}
 	
+	public static void setAccel(Player player, float accel){
+		if(!ucars.smoothDrive){ //Return "1" (No multiplier) if accelerating vehicles is disabled
+			return;
+		}
+		
+		SmoothMeta smooth = null; //Metadata saved to the player for tracking their acceleration
+		if(!player.hasMetadata("ucars.smooth")){ //Setting the metadata onto the player if it's not already set
+			float accMod = uCarsAPI.getAPI().getAcceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+			float decMod = uCarsAPI.getAPI().getDeceleration(player, 1);
+			smooth = new SmoothMeta(accMod, decMod);
+			player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+		}
+		else { //Metadata already set, lets attempt to read it
+			try {
+				Object o = player.getMetadata("ucars.smooth").get(0).value(); //Get the smooth meta set on the player
+				if(o instanceof SmoothMeta){
+					smooth = (SmoothMeta) o;
+				}
+				else { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
+					float accMod = uCarsAPI.getAPI().getAcceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+					float decMod = uCarsAPI.getAPI().getDeceleration(player, 1);
+					smooth = new SmoothMeta(accMod, decMod);
+					player.removeMetadata("ucars.smooth", ucars.plugin);
+					player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+				}
+			} catch (Exception e) { //Meta incorrectly set, plugin conflict? Just overwriting it with out own, correct, meta
+				float accMod = uCarsAPI.getAPI().getAcceleration(player, 1); //The multiplier to multiply our acceleration by from the API (Eg. another plugin can say "0.5" as the value here for accelerating at half the usual speed)
+				float decMod = uCarsAPI.getAPI().getDeceleration(player, 1);
+				smooth = new SmoothMeta(accMod, decMod);
+				player.removeMetadata("ucars.smooth", ucars.plugin);
+				player.setMetadata("ucars.smooth", new StatValue(smooth, ucars.plugin));
+			}
+		}
+		
+		smooth.setCurrentSpeedFactor(accel);
+	}
+	
 	public static float getAccel(Player player, CarDirection dir){ //Returns a multiplier to multiply with the x and z of the movement vector so the car appears to accelerate smoothly
 		if(!ucars.smoothDrive){ //Return "1" (No multiplier) if accelerating vehicles is disabled
 			return 1;

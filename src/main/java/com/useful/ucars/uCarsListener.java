@@ -70,7 +70,7 @@ public class uCarsListener implements Listener {
 	private double damage_water = 0;
 	private double damage_lava = 10;
 	private double damage_cactus = 5;
-	private double uCar_jump_amount = 20;
+	private double uCar_jump_amount = 5;
 	private double crash_damage = 0;
 	private double hitby_crash_damage = 0;
 	
@@ -119,6 +119,12 @@ public class uCarsListener implements Listener {
 		ignoreJump.add("DAYLIGHT_DETECTOR"); // daylight detector
 		ignoreJump.add("SIGN_POST"); // sign
 		ignoreJump.add("WALL_SIGN"); // sign on the side of a block
+		ignoreJump.add(Material.ACACIA_FENCE.name());
+		ignoreJump.add(Material.ACACIA_FENCE_GATE.name());
+		ignoreJump.add(Material.BIRCH_FENCE.name());
+		ignoreJump.add(Material.BIRCH_FENCE_GATE.name());
+		ignoreJump.add(Material.JUNGLE_FENCE.name());
+		ignoreJump.add(Material.JUNGLE_FENCE_GATE.name());
 		/*ignoreJump.add("CARPET"); // carpet
 */		
 		usePerms = ucars.config.getBoolean("general.permissions.enable");
@@ -817,7 +823,8 @@ public class uCarsListener implements Listener {
 			multiplier = multiplier * event.getDivider();
 		}
 		
-		travel = travel.multiply(multiplier);
+		travel = travel.setX(travel.getX()*multiplier);
+		travel = travel.setZ(travel.getZ()*multiplier); //TODO Test if this breaks block climbing or is ok
 		if (usePerms) {
 			if (!player.hasPermission("ucars.cars")) {
 				player.sendMessage(ucars.colors.getInfo()
@@ -826,7 +833,7 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		if (normalblock.getType() != Material.AIR //Air
+		/*if (normalblock.getType() != Material.AIR //Air
 				&& normalblock.getType() != Material.WATER //Water
 				&& normalblock.getType() != Material.STATIONARY_WATER //Water
 				&& normalblock.getType() != Material.STEP //Slab
@@ -835,8 +842,8 @@ public class uCarsListener implements Listener {
 				&& !normalblock.getType().name().toLowerCase()
 						.contains("stairs")) {
 			// Stuck in a block
-			car.setVelocity(new Vector(0, 1.1, 0));
-		}
+			car.setVelocity(new Vector(0, 0.5, 0));
+		}*/
 		
 		Location before = car.getLocation();
 		float dir = player.getLocation().getYaw();
@@ -853,6 +860,15 @@ public class uCarsListener implements Listener {
 		}
 		before.add(new Vector(fx, faceDir.getModY(), fz));
 		Block block = before.getBlock(); //Block we're driving into
+		Block above = block.getRelative(BlockFace.UP);
+		
+		if((!(block.isEmpty() || block.isLiquid())
+				&& !(above.isEmpty() || above.isLiquid())
+				&& !(block.getType().name().toLowerCase().contains("step"))
+				&& !(above.getType().name().toLowerCase().contains("step")))
+		){
+			ControlInput.setAccel(player, 0); //They hit a wall head on
+		}
 		
 		// Calculate collision health
 		if (block.getType().equals(Material.CACTUS)) {
@@ -945,9 +961,18 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		if (travel.getY() < 0) { // Fix falling into ground and also allow use
-									// custom gravity values (Eg. better jumping)
-			double newy = travel.getY() + 2d;
+		if (travel.getY() < 0) { //Custom gravity
+			double a1 = multiplier*a;
+			if(a1 < 1){
+				a1 = 1;
+			}
+			double newy = travel.getY() - (Math.abs(travel.getY())*0.02d)/a1;
+			if(newy < 2){
+				newy = 2;
+			}
+			if(newy > 0){
+				newy = -0.2;
+			}
 			travel.setY(newy);
 		}
 		
@@ -1105,10 +1130,10 @@ public class uCarsListener implements Listener {
 					|| bidU == Material.DOUBLE_STEP || inStairs) { //Clear air above
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
-				double y = 7;
+				double y = 1.1;
 				if (block.getType().name().toLowerCase().contains("step")) {
 					calculated = true;
-					y = 8;
+					y = 1.2;
 				}
 				if (carBlock.name().toLowerCase().contains("step")) { // In
 																		// a
@@ -1119,7 +1144,7 @@ public class uCarsListener implements Listener {
 																		// to
 																		// jump
 					calculated = true;
-					y = 8;
+					y = 0.6;
 				}
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
@@ -1129,7 +1154,7 @@ public class uCarsListener implements Listener {
 								.contains(Pattern.quote("stairs"))
 						|| inStairs) {
 					calculated = true;
-					y = 2.5;
+					y = 0.6;
 					// ascend stairs
 				}
 				Boolean ignore = false;
@@ -1151,7 +1176,7 @@ public class uCarsListener implements Listener {
 			}
 			if (fly && cont) {
 				// Make the car ascend (easter egg, slab elevator)
-				travel.setY(0.8); // Make a little easier
+				travel.setY(0.1); // Make a little easier
 				car.setMetadata("car.ascending",
 						new StatValue(null, plugin));
 			}
@@ -1161,7 +1186,7 @@ public class uCarsListener implements Listener {
 		} else {
 			if (fly) {
 				// Make the car ascend (easter egg, slab elevator)
-				travel.setY(0.8); // Make a little easier
+				travel.setY(0.1); // Make a little easier
 				car.setMetadata("car.ascending",
 						new StatValue(null, plugin));
 			}
