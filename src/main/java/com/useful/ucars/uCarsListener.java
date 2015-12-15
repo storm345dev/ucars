@@ -1232,6 +1232,9 @@ public class uCarsListener implements Listener {
 	 */
 	@EventHandler
 	void hitByCar(VehicleEntityCollisionEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		Vehicle veh = event.getVehicle();
 		if (!(veh instanceof Minecart)) {
 			return;
