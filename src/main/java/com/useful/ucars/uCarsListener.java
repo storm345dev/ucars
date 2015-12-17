@@ -38,6 +38,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
@@ -412,7 +413,13 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		
+		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
 		event.getExited().removeMetadata("ucars.smooth", ucars.plugin);;
+	}
+	
+	@EventHandler
+	void carRemove(VehicleDestroyEvent event){
+		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
 	}
 
 	/*
@@ -1648,6 +1655,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		cart.setMetadata("car.destroyed", new StatValue(true, ucars.plugin));
+		cart.removeMetadata("car.vec", ucars.plugin);
 		cart.eject();
 		Location loc = cart.getLocation();
 		cart.remove();
