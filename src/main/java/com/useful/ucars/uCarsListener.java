@@ -51,6 +51,7 @@ import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
 import com.useful.ucars.controls.ControlSchemeManager;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
 
 public class uCarsListener implements Listener {
@@ -204,7 +205,7 @@ public class uCarsListener implements Listener {
 	 */
 	public Vector calculateCarStats(Minecart car, Player player,
 			Vector velocity, double currentMult) {
-		if (car.hasMetadata("car.frozen")) {
+		if (UEntityMeta.hasMetadata(car, "car.frozen")) {
 			velocity = new Vector(0, 0, 0);
 			return velocity;
 		}
@@ -274,7 +275,7 @@ public class uCarsListener implements Listener {
 	 * Checks if a minecart is a car (Public for traincarts support)
 	 */
 	public boolean isACar(Minecart cart) {
-		if(cart.hasMetadata("ucars.ignore")){
+		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
 		}
 		Location loc = cart.getLocation();
@@ -406,19 +407,22 @@ public class uCarsListener implements Listener {
 	
 	@EventHandler
 	void carExit(VehicleExitEvent event){
-		if(event.getVehicle().hasMetadata("safeExit.ignore")){
+		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
+		UEntityMeta.removeMetadata(event.getExited(), "ucars.smooth");
+		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
+		event.getExited().removeMetadata("ucars.smooth", ucars.plugin);
+		if(event.getVehicle().hasMetadata("safeExit.ignore")
+				|| UEntityMeta.hasMetadata(event.getVehicle(), "safeExit.ignore")){
 			return;
 		}
 		if(!(event.getVehicle() instanceof Minecart) || !isACar((Minecart) event.getVehicle())){
 			return;
 		}
-		
-		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
-		event.getExited().removeMetadata("ucars.smooth", ucars.plugin);;
 	}
 	
 	@EventHandler
 	void carRemove(VehicleDestroyEvent event){
+		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
 		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
 	}
 
@@ -488,14 +492,14 @@ public class uCarsListener implements Listener {
 		}
 		
 		if(!(event instanceof ucarUpdateEvent)){ //If it's just the standard every tick vehicle update event...
-			if(vehicle.hasMetadata("car.vec")){ //If it has the 'car.vec' meta, we need to use RACE CONTROLS on this vehicle
-				ucarUpdateEvent evt = (ucarUpdateEvent) vehicle.getMetadata("car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with a better connection fire more control events and move marginally faster)
+			if(UEntityMeta.hasMetadata(vehicle, "car.vec")){ //If it has the 'car.vec' meta, we need to use RACE CONTROLS on this vehicle
+				ucarUpdateEvent evt = (ucarUpdateEvent) UEntityMeta.getMetadata(vehicle, "car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with a better connection fire more control events and move marginally faster)
 				evt.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
 				evt.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
-				vehicle.removeMetadata("car.vec", ucars.plugin); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
+				UEntityMeta.removeMetadata(vehicle, "car.vec"); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
 				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
-				vehicle.setMetadata("car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
+				UEntityMeta.setMetadata(vehicle, "car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
 				/*ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
 */
 				if(!ucars.fireUpdateEvent){
@@ -527,18 +531,18 @@ public class uCarsListener implements Listener {
 		Vector vel = car.getVelocity();
 		
 		if (car.getVelocity().getY() > 0.1
-				&& !car.hasMetadata("car.falling")
-				&& !car.hasMetadata("car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping a block)
+				&& !UEntityMeta.hasMetadata(car, "car.falling")
+				&& !UEntityMeta.hasMetadata(car, "car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping a block)
 														// in most occasions
-			if (car.hasMetadata("car.jumping")) {
+			if (UEntityMeta.hasMetadata(car, "car.jumping")) {
 				vel.setY(2.5);
-				car.removeMetadata("car.jumping", plugin);
-			} else if (car.hasMetadata("car.jumpFull")) {
+				UEntityMeta.removeMetadata(car, "car.jumping");
+			} else if (UEntityMeta.hasMetadata(car, "car.jumpFull")) {
 				// Jumping a full block
 				if (car.getVelocity().getY() > 10) {
 					vel.setY(5);
 				}
-				car.removeMetadata("car.jumpFull", plugin);
+				UEntityMeta.removeMetadata(car, "car.jumpFull");
 			} else {
 				vel.setY(0);
 			}
@@ -547,28 +551,28 @@ public class uCarsListener implements Listener {
 		
 		// Make jumping work when not moving
 		// Calculate jumping gravity
-		if(car.hasMetadata("car.jumpUp")){
-			double amt = (Double) car.getMetadata("car.jumpUp").get(0).value();
-			car.removeMetadata("car.jumpUp", plugin);
+		if(UEntityMeta.hasMetadata(car, "car.jumpUp")){
+			double amt = (Double) UEntityMeta.getMetadata(car, "car.jumpUp").get(0).value();
+			UEntityMeta.removeMetadata(car, "car.jumpUp");
 			if(amt >= 1.5){
 				double y = amt * 0.1;
-				car.setMetadata("car.jumpUp", new StatValue(amt-y, plugin));
+				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(amt-y, plugin));
 				vel.setY(y);
 				car.setVelocity(vel);
 				return; //We don't want any further calculations
 			}
 			else{ //At the peak of ascent
-				car.setMetadata("car.falling", new StatValue(0.01, plugin));
+				UEntityMeta.setMetadata(car, "car.falling", new StatValue(0.01, plugin));
 				//car.setMetadata("car.fallingPause", new StatValue(1, plugin));
 			}
 			
 		}
-		if (car.hasMetadata("car.falling")) {
-			double gravity = (Double) car.getMetadata("car.falling").get(0).value();
+		if (UEntityMeta.hasMetadata(car, "car.falling")) {
+			double gravity = (Double) UEntityMeta.getMetadata(car, "car.falling").get(0).value();
 			double newGravity = gravity + (gravity * 0.6);
-			car.removeMetadata("car.falling", plugin);
+			UEntityMeta.removeMetadata(car, "car.falling");
 			if ((gravity <= 0.6)) {
-				car.setMetadata("car.falling", new StatValue(
+				UEntityMeta.setMetadata(car, "car.falling", new StatValue(
 						newGravity, ucars.plugin));
 				vel.setY(-(gravity * 1.333 + 0.2d));
 				car.setVelocity(vel);
@@ -652,6 +656,7 @@ public class uCarsListener implements Listener {
 		Vehicle vehicle = event.getVehicle();
 		
 		if(event.getReadCount() > 2){
+			UEntityMeta.removeMetadata(vehicle, "car.vec");
 			vehicle.removeMetadata("car.vec", ucars.plugin);
 		}
 		
@@ -704,15 +709,15 @@ public class uCarsListener implements Listener {
 		Boolean recalculateHealth = false;
 		
 		if (car.getVelocity().getY() > 0.01
-				&& !car.hasMetadata("car.falling")
-				&& !car.hasMetadata("car.ascending")) {
+				&& !UEntityMeta.hasMetadata(car, "car.falling")
+				&& !UEntityMeta.hasMetadata(car, "car.ascending")) {
 			modY = false;
 		}
-		if (car.hasMetadata("car.jumping")) {
-			if (!car.hasMetadata("car.ascending")) {
+		if (UEntityMeta.hasMetadata(car, "car.jumping")) {
+			if (!UEntityMeta.hasMetadata(car, "car.ascending")) {
 				modY = false;
 			}
-			car.removeMetadata("car.jumping", plugin);
+			UEntityMeta.removeMetadata(car, "car.jumping");
 		}
 		car.setMaxSpeed(5); // Don't allow game breaking speed - but faster
 							// than default
@@ -1000,7 +1005,7 @@ public class uCarsListener implements Listener {
 					|| plugin.isBlockEqualToConfigIds(
 							jumpBlock, underunderblock)) {
 				double y = uCar_jump_amount;
-				car.setMetadata("car.jumpUp", new StatValue(uCar_jump_amount, plugin));
+				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(uCar_jump_amount, plugin));
 				travel.setY(y);
 				car.setVelocity(travel);
 			}
@@ -1021,10 +1026,11 @@ public class uCarsListener implements Listener {
 					String[] lines = s.getLines();
 					if (lines[0].equalsIgnoreCase("[Teleport]")) {
 						Boolean raceCar = false;
-						if (car.hasMetadata("kart.racing")) {
+						if (car.hasMetadata("kart.racing")
+								|| UEntityMeta.hasMetadata(car, "kart.racing")) {
 							raceCar = true;
 						}
-						car.setMetadata("safeExit.ignore", new StatValue(null, plugin));
+						UEntityMeta.setMetadata(car, "safeExit.ignore", new StatValue(null, plugin));
 						car.eject();
 						
 						UUID carId = car.getUniqueId();
@@ -1057,11 +1063,16 @@ public class uCarsListener implements Listener {
 						}
 						if (valid) {
 							List<MetadataValue> metas = null;
-							if (player.hasMetadata("car.stayIn")) {
+							if (player.hasMetadata("car.stayIn") || UEntityMeta.hasMetadata(player, "car.stayIn")) {
 								metas = player.getMetadata("car.stayIn");
+								List<MetadataValue> others = UEntityMeta.getMetadata(player, "car.stayIn");
+								if(others != null){
+									metas.addAll(others);
+								}
 								for (MetadataValue val : metas) {
 									player.removeMetadata("car.stayIn",
 											val.getOwningPlugin());
+									UEntityMeta.removeMetadata(player, "car.stayIn");
 								}
 							}
 							Location toTele = new Location(s.getWorld(), x,
@@ -1073,10 +1084,9 @@ public class uCarsListener implements Listener {
 							car = (Minecart) s.getWorld().spawnEntity(
 									toTele, EntityType.MINECART);
 							final Minecart v = car;
-							car.setMetadata("carhealth", health);
+							UEntityMeta.setMetadata(car, "carhealth", health);
 							if (raceCar) {
-								car.setMetadata("kart.racing",
-										new StatValue(null, plugin));
+								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
 							}
 							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
@@ -1099,6 +1109,7 @@ public class uCarsListener implements Listener {
 								car.setVelocity(travel);
 								if (metas != null) {
 									for (MetadataValue val : metas) {
+										UEntityMeta.setMetadata(player, "car.stayIn", val);
 										player.setMetadata("car.stayIn", val);
 									}
 								}
@@ -1124,8 +1135,8 @@ public class uCarsListener implements Listener {
 		if (carBlock.name().toLowerCase().contains("stairs")) {
 			inStairs = true;
 		}
-		if (car.hasMetadata("car.ascending")) {
-			car.removeMetadata("car.ascending", plugin);
+		if (UEntityMeta.hasMetadata(car, "car.ascending")) {
+			UEntityMeta.removeMetadata(car, "car.ascending");
 		}
 		// Make cars jump if needed
 		if (inStairs ||
@@ -1173,10 +1184,10 @@ public class uCarsListener implements Listener {
 					// Do ascent
 					travel.setY(y);
 					if (calculated) {
-						car.setMetadata("car.jumping", new StatValue(null,
+						UEntityMeta.setMetadata(car, "car.jumping", new StatValue(null,
 								plugin));
 					} else {
-						car.setMetadata("car.jumpFull", new StatValue(null,
+						UEntityMeta.setMetadata(car, "car.jumpFull", new StatValue(null,
 								plugin));
 					}
 				}
@@ -1184,8 +1195,7 @@ public class uCarsListener implements Listener {
 			if (fly && cont) {
 				// Make the car ascend (easter egg, slab elevator)
 				travel.setY(0.1); // Make a little easier
-				car.setMetadata("car.ascending",
-						new StatValue(null, plugin));
+				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
 			car.setVelocity(calculateCarStats(car, player, travel,
@@ -1194,8 +1204,7 @@ public class uCarsListener implements Listener {
 			if (fly) {
 				// Make the car ascend (easter egg, slab elevator)
 				travel.setY(0.1); // Make a little easier
-				car.setMetadata("car.ascending",
-						new StatValue(null, plugin));
+				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
 			car.setVelocity(calculateCarStats(car, player, travel,
@@ -1251,13 +1260,15 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Entity ent = event.getEntity(); //copCar
-		if((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npc"))
-				|| (cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))){
+		if(((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npc"))
+				|| UEntityMeta.hasMetadata(cart, "trade.npc") && UEntityMeta.hasMetadata(ent, "trade.npc"))
+				|| ((cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))
+						&& UEntityMeta.hasMetadata(cart, "trade.npc") && ent.getVehicle() != null && UEntityMeta.hasMetadata(ent.getVehicle(), "trade.npc"))){
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
 		}
-		if(cart.hasMetadata("copCar")){ 
+		if(cart.hasMetadata("copCar") || UEntityMeta.hasMetadata(cart, "copCar")){ 
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
@@ -1274,7 +1285,7 @@ public class uCarsListener implements Listener {
 			return; //Player being hit is in the car
 		}
 		
-		if(ent.hasMetadata("copCar") || (ent.getVehicle() != null && ent.getVehicle().hasMetadata("copCar"))){
+		if(ent.hasMetadata("copCar") || UEntityMeta.hasMetadata(ent, "copCar") || (ent.getVehicle() != null && (ent.getVehicle().hasMetadata("copCar") || UEntityMeta.hasMetadata(ent.getVehicle(), "copCar")))){
 			if(!(passenger instanceof Player)){
 				event.setCancelled(true);
 				event.setCollisionCancelled(false);
@@ -1282,22 +1293,22 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		if(ent.hasMetadata("hitByLast")){
+		if(UEntityMeta.hasMetadata(ent, "hitByLast")){
 			try {
-				long l = (Long) ent.getMetadata("hitByLast").get(0).value();
+				long l = (Long) UEntityMeta.getMetadata(ent, "hitByLast").get(0).value();
 				long pastTime = System.currentTimeMillis() - l;
 				if(pastTime < 500){
 					return; //Don't get hit by more than once at a time
 				}
 				else {
-					ent.removeMetadata("hitByLast", ucars.plugin);
+					UEntityMeta.removeMetadata(ent, "hitByLast");
 				}
 			} catch (Exception e) {
-				ent.removeMetadata("hitByLast", ucars.plugin);
+				UEntityMeta.removeMetadata(ent, "hitByLast");
 			}
 		}
-		ent.removeMetadata("hitByLast", ucars.plugin);
-		ent.setMetadata("hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
+		UEntityMeta.removeMetadata(ent, "hitByLast");
+		UEntityMeta.setMetadata(ent, "hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
 		double speed = cart.getVelocity().length() * 3.5;
 		if(passenger instanceof Villager){ //NPC car from UT
@@ -1651,11 +1662,12 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Minecart cart = event.getCar();
-		if(cart.hasMetadata("car.destroyed")){
+		if(cart.hasMetadata("car.destroyed") || UEntityMeta.hasMetadata(cart, "car.destroyed")){
 			return;
 		}
-		cart.setMetadata("car.destroyed", new StatValue(true, ucars.plugin));
+		UEntityMeta.setMetadata(cart, "car.destroyed", new StatValue(true, ucars.plugin));
 		cart.removeMetadata("car.vec", ucars.plugin);
+		UEntityMeta.removeMetadata(cart, "car.vec");
 		cart.eject();
 		Location loc = cart.getLocation();
 		cart.remove();
@@ -1873,15 +1885,15 @@ public class uCarsListener implements Listener {
 	}
 	
 	public void updateCarHealthHandler(Minecart car, CarHealthData handler){
-		car.removeMetadata("carhealth", ucars.plugin);
-		car.setMetadata("carhealth", new StatValue(handler, ucars.plugin));
+		UEntityMeta.removeMetadata(car, "carhealth");
+		UEntityMeta.setMetadata(car, "carhealth", new StatValue(handler, ucars.plugin));
 	}
 	
 	public CarHealthData getCarHealthHandler(final Minecart car){
 		CarHealthData health = null;
-		if (car.hasMetadata("carhealth")) {
+		if (UEntityMeta.hasMetadata(car, "carhealth")) {
 			try {
-				List<MetadataValue> vals = car.getMetadata("carhealth");
+				List<MetadataValue> vals = UEntityMeta.getMetadata(car, "carhealth");
 				for (MetadataValue val : vals) {
 					if (val.value() != null && val.value() instanceof CarHealthData) {
 						health = (CarHealthData) val.value();
@@ -1889,7 +1901,7 @@ public class uCarsListener implements Listener {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				car.removeMetadata("carhealth", ucars.plugin);
+				UEntityMeta.removeMetadata(car, "carhealth");
 				health = null;
 			}
 		}

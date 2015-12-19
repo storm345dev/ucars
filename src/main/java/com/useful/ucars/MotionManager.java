@@ -9,6 +9,7 @@ import org.bukkit.util.Vector;
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlScheme;
 import com.useful.ucars.controls.ControlSchemeManager;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
 
 public class MotionManager {
@@ -51,23 +52,24 @@ public class MotionManager {
 		Vector plaD = player.getEyeLocation().getDirection();
 		
 		if(jumping){
-			if(!player.hasMetadata("ucarsToggleControls")){
-				player.setMetadata("ucarsToggleControls", new StatValue(true, ucars.plugin));
+			if(!UEntityMeta.hasMetadata(player, "ucarsToggleControls")){
+				/*player.setMetadata("ucarsToggleControls", new StatValue(true, ucars.plugin));*/
+				UEntityMeta.setMetadata(player, "ucarsToggleControls", new StatValue(true, ucars.plugin));
 				if(ControlSchemeManager.isControlsLocked(player)){
 					player.sendMessage(ucars.colors.getError()+"Cannot toggle control scheme right now! (It's been locked by another plugin)");
 				}
 				else {
 					ControlSchemeManager.toggleControlScheme(player);
 					if(!ucars.turningCircles && ControlSchemeManager.getScheme(player).equals(ControlScheme.KEYBOARD)){
-						car.removeMetadata("ucarsSteeringDir", ucars.plugin);
-						car.setMetadata("ucarsSteeringDir", new StatValue(plaD.clone().setY(0).normalize(), ucars.plugin));
+						UEntityMeta.removeMetadata(car, "ucarsSteeringDir");
+						UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(plaD.clone().setY(0).normalize(), ucars.plugin));
 					}
 				}
 			}
 		}
 		else { // !jumping
-			if(player.hasMetadata("ucarsToggleControls")){
-				player.removeMetadata("ucarsToggleControls", ucars.plugin);
+			if(UEntityMeta.hasMetadata(player, "ucarsToggleControls")){
+				UEntityMeta.removeMetadata(player, "ucarsToggleControls");
 			}
 		}
 		
@@ -76,8 +78,8 @@ public class MotionManager {
 		
 		Vector carDirection = null;
 		try {
-			if(car.hasMetadata("ucarsSteeringDir")){
-				carDirection = (Vector) car.getMetadata("ucarsSteeringDir").get(0).value();
+			if(UEntityMeta.hasMetadata(car, "ucarsSteeringDir")/*car.hasMetadata("ucarsSteeringDir")*/){
+				carDirection = (Vector) UEntityMeta.getMetadata(car, "ucarsSteeringDir")/*car.getMetadata("ucarsSteeringDir")*/.get(0).value();
 			}
 		} catch (Exception e) {
 			carDirection = null;
@@ -87,8 +89,8 @@ public class MotionManager {
 		}
 		if(keyboardSteering || ucars.turningCircles){
 			try {
-				if(car.hasMetadata("ucarsSteeringDir")){
-					carDirection = (Vector) car.getMetadata("ucarsSteeringDir").get(0).value();
+				if(UEntityMeta.hasMetadata(car, "ucarsSteeringDir")){
+					carDirection = (Vector) UEntityMeta.getMetadata(car, "ucarsSteeringDir").get(0).value();
 				}
 			} catch (Exception e) {
 				carDirection = null;
@@ -132,7 +134,7 @@ public class MotionManager {
 			if (side < 0) {// do left action
 				if(!keyboardSteering){
 					doAction = true;
-					car.setMetadata("car.action", new StatValue(true, ucars.plugin));
+					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, ucars.plugin));
 				}
 				else {
 					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? rotMod : -rotMod);
@@ -140,8 +142,7 @@ public class MotionManager {
 			} else if (side > 0) {// do right action
 				if(!keyboardSteering){
 					doDivider = true;
-					car.setMetadata("car.braking",
-						new StatValue(true, ucars.plugin));
+					UEntityMeta.setMetadata(car, "car.action", new StatValue(true, ucars.plugin));
 				}
 				else {
 					carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -rotMod : rotMod);
@@ -172,21 +173,21 @@ public class MotionManager {
 			carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -yawDiff : yawDiff);
 		}
 		if(keyboardSteering || ucars.turningCircles){
-			car.removeMetadata("ucarsSteeringDir", ucars.plugin);
-			car.setMetadata("ucarsSteeringDir", new StatValue(carDirection.normalize(), ucars.plugin));
+			UEntityMeta.removeMetadata(car, "ucarsSteeringDir");
+			UEntityMeta.setMetadata(car, "ucarsSteeringDir", new StatValue(carDirection.normalize(), ucars.plugin));
 			plaD = carDirection.clone();
 		}
 		if (forwards) {
 			double x = plaD.getX() / d;
 			double z = plaD.getZ() / d;
 			if (!doDivider) {
-				if (car.hasMetadata("car.braking")) {
-					car.removeMetadata("car.braking", ucars.plugin);
+				if (UEntityMeta.hasMetadata(car, "car.braking")) {
+					UEntityMeta.removeMetadata(car, "car.braking");
 				}
 			}
 			if(!doAction){
-				if(car.hasMetadata("car.action")){
-					car.removeMetadata("car.action", ucars.plugin);
+				if (UEntityMeta.hasMetadata(car, "car.action")) {
+					UEntityMeta.removeMetadata(car, "car.action");
 				}
 			}
 			vec = new Vector(x, y, z);
@@ -207,8 +208,8 @@ public class MotionManager {
 			double x = plaD.getX() / d;
 			double z = plaD.getZ() / d;
 			if (!doDivider) {
-				if (car.hasMetadata("car.braking")) {
-					car.removeMetadata("car.braking", ucars.plugin);
+				if (UEntityMeta.hasMetadata(car, "car.braking")) {
+					UEntityMeta.removeMetadata(car, "car.braking");
 				}
 			}
 			x = 0 - x;

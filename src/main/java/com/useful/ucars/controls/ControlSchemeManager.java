@@ -3,6 +3,7 @@ package com.useful.ucars.controls;
 import org.bukkit.entity.Player;
 
 import com.useful.ucars.ucars;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
 
 public class ControlSchemeManager {
@@ -10,20 +11,20 @@ public class ControlSchemeManager {
 	public static final String CONTROL_LOCK_META = "ucarsControlsLocked";
 	
 	public static ControlScheme getScheme(Player player){
-		if(!player.hasMetadata(CONTROL_TYPE_META)){
+		if(!UEntityMeta.hasMetadata(player, CONTROL_TYPE_META)){
 			return ControlScheme.getDefault();
 		}
 		try {
-			return (ControlScheme) player.getMetadata(CONTROL_TYPE_META).get(0).value();
+			return (ControlScheme) UEntityMeta.getMetadata(player, CONTROL_TYPE_META).get(0).value();
 		} catch (Exception e) {
-			player.removeMetadata(CONTROL_TYPE_META, ucars.plugin);
+			UEntityMeta.removeMetadata(player, CONTROL_TYPE_META);
 			return ControlScheme.getDefault();
 		}
 	}
 	
 	public static void setControlScheme(Player player, ControlScheme scheme){
-		player.removeMetadata(CONTROL_TYPE_META, ucars.plugin);
-		player.setMetadata(CONTROL_TYPE_META, new StatValue(scheme, ucars.plugin));
+		UEntityMeta.removeMetadata(player, CONTROL_TYPE_META);
+		UEntityMeta.setMetadata(player, CONTROL_TYPE_META, new StatValue(scheme, ucars.plugin));
 	}
 	
 	public static ControlScheme toggleControlScheme(Player player){
@@ -34,13 +35,13 @@ public class ControlSchemeManager {
 	}
 	
 	public static boolean isControlsLocked(Player player){
-		return player.hasMetadata(CONTROL_LOCK_META);
+		return UEntityMeta.hasMetadata(player, CONTROL_LOCK_META);
 	}
 	
 	public static void setControlsLocked(Player player, boolean locked){
-		player.removeMetadata(CONTROL_LOCK_META, ucars.plugin);
+		UEntityMeta.removeMetadata(player, CONTROL_LOCK_META);
 		if(locked){
-			player.setMetadata(CONTROL_LOCK_META, new StatValue(null, ucars.plugin));
+			UEntityMeta.setMetadata(player, CONTROL_LOCK_META, new StatValue(null, ucars.plugin));
 		}
 	}
 }

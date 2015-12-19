@@ -35,6 +35,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.util.UMeta;
 
 public class ucars extends JavaPlugin {
 	// The main file
@@ -626,6 +627,15 @@ public class ucars extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(listener, this);
 		this.API = new uCarsAPI();
 		smoothDrive = config.getBoolean("general.cars.smooth");
+		
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
+
+			@Override
+			public void run() {
+				UMeta.clean();
+				return;
+			}}, 20*20l, 20*20l);
+		
 		getLogger().info("uCars has been enabled!");
 		return;
 	}
