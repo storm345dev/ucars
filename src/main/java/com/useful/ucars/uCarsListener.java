@@ -35,6 +35,7 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -420,10 +421,19 @@ public class uCarsListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	void carRemove(VehicleDestroyEvent event){
+		if(event.isCancelled()){
+			return;
+		}
 		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
 		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
+		UEntityMeta.removeAllMeta(event.getVehicle());
+	}
+	
+	@EventHandler
+	void entityDeath(EntityDeathEvent event){
+		UEntityMeta.removeAllMeta(event.getEntity());
 	}
 
 	/*

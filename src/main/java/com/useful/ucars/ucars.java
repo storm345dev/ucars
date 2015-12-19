@@ -35,6 +35,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucars.util.UMeta;
 
 public class ucars extends JavaPlugin {
@@ -632,6 +633,7 @@ public class ucars extends JavaPlugin {
 
 			@Override
 			public void run() {
+				UEntityMeta.cleanEntityObjs();
 				UMeta.clean();
 				return;
 			}}, 20*20l, 20*20l);

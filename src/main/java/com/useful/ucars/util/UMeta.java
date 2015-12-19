@@ -12,6 +12,13 @@ import org.bukkit.metadata.MetadataValue;
 public class UMeta {
 	private static volatile WeakHashMap<WeakKey, Map<String, List<MetadataValue>>> metadata = new WeakHashMap<WeakKey, Map<String, List<MetadataValue>>>();
 	
+	public static void removeAllMeta(Object key){
+		synchronized(metadata){
+			WeakKey weakKey = new WeakKey(key);
+			metadata.remove(weakKey);
+		}
+	}
+	
 	public static Map<String, List<MetadataValue>> getAllMeta(Object key){
 		synchronized(metadata){
 			WeakKey weakKey = new WeakKey(key);
