@@ -15,7 +15,7 @@ import com.useful.ucars.ucars;
 
 public class UEntityMeta {
 	
-	private static Map<UUID, Object> entityMetaObjs = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
+	private static volatile Map<UUID, Object> entityMetaObjs = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
 	
 	public static void cleanEntityObjs(){
 		Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
@@ -74,7 +74,7 @@ public class UEntityMeta {
 	}
 	
 	public static List<MetadataValue> getMetadata(Entity entity, String metaKey){
-		return UMeta.getAllMeta(getMetaObj(entity)).get(metaKey);
+		return UMeta.getMeta(getMetaObj(entity), metaKey);
 	}
 	
 	public static boolean hasMetadata(Entity entity, String metaKey){

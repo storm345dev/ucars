@@ -1,6 +1,7 @@
 package com.useful.ucars.util;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.WeakHashMap;
 
 /**
@@ -8,8 +9,8 @@ import java.util.WeakHashMap;
  * This WILL work IF (and only if) the objects used return true for .equals()
  *
  */
-public class SchLocks {
-	private static volatile WeakHashMap<WeakKey, WeakReference> monitors = new WeakHashMap<WeakKey, WeakReference>();
+public class USchLocks {
+	private static volatile HashMap<WeakKey, WeakReference> monitors = new HashMap<WeakKey, WeakReference>();
 	
 	public static Object getMonitor(Object key){
 		clean();
@@ -47,17 +48,16 @@ public class SchLocks {
 	
 	private static class WeakKey extends WeakReference {
 
+		private int hash;
+		
 		public WeakKey(Object arg0) {
 			super(arg0);
+			this.hash = arg0.hashCode();
 		}
 		
 		@Override
 		public int hashCode(){
-			Object val = get();
-			if(val == null){
-				return super.hashCode();
-			}
-			return val.hashCode();
+			return hash;
 		}
 		
 		@Override

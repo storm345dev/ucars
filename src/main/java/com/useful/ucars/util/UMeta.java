@@ -2,15 +2,15 @@ package com.useful.ucars.util;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.metadata.MetadataValue;
 
 public class UMeta {
-	private static volatile WeakHashMap<WeakKey, Map<String, List<MetadataValue>>> metadata = new WeakHashMap<WeakKey, Map<String, List<MetadataValue>>>();
+	private static volatile HashMap<WeakKey, Map<String, List<MetadataValue>>> metadata = new HashMap<WeakKey, Map<String, List<MetadataValue>>>();
 	
 	public static void removeAllMeta(Object key){
 		synchronized(metadata){
@@ -34,7 +34,7 @@ public class UMeta {
 	public static List<MetadataValue> getMeta(Object key, String metaKey){
 		Map<String, List<MetadataValue>> meta = getAllMeta(key);
 		List<MetadataValue> list;
-		synchronized(SchLocks.getMonitor(key)){
+		synchronized(USchLocks.getMonitor(key)){
 			list = meta.get(metaKey);
 			if(list == null){
 				list = new ArrayList<MetadataValue>();
@@ -46,7 +46,7 @@ public class UMeta {
 	
 	public static void removeMeta(Object key, String metaKey){
 		Map<String, List<MetadataValue>> meta = getAllMeta(key);
-		synchronized(SchLocks.getMonitor(key)){
+		synchronized(USchLocks.getMonitor(key)){
 			meta.remove(metaKey);
 		}
 	}
@@ -71,17 +71,16 @@ public class UMeta {
 	
 	private static class WeakKey extends WeakReference {
 
+		private int hash = -1;
+		
 		public WeakKey(Object arg0) {
 			super(arg0);
+			this.hash = arg0.hashCode();
 		}
 		
 		@Override
 		public int hashCode(){
-			Object val = get();
-			if(val == null){
-				return super.hashCode();
-			}
-			return val.hashCode();
+			return hash;
 		}
 		
 		@Override
