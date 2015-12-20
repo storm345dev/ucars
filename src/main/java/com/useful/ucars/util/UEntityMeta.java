@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.MetadataValue;
 
@@ -16,21 +15,36 @@ import com.useful.ucars.ucars;
 public class UEntityMeta {
 	
 	private static volatile Map<UUID, Object> entityMetaObjs = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
+	private static volatile Map<UUID, Entity> entityObjs = new ConcurrentHashMap<UUID, Entity>(100, 0.75f, 2);
 	
 	public static void cleanEntityObjs(){
 		Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				final List<Entity> allEntities = new ArrayList<Entity>();
+/*				final List<Entity> allEntities = new ArrayList<Entity>();
 				for(World w:Bukkit.getWorlds()){
 					allEntities.addAll(w.getEntities());
-				}
+				}*/
 				Bukkit.getScheduler().runTaskAsynchronously(ucars.plugin, new Runnable(){
 
 					@Override
 					public void run() {
-						mainLoop: for(final UUID entID:new ArrayList<UUID>(entityMetaObjs.keySet())){
+						for(final Entity e:new ArrayList<Entity>(entityObjs.values())){
+							if(e.isDead() && !e.isValid()){
+								synchronized(entityMetaObjs){
+									Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+
+										@Override
+										public void run() {
+											entityObjs.remove(e.getUniqueId());
+											entityMetaObjs.remove(e.getUniqueId());
+											return;
+										}}, 100l);
+								}
+							}
+						}
+						/*mainLoop: for(final UUID entID:new ArrayList<UUID>(entityMetaObjs.keySet())){
 							for(Entity e:allEntities){
 								if(e.getUniqueId().equals(entID)){
 									continue mainLoop;
@@ -47,7 +61,7 @@ public class UEntityMeta {
 									}
 									return;
 								}}, 100l);
-						}
+						}*/
 					}});
 				return;
 			}});
@@ -62,12 +76,13 @@ public class UEntityMeta {
 			}
 			sb.append(key);
 		}
-		Bukkit.broadcastMessage(sb.toString());
+		Bukkit.broadcastMessage(e.getUniqueId()+": "+sb.toString());
 	}
 	
 	public static void removeAllMeta(Entity e){
 		Object o = entityMetaObjs.get(e.getUniqueId());
 		entityMetaObjs.remove(e.getUniqueId());
+		entityObjs.put(e.getUniqueId(), e);
 		if(o != null){
 			UMeta.removeAllMeta(o);
 		}
@@ -78,6 +93,7 @@ public class UEntityMeta {
 			return null;
 		}
 		synchronized(entityMetaObjs){
+			entityObjs.put(e.getUniqueId(), e);
 			Object obj = entityMetaObjs.get(e.getUniqueId());
 			if(obj == null){
 				obj = new Object();
@@ -88,18 +104,22 @@ public class UEntityMeta {
 	}
 	
 	public static void setMetadata(Entity entity, String metaKey, MetadataValue value){
+		entityObjs.put(entity.getUniqueId(), entity);
 		UMeta.getMeta(getMetaObj(entity), metaKey).add(value);
 	}
 	
 	public static List<MetadataValue> getMetadata(Entity entity, String metaKey){
-		return UMeta.getMeta(getMetaObj(entity), metaKey);
+		entityObjs.put(entity.getUniqueId(), entity);
+		return UMeta.getAllMeta(getMetaObj(entity)).get(metaKey);
 	}
 	
 	public static boolean hasMetadata(Entity entity, String metaKey){
+		entityObjs.put(entity.getUniqueId(), entity);
 		return UMeta.getAllMeta(getMetaObj(entity)).containsKey(metaKey);
 	}
 	
 	public static void removeMetadata(Entity entity, String metaKey){
+		entityObjs.put(entity.getUniqueId(), entity);
 		UMeta.removeMeta(getMetaObj(entity), metaKey);
 	}
 }

@@ -58,7 +58,7 @@ public class UMeta {
 	
 	public static void clean(){
 		synchronized(metadata){
-			for(WeakKey ref:metadata.keySet()){
+			for(WeakKey ref:new ArrayList<WeakKey>(metadata.keySet())){
 				try {
 					if(ref.get() == null || ref == null){
 						metadata.remove(ref);
