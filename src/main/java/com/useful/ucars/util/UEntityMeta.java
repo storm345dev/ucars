@@ -53,6 +53,18 @@ public class UEntityMeta {
 			}});
 	}
 	
+	public static void printOutMeta(Entity e){
+		StringBuilder sb = new StringBuilder();
+		Map<String, List<MetadataValue>> metas = UMeta.getAllMeta(getMetaObj(e));
+		for(String key:new ArrayList<String>(metas.keySet())){
+			if(sb.length() > 0){
+				sb.append(", ");
+			}
+			sb.append(key);
+		}
+		Bukkit.broadcastMessage(sb.toString());
+	}
+	
 	public static void removeAllMeta(Entity e){
 		Object o = entityMetaObjs.get(e.getUniqueId());
 		entityMetaObjs.remove(e.getUniqueId());
