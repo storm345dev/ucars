@@ -637,6 +637,15 @@ public class ucars extends JavaPlugin {
 				UMeta.clean();
 				return;
 			}}, 20*20l, 20*20l);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable(){
+
+			@Override
+			public void run() {
+				if(Runtime.getRuntime().maxMemory()-Runtime.getRuntime().freeMemory() > 1000){
+					System.gc();
+				}
+				return;
+			}}, 20*20l, 120*20l);
 		
 		getLogger().info("uCars has been enabled!");
 		return;

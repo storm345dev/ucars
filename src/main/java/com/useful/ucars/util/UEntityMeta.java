@@ -1,5 +1,6 @@
 package com.useful.ucars.util;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.MetadataValue;
 
+import com.useful.ucars.ucars;
+
 public class UEntityMeta {
 	
 	private static volatile Map<UUID, Object> entityMetaObjs = new ConcurrentHashMap<UUID, Object>(100, 0.75f, 2);
-	/*private static volatile Map<UUID, Entity> entityObjs = new ConcurrentHashMap<UUID, Entity>(100, 0.75f, 2);*/
+	private static volatile Map<UUID, WeakReference<Entity>> entityObjs = new ConcurrentHashMap<UUID, WeakReference<Entity>>(100, 0.75f, 2);
 	
 	public static void cleanEntityObjs(){
+		Bukkit.getScheduler().runTaskAsynchronously(ucars.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				for(UUID entID:new ArrayList<UUID>(entityObjs.keySet())){
+					WeakReference<Entity> val = entityObjs.get(entID);
+					if(val == null){
+						continue;
+					}
+					if(val.get() == null){
+						Bukkit.broadcastMessage("CLEANED UP "+entID);
+						entityObjs.remove(entID);
+					}
+				}
+				return;
+			}});
 		/*Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
 
 			@Override
@@ -65,6 +84,18 @@ public class UEntityMeta {
 			}});*/
 	}
 	
+	private static void setEntityObj(Entity e){
+		synchronized(entityObjs){
+			entityObjs.put(e.getUniqueId(), new WeakReference<Entity>(e));
+		}
+	}
+	
+	private static void delEntityObj(Entity e){
+		synchronized(entityObjs){
+			entityObjs.remove(e.getUniqueId());
+		}
+	}
+	
 	public static void printOutMeta(Entity e){
 		StringBuilder sb = new StringBuilder();
 		Map<String, List<MetadataValue>> metas = UMeta.getAllMeta(getMetaObj(e));
@@ -77,9 +108,10 @@ public class UEntityMeta {
 		Bukkit.broadcastMessage(e.getUniqueId()+": "+sb.toString());
 	}
 	
-	public static void removeAllMeta(Entity e){
+	public static synchronized void removeAllMeta(Entity e){
 		Object o = entityMetaObjs.get(e.getUniqueId());
 		entityMetaObjs.remove(e.getUniqueId());
+		delEntityObj(e);
 		/*entityObjs.put(e.getUniqueId(), e);*/
 		if(o != null){
 			UMeta.removeAllMeta(o);
@@ -96,6 +128,7 @@ public class UEntityMeta {
 			if(obj == null){
 				obj = new Object();
 				entityMetaObjs.put(e.getUniqueId(), obj);
+				setEntityObj(e);
 			}
 			return obj;
 		}
@@ -103,6 +136,7 @@ public class UEntityMeta {
 	
 	public static void setMetadata(Entity entity, String metaKey, MetadataValue value){
 		/*entityObjs.put(entity.getUniqueId(), entity);*/
+		setEntityObj(entity);
 		UMeta.getMeta(getMetaObj(entity), metaKey).add(value);
 	}
 	
