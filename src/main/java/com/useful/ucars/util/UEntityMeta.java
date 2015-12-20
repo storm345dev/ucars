@@ -29,7 +29,6 @@ public class UEntityMeta {
 						continue;
 					}
 					if(val.get() == null){
-						Bukkit.broadcastMessage("CLEANED UP "+entID);
 						entityObjs.remove(entID);
 					}
 				}
