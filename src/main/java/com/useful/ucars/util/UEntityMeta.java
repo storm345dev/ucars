@@ -30,17 +30,23 @@ public class UEntityMeta {
 
 					@Override
 					public void run() {
-						mainLoop: for(UUID entID:new ArrayList<UUID>(entityMetaObjs.keySet())){
+						mainLoop: for(final UUID entID:new ArrayList<UUID>(entityMetaObjs.keySet())){
 							for(Entity e:allEntities){
 								if(e.getUniqueId().equals(entID)){
 									continue mainLoop;
 								}
 							}
-							Object o = entityMetaObjs.get(entID);
-							entityMetaObjs.remove(entID);
-							if(o != null){
-								UMeta.removeAllMeta(o);
-							}
+							Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+
+								@Override
+								public void run() {
+									Object o = entityMetaObjs.get(entID);
+									entityMetaObjs.remove(entID);
+									if(o != null){
+										UMeta.removeAllMeta(o);
+									}
+									return;
+								}}, 100l);
 						}
 					}});
 				return;

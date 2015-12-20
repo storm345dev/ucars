@@ -428,12 +428,26 @@ public class uCarsListener implements Listener {
 		}
 		UEntityMeta.removeMetadata(event.getVehicle(), "car.vec");
 		event.getVehicle().removeMetadata("car.vec", ucars.plugin);
-		UEntityMeta.removeAllMeta(event.getVehicle());
+		final Vehicle v = event.getVehicle();
+		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				UEntityMeta.removeAllMeta(v);
+				return;
+			}}, 100l);
 	}
 	
 	@EventHandler
 	void entityDeath(EntityDeathEvent event){
-		UEntityMeta.removeAllMeta(event.getEntity());
+		final Entity e = event.getEntity();
+		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				UEntityMeta.removeAllMeta(e);
+				return;
+			}}, 100l);
 	}
 
 	/*
