@@ -1,8 +1,8 @@
 package com.useful.ucars.util;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.WeakHashMap;
 
 /**
  * Super awesome memory-leak-free (TESTED) class for allowing any objects to be used as synchronized code block monitor objects
@@ -34,7 +34,7 @@ public class USchLocks {
 	
 	private static void clean(){
 		synchronized(monitors){
-			for(WeakKey ref:monitors.keySet()){
+			for(WeakKey ref:new ArrayList<WeakKey>(monitors.keySet())){
 				try {
 					if(ref.get() == null || monitors.get(ref).get() == null){
 						monitors.remove(ref);
