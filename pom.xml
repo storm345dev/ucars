@@ -2,7 +2,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.useful</groupId>
     <artifactId>uCars</artifactId>
-    <version>19</version>
     <name>uCars</name>
     <url>https://github.com/USERNAME/TEMPLATE</url>
     <issueManagement>
@@ -132,4 +131,5 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <version>20</version>
 </project>
