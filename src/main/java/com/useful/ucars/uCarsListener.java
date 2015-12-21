@@ -38,6 +38,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
@@ -441,6 +442,9 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void entityDeath(EntityDeathEvent event){
 		final Entity e = event.getEntity();
+		if(e instanceof Player){
+			return;
+		}
 		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
 
 			@Override
@@ -1775,6 +1779,18 @@ public class uCarsListener implements Listener {
 			//Not formatted right
 			throw new Exception();
 		}
+	}
+	
+	@EventHandler
+	void quit(PlayerQuitEvent event){
+		final Player pl = event.getPlayer();
+		Bukkit.getScheduler().runTaskLater(ucars.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				UEntityMeta.removeAllMeta(pl);
+				return;
+			}}, 100l);
 	}
 	
 	@EventHandler

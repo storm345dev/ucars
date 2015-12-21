@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
 import com.useful.ucars.ucars;
@@ -84,12 +85,18 @@ public class UEntityMeta {
 	}
 	
 	private static void setEntityObj(Entity e){
+		if(e instanceof Player){
+			return;
+		}
 		synchronized(entityObjs){
 			entityObjs.put(e.getUniqueId(), new WeakReference<Entity>(e));
 		}
 	}
 	
 	private static void delEntityObj(Entity e){
+		if(e instanceof Player){
+			return;
+		}
 		synchronized(entityObjs){
 			entityObjs.remove(e.getUniqueId());
 		}
