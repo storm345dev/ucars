@@ -1001,20 +1001,20 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		if (travel.getY() < 0) { //Custom gravity
+		/*if (travel.getY() < 0) { //Custom gravity
 			double a1 = multiplier*a;
 			if(a1 < 1){
 				a1 = 1;
 			}
 			double newy = travel.getY() - (Math.abs(travel.getY())*0.02d)/a1;
-			if(newy < 2){
-				newy = 2;
+			if(newy < -5){
+				newy = -5;
 			}
 			if(newy > 0){
 				newy = -0.2;
 			}
 			travel.setY(newy);
-		}
+		}*/
 		
 		Material bType = block.getType();
 		int bData = block.getData();

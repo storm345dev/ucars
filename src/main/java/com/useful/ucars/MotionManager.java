@@ -106,6 +106,16 @@ public class MotionManager {
 			return;
 		}
 		
+		boolean inAir = car.getLocation().clone().add(0, -1, 0).getBlock().isEmpty();
+		if(ucars.smoothDrive && inAir){
+			f = 0;
+			s = 0;
+		}
+		else if(ucars.smoothDrive) {
+			//Not in air
+			ControlInput.setFirstAirTime(player, System.currentTimeMillis());
+		}
+		
 		Boolean forwards = true; // if true, forwards, else backwards
 		int side = 0; // -1=left, 0=straight, 1=right
 		Boolean turning = false;
@@ -124,7 +134,13 @@ public class MotionManager {
 			side = 1;
 			turning = true;
 		}
-		double y = -0.35; // rough gravity of minecraft
+		
+		long timeSinceOnGround = System.currentTimeMillis() - ControlInput.getFirstAirTime(player);
+		
+		double y = -0.1 + (-0.003*timeSinceOnGround); // rough gravity of minecraft
+		if(y < -1){
+			y = -1;
+		}
 		double d = 27;
 		Boolean doDivider = false;
 		Boolean doAction = false;
@@ -149,7 +165,7 @@ public class MotionManager {
 				}
 			}
 		}
-		if(!keyboardSteering && ucars.turningCircles){
+		if(!keyboardSteering && ucars.turningCircles && (!ucars.smoothDrive || !inAir)){
 			//Rotate 'carDirection' vector according to where they're looking; max of rotMod degrees
 			float pYaw = (float) Math.toDegrees(Math.atan2(plaD.getX() , -plaD.getZ())); //Calculate yaw from 'player direction' vector
 			float cYaw = (float) Math.toDegrees(Math.atan2(carDirection.getX() , -carDirection.getZ())); //Calculate yaw from 'carDirection' vector

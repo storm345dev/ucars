@@ -7,14 +7,23 @@ public class SmoothMeta { //Performs all the calculations for actually making ca
 	private volatile float accFac = 1;
 	private volatile float decFac = 1;
 	private volatile CarDirection dir = CarDirection.FORWARDS;
+	private volatile long firstAirTime = System.currentTimeMillis();
 	
 	public SmoothMeta(float accFac, float decFac){
 		this.lastTime = System.currentTimeMillis();
 		this.speedFactor = 0;
 		this.accFac = accFac;
 		this.decFac = decFac;
+		firstAirTime = System.currentTimeMillis();
 	}
 	
+	public void setFirstAirTime(long sf){
+		this.firstAirTime = sf;
+	}
+	
+	public long getFirstAirTime(){
+		return this.firstAirTime;
+	}
 	
 	public void setCurrentSpeedFactor(float sf){
 		this.speedFactor = sf;
