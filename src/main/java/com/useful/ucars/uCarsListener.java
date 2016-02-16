@@ -1259,13 +1259,13 @@ public class uCarsListener implements Listener {
 			Vector vel = p.getVehicle().getVelocity();
 			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
 				event.setCancelled(true);
-			} else {
+			} /*else {
 				try {
 					p.damage(event.getDamage());
 				} catch (Exception e) {
 					// Damaging failed
 				}
-			}
+			}*/
 
 		}
 		return;
