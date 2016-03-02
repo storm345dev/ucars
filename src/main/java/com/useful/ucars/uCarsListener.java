@@ -1442,9 +1442,6 @@ public class uCarsListener implements Listener {
 	 */
 	@EventHandler
 	void interact(PlayerInteractEvent event) {
-		ucars.plugin.getLogger().info(event+"");
-		ucars.plugin.getLogger().info(event.getEventName());
-		ucars.plugin.getLogger().info(event.getAction()+"");
 		if (event.isCancelled()) {
 			return;
 		}
