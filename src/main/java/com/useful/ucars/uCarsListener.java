@@ -52,6 +52,7 @@ import org.bukkit.util.Vector;
 import com.useful.uCarsAPI.CarRespawnReason;
 import com.useful.uCarsAPI.uCarCrashEvent;
 import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
@@ -1296,11 +1297,12 @@ public class uCarsListener implements Listener {
 			event.setCollisionCancelled(false);
 			return;
 		}
-		if(cart.hasMetadata("copCar") || UEntityMeta.hasMetadata(cart, "copCar")){ 
+		/*if(cart.hasMetadata("copCar") || UEntityMeta.hasMetadata(cart, "copCar")){ 
+			Bukkit.broadcastMessage("CANCELLED AS COP CAR");
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
-		}
+		}*/
 		if (cart.getPassenger() == null) { //Don't both to calculate with PiguCarts, etc...
 			return;
 		}
@@ -1338,10 +1340,17 @@ public class uCarsListener implements Listener {
 		UEntityMeta.removeMetadata(ent, "hitByLast");
 		UEntityMeta.setMetadata(ent, "hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double speed = cart.getVelocity().length() * 3.5;
+		double accel = 1;
+		if(passenger instanceof Player){
+			accel = ControlInput.getAccel(((Player)passenger), CarDirection.FORWARDS);
+		}
+		else {
+			accel = UEntityMeta.hasMetadata(cart, "currentlyStopped") ? 0:1;
+		}
+		double speed = accel * uCarsAPI.getAPI().getTravelVector(cart, cart.getLocation().getDirection().clone().normalize(), 1).length();/*cart.getVelocity().length() * 3.5;
 		if(passenger instanceof Villager){ //NPC car from UT
 			speed = cart.getVelocity().length()*1.6;
-		}
+		}*/
 		
 		double damage = hitby_crash_damage;
 		double pDmg = (damage * speed * 2);
