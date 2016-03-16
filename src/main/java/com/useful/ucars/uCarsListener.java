@@ -865,7 +865,7 @@ public class uCarsListener implements Listener {
 		}
 		
 		travel = travel.setX(travel.getX()*multiplier);
-		travel = travel.setZ(travel.getZ()*multiplier); //TODO Test if this breaks block climbing or is ok
+		travel = travel.setZ(travel.getZ()*multiplier); 
 		if (usePerms) {
 			if (!player.hasPermission("ucars.cars")) {
 				player.sendMessage(ucars.colors.getInfo()
@@ -1347,7 +1347,7 @@ public class uCarsListener implements Listener {
 		else {
 			accel = UEntityMeta.hasMetadata(cart, "currentlyStopped") ? 0:1;
 		}
-		double speed = accel * uCarsAPI.getAPI().getTravelVector(cart, cart.getLocation().getDirection().clone().normalize(), 1).length();/*cart.getVelocity().length() * 3.5;
+		double speed = 30 * accel * uCarsAPI.getAPI().getTravelVector(cart, cart.getLocation().getDirection().clone().normalize(), 1).length();/*cart.getVelocity().length() * 3.5;
 		if(passenger instanceof Villager){ //NPC car from UT
 			speed = cart.getVelocity().length()*1.6;
 		}*/
