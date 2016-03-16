@@ -312,7 +312,7 @@ public class uCarsListener implements Listener {
 		String p = playername;
 		World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
 		w.playSound(plugin.getServer().getPlayer(p).getLocation(),
-				Sound.BAT_TAKEOFF, 1.5f, -2);
+				Sound.ENTITY_BAT_TAKEOFF, 1.5f, -2);
 		if (ucars.carBoosts.containsKey(p)) {
 			ucars.carBoosts.remove(p);
 		}
@@ -345,7 +345,7 @@ public class uCarsListener implements Listener {
 						World w = plugin.getServer().getPlayer(p).getLocation()
 								.getWorld();
 						w.playSound(plugin.getServer().getPlayer(p)
-								.getLocation(), Sound.FIZZ, 1.5f, -2);
+								.getLocation(), Sound.BLOCK_LAVA_EXTINGUISH, 1.5f, -2);
 						double speed = current + power;
 						ucars.carBoosts.put(p, speed);
 						// Boosting!
