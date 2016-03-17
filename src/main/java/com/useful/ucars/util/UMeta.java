@@ -20,6 +20,9 @@ public class UMeta {
 	}
 	
 	public static Map<String, List<MetadataValue>> getAllMeta(Object key){
+		if(key == null){
+			return new ConcurrentHashMap<String, List<MetadataValue>>(10, 0.75f, 2);
+		}
 		synchronized(metadata){
 			WeakKey weakKey = new WeakKey(key);
 			Map<String, List<MetadataValue>> res = metadata.get(weakKey);
