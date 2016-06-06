@@ -22,6 +22,7 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -1340,14 +1341,15 @@ public class uCarsListener implements Listener {
 		UEntityMeta.removeMetadata(ent, "hitByLast");
 		UEntityMeta.setMetadata(ent, "hitByLast", new StatValue(System.currentTimeMillis(), ucars.plugin));
 		
-		double accel = 1;
+		/*double accel = 1;
 		if(passenger instanceof Player){
 			accel = ControlInput.getAccel(((Player)passenger), CarDirection.FORWARDS);
 		}
 		else {
 			accel = UEntityMeta.hasMetadata(cart, "currentlyStopped") ? 0:1;
-		}
-		double speed = 30 * accel * uCarsAPI.getAPI().getTravelVector(cart, cart.getLocation().getDirection().clone().normalize(), 1).length();/*cart.getVelocity().length() * 3.5;
+		}*/
+		Vector vel = cart.getVelocity();
+		double speed = vel.length() * 1.6; /*
 		if(passenger instanceof Villager){ //NPC car from UT
 			speed = cart.getVelocity().length()*1.6;
 		}*/
@@ -1407,7 +1409,7 @@ public class uCarsListener implements Listener {
 				
 				double mult = ucars.config
 						.getDouble("general.cars.hitBy.power") / 7;
-				ent.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
+				ent.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(mult));
 				
 				if(driver != null && driver.equals(ent)){
 					
@@ -1420,15 +1422,22 @@ public class uCarsListener implements Listener {
 				}
 			}
 		}
-		if (!(ent instanceof Player)) {
+		
+		boolean player = ent instanceof Player;
+		Player p = null;
+		if(player){
+			p = (Player) ent;
+		}
+		if (!(player)) {
 			return;
 		}
-		Player p = (Player) ent;
-		if (inACar(p)) {
-			return;
+		if(p != null){
+			if (inACar(p)) {
+				return;
+			}
 		}
 		
-		uCarCrashEvent evt = new uCarCrashEvent(cart, p, pDmg);
+		uCarCrashEvent evt = new uCarCrashEvent(cart, ent, pDmg);
 		Bukkit.getPluginManager().callEvent(evt);
 		if(evt.isCancelled()){
 			return;
@@ -1436,13 +1445,17 @@ public class uCarsListener implements Listener {
 		pDmg = evt.getDamageToBeDoneToTheEntity();
 		
 		double mult = ucars.config.getDouble("general.cars.hitBy.power") / 5;
-		p.setVelocity(cart.getVelocity().setY(0.5).multiply(mult));
-		p.sendMessage(ucars.colors.getInfo()
+		ent.setVelocity(cart.getVelocity().clone().setY(0.5).multiply(mult));
+		if(p != null){
+			p.sendMessage(ucars.colors.getInfo()
 				+ Lang.get("lang.messages.hitByCar"));
+		}
 		/*p.sendMessage("Speed: "+speed);
 		p.sendMessage("Crash dmg def: "+hitby_crash_damage);
 		p.sendMessage("Damage to do: "+pDmg);*/
-		p.damage(pDmg, driver);
+		if(ent instanceof LivingEntity){
+			((LivingEntity)ent).damage(pDmg, driver);
+		}
 		return;
 	}
 
@@ -1488,7 +1501,7 @@ public class uCarsListener implements Listener {
 								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
-            if(!plugin.API.runCarChecks(event.getPlayer().getItemInHand())){
+			if(!plugin.API.runCarChecks(event.getPlayer().getItemInHand())){
 				return;
 			}
 			Location loc = block.getLocation().add(0, 1.5, 0);
