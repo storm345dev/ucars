@@ -45,6 +45,7 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleUpdateEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
@@ -1465,6 +1466,9 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void interact(PlayerInteractEvent event) {
 		if (event.isCancelled()) {
+			return;
+		}
+		if(event.getHand().equals(EquipmentSlot.OFF_HAND) && !Bukkit.getServerName().toLowerCase().contains("mta")){
 			return;
 		}
 		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
