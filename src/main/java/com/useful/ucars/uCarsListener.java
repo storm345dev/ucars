@@ -1468,6 +1468,9 @@ public class uCarsListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
+		if(event.getHand() == null){
+			return;
+		}
 		if(event.getHand().equals(EquipmentSlot.OFF_HAND) && !Bukkit.getServerName().toLowerCase().contains("mta")){
 			return;
 		}

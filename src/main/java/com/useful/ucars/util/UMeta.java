@@ -67,6 +67,7 @@ public class UMeta {
 						metadata.remove(ref);
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		}

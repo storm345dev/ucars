@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,12 +25,10 @@ public class UEntityMeta {
 
 			@Override
 			public void run() {
-				for(UUID entID:new ArrayList<UUID>(entityObjs.keySet())){
-					WeakReference<Entity> val = entityObjs.get(entID);
-					if(val == null){
-						continue;
-					}
-					if(val.get() == null){
+				for(Entry<UUID, WeakReference<Entity>> entry:entityObjs.entrySet()){
+					UUID entID = entry.getKey();
+					WeakReference<Entity> val = entry.getValue();
+					if(val == null || val.get() == null){
 						entityObjs.remove(entID);
 					}
 				}
