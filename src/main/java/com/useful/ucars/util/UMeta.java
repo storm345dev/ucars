@@ -10,38 +10,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.metadata.MetadataValue;
 
 public class UMeta {
-	private static volatile HashMap<WeakKey, Map<String, List<MetadataValue>>> metadata = new HashMap<WeakKey, Map<String, List<MetadataValue>>>();
+	private static volatile ConcurrentHashMap<WeakKey, Map<String, List<MetadataValue>>> metadata = new ConcurrentHashMap<WeakKey, Map<String, List<MetadataValue>>>(100, 0.75f, 3);
 	
 	public static void removeAllMeta(Object key){
-		synchronized(metadata){
-			WeakKey weakKey = new WeakKey(key);
-			metadata.remove(weakKey);
-		}
+		WeakKey weakKey = new WeakKey(key);
+		metadata.remove(weakKey);
 	}
 	
 	public static Map<String, List<MetadataValue>> getAllMeta(Object key){
 		if(key == null){
 			return new ConcurrentHashMap<String, List<MetadataValue>>(10, 0.75f, 2);
 		}
-		synchronized(metadata){
-			WeakKey weakKey = new WeakKey(key);
-			Map<String, List<MetadataValue>> res = metadata.get(weakKey);
-			if(res == null){
-				res = new ConcurrentHashMap<String, List<MetadataValue>>(10, 0.75f, 2);
-				metadata.put(weakKey, res);
+		WeakKey weakKey = new WeakKey(key);
+		Map<String, List<MetadataValue>> res = metadata.get(weakKey);
+		if(res == null){
+			synchronized(metadata){
+				res = metadata.get(weakKey);
+				if(res == null){
+					res = new ConcurrentHashMap<String, List<MetadataValue>>(10, 0.75f, 2);
+					metadata.put(weakKey, res);
+				}
 			}
-			return res;
 		}
+		return res;
 	}
 	
 	public static List<MetadataValue> getMeta(Object key, String metaKey){
 		Map<String, List<MetadataValue>> meta = getAllMeta(key);
-		List<MetadataValue> list;
-		synchronized(USchLocks.getMonitor(key)){
-			list = meta.get(metaKey);
-			if(list == null){
-				list = new ArrayList<MetadataValue>();
-				meta.put(metaKey, list);
+		List<MetadataValue> list = meta.get(metaKey);
+		if(list == null) {
+			synchronized (USchLocks.getMonitor(key)) {
+				list = meta.get(metaKey);
+				if (list == null) {
+					list = new ArrayList<MetadataValue>();
+					meta.put(metaKey, list);
+				}
 			}
 		}
 		return list;
@@ -49,26 +52,23 @@ public class UMeta {
 	
 	public static void removeMeta(Object key, String metaKey){
 		Map<String, List<MetadataValue>> meta = getAllMeta(key);
-		synchronized(USchLocks.getMonitor(key)){
-			meta.remove(metaKey);
-		}
+		meta.remove(metaKey);
 	}
 	
 	public static void gc(){
-		System.gc();
+		/*System.gc();*/
 		clean();
 	}
 	
 	public static void clean(){
-		synchronized(metadata){
-			for(WeakKey ref:new ArrayList<WeakKey>(metadata.keySet())){
-				try {
-					if(ref.get() == null || ref == null){
-						metadata.remove(ref);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		for(Map.Entry<WeakKey, Map<String, List<MetadataValue>>> entry:metadata.entrySet()){
+			WeakKey ref = entry.getKey();
+			try {
+				if(ref.get() == null || ref == null){
+					metadata.remove(ref);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -84,6 +84,10 @@ public class UMeta {
 		
 		@Override
 		public int hashCode(){
+			Object self = get();
+			if(self != null){ //Update the hash code
+				this.hash = self.hashCode();
+			}
 			return hash;
 		}
 		

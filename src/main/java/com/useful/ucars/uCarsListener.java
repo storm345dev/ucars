@@ -39,6 +39,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
@@ -1812,6 +1813,18 @@ public class uCarsListener implements Listener {
 	
 	@EventHandler
 	void quit(PlayerQuitEvent event){
+		final Player pl = event.getPlayer();
+		Bukkit.getScheduler().runTaskLater(ucars.plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				UEntityMeta.removeAllMeta(pl);
+				return;
+			}}, 100l);
+	}
+
+	@EventHandler
+	void quit(PlayerKickEvent event){
 		final Player pl = event.getPlayer();
 		Bukkit.getScheduler().runTaskLater(ucars.plugin, new Runnable(){
 

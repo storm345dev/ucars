@@ -21,7 +21,7 @@ public class UEntityMeta {
 	private static volatile Map<UUID, WeakReference<Entity>> entityObjs = new ConcurrentHashMap<UUID, WeakReference<Entity>>(100, 0.75f, 2);
 	
 	public static void cleanEntityObjs(){
-		Bukkit.getScheduler().runTaskAsynchronously(ucars.plugin, new Runnable(){
+		Bukkit.getScheduler().runTaskTimerAsynchronously(ucars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
@@ -30,10 +30,17 @@ public class UEntityMeta {
 					WeakReference<Entity> val = entry.getValue();
 					if(val == null || val.get() == null){
 						entityObjs.remove(entID);
+						Object metaObj = entityMetaObjs.remove(entID); //Entity no longer exists
+						if(metaObj != null){
+							UMeta.removeAllMeta(metaObj);
+						}
 					}
 				}
+				UMeta.clean();
 				return;
-			}});
+			}}, 1180l, 1180l); //Every 59 sec
+
+
 		/*Bukkit.getScheduler().runTask(ucars.plugin, new Runnable(){
 
 			@Override
@@ -87,18 +94,14 @@ public class UEntityMeta {
 		if(e instanceof Player){
 			return;
 		}
-		synchronized(entityObjs){
-			entityObjs.put(e.getUniqueId(), new WeakReference<Entity>(e));
-		}
+		entityObjs.put(e.getUniqueId(), new WeakReference<Entity>(e));
 	}
 	
 	private static void delEntityObj(Entity e){
 		if(e instanceof Player){
 			return;
 		}
-		synchronized(entityObjs){
-			entityObjs.remove(e.getUniqueId());
-		}
+		entityObjs.remove(e.getUniqueId());
 	}
 	
 	public static void printOutMeta(Entity e){
@@ -113,7 +116,7 @@ public class UEntityMeta {
 		Bukkit.broadcastMessage(e.getUniqueId()+": "+sb.toString());
 	}
 	
-	public static synchronized void removeAllMeta(Entity e){
+	public static void removeAllMeta(Entity e){
 		Object o = entityMetaObjs.get(e.getUniqueId());
 		entityMetaObjs.remove(e.getUniqueId());
 		delEntityObj(e);
@@ -122,21 +125,24 @@ public class UEntityMeta {
 			UMeta.removeAllMeta(o);
 		}
 	}
-	
+
 	private static Object getMetaObj(Entity e){
 		if(e == null){
 			return null;
 		}
-		synchronized(entityMetaObjs){
-			/*entityObjs.put(e.getUniqueId(), e);*/
-			Object obj = entityMetaObjs.get(e.getUniqueId());
-			if(obj == null){
-				obj = new Object();
-				entityMetaObjs.put(e.getUniqueId(), obj);
-				setEntityObj(e);
+		/*entityObjs.put(e.getUniqueId(), e);*/
+		Object obj = entityMetaObjs.get(e.getUniqueId());
+		if(obj == null){
+			synchronized (USchLocks.getMonitor("newMetaObjMonitor"+e.getUniqueId())) {
+				obj = entityMetaObjs.get(e.getUniqueId());
+				if(obj == null) {
+					obj = new Object();
+					entityMetaObjs.put(e.getUniqueId(), obj);
+					setEntityObj(e);
+				}
 			}
-			return obj;
 		}
+		return obj;
 	}
 	
 	public static void setMetadata(Entity entity, String metaKey, MetadataValue value){
