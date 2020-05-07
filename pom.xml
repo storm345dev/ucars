@@ -87,7 +87,7 @@
         </repository>
         <repository>
 	       <id>stormdev-repo</id>
-	       <url>http://stormdev.org/jenkins/plugin/repository/release</url>
+	       <url>https://stormdev.org/jenkins/plugin/repository/everything/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -127,5 +127,5 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <version>20</version>
+    <version>21</version>
 </project>
