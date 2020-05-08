@@ -1,7 +1,6 @@
 package com.useful.uCarsAPI;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,11 +8,11 @@ import org.bukkit.event.HandlerList;
 public class uCarCrashEvent extends Event implements Cancellable {
 	private boolean cancelled = false;
 	private static final HandlerList handlers = new HandlerList();
-	private Minecart car = null;
+	private Entity car = null;
 	private Entity hit;
 	private double damageToEntity = 0;
 
-	public uCarCrashEvent(Minecart vehicle, Entity hit, double damageToEntity) {
+	public uCarCrashEvent(Entity vehicle, Entity hit, double damageToEntity) {
 		this.car = vehicle;
 		this.hit = hit;
 		this.damageToEntity = damageToEntity;
@@ -27,7 +26,7 @@ public class uCarCrashEvent extends Event implements Cancellable {
 		this.cancelled = arg0;
 	}
 
-	public Minecart getCar() {
+	public Entity getCar() {
 		return car;
 	}
 	

@@ -3,10 +3,14 @@ package com.useful.ucars;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
 public class CartOrientationUtil {
-	public static void setPitch(Minecart cart, float pitch){
+	public static void setPitch(Entity cart, float pitch){
+		if(!(cart instanceof Minecart)){
+			throw new RuntimeException("Non Minecart cars not supported yet!");
+		}
 		try {
 			Class<?> cmr = cart.getClass();
 			Method getHandle = cmr.getMethod("getHandle");
@@ -20,7 +24,10 @@ public class CartOrientationUtil {
 		}
 	}
 	
-	public static void setYaw(Minecart cart, float yaw){
+	public static void setYaw(Entity cart, float yaw){
+		if(!(cart instanceof Minecart)){
+			throw new RuntimeException("Non Minecart cars not supported yet!");
+		}
 		try {
 			Class<?> cmr = cart.getClass();
 			Method getHandle = cmr.getMethod("getHandle");

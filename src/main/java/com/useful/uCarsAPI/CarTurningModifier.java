@@ -1,6 +1,6 @@
 package com.useful.uCarsAPI;
 
-import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Entity;
 
 /**
  * A basic interface for modifying (multiplying) the car turning amount after
@@ -17,6 +17,6 @@ public interface CarTurningModifier {
 	 * @param currentRotationPerTick The number of degrees the car will turn each tick
 	 * @return The maximum amount for the car to turn in degrees per tick (Positive)
 	 */
-	public double getModifiedTurningSpeed(Minecart car, double currentRotationPerTick);
+	public double getModifiedTurningSpeed(Entity car, double currentRotationPerTick);
 
 }

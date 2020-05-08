@@ -1,11 +1,11 @@
 package com.useful.uCarsAPI;
 
-import java.util.UUID;
-
-import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+
+import java.util.UUID;
 
 /**
  * Called when a new car is made in place of an old, identical one.
@@ -15,7 +15,7 @@ import org.bukkit.event.HandlerList;
  *
  */
 public class uCarRespawnEvent extends Event implements Cancellable {
-	private Minecart newCar;
+	private Entity newCar;
 	private UUID oldId;
 	private UUID newId;
 	private Boolean cancelled = false;
@@ -31,7 +31,7 @@ public class uCarRespawnEvent extends Event implements Cancellable {
 	 * @param oldId The UUID of the old Car entity.
 	 * @param newId The UUID of the new Car entity.
 	 */
-	public uCarRespawnEvent(Minecart newCar, UUID oldId, UUID newId, CarRespawnReason reason) {
+	public uCarRespawnEvent(Entity newCar, UUID oldId, UUID newId, CarRespawnReason reason) {
 		this.newCar = newCar;
 		this.oldId = oldId;
 		this.newId = newId;
@@ -43,7 +43,7 @@ public class uCarRespawnEvent extends Event implements Cancellable {
 	 * 
 	 * @return The new car entity.
 	 */
-	public Minecart getNewCar() {
+	public Entity getNewCar() {
 		return newCar;
 	}
 

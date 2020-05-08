@@ -209,7 +209,7 @@ public class uCarsListener implements Listener {
 	/*
 	 * Asks the API to calculate car stats (Such as velocity mods, etc...)
 	 */
-	public Vector calculateCarStats(Minecart car, Player player,
+	public Vector calculateCarStats(Entity car, Player player,
 			Vector velocity, double currentMult) {
 		if (UEntityMeta.hasMetadata(car, "car.frozen")) {
 			velocity = new Vector(0, 0, 0);
@@ -280,7 +280,7 @@ public class uCarsListener implements Listener {
 	/*
 	 * Checks if a minecart is a car (Public for traincarts support)
 	 */
-	public boolean isACar(Minecart cart) {
+	public boolean isACar(Entity cart) {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
 		}
@@ -310,7 +310,7 @@ public class uCarsListener implements Listener {
 	/*
 	 * Resets any boosts the given car may have
 	 */
-	public void ResetCarBoost(String playername, Minecart car,
+	public void ResetCarBoost(String playername, Vehicle car,
 			double defaultSpeed) {
 		String p = playername;
 		World w = plugin.getServer().getPlayer(p).getLocation().getWorld();
@@ -381,15 +381,15 @@ public class uCarsListener implements Listener {
 				return false;
 			}
 			Entity ent = p.getVehicle();
-			if (!(ent instanceof Minecart)) {
-				while (!(ent instanceof Minecart) && ent.getVehicle() != null) {
+			if (!(ent instanceof Vehicle)) {
+				while (!(ent instanceof Vehicle) && ent.getVehicle() != null) {
 					ent = ent.getVehicle();
 				}
-				if (!(ent instanceof Minecart)) {
+				if (!(ent instanceof Vehicle)) {
 					return false;
 				}
 			}
-			Minecart cart = (Minecart) ent;
+			Vehicle cart = (Vehicle) ent;
 			return isACar(cart);
 		} catch (Exception e) {
 			// Server reloading
@@ -399,7 +399,7 @@ public class uCarsListener implements Listener {
 	
 	public Entity getDrivingPassengerOfCar(Vehicle vehicle){ //Get the PLAYER passenger of the car
 		Entity passenger = vehicle.getPassenger(); //The vehicle's lowest passenger; may be a pig, etc... if pigucarting
-		if (passenger == null || !(vehicle instanceof Minecart)) { //If it has nobody riding it, ignore it
+		if (passenger == null || !(vehicle instanceof Entity)) { //If it has nobody riding it, ignore it
 			return null;
 		}
 		if (!(passenger instanceof Player)) { //If not a player riding it; then keep looking until we find a player
@@ -421,7 +421,7 @@ public class uCarsListener implements Listener {
 				|| UEntityMeta.hasMetadata(event.getVehicle(), "safeExit.ignore")){
 			return;
 		}
-		if(!(event.getVehicle() instanceof Minecart) || !isACar((Minecart) event.getVehicle())){
+		if(!(event.getVehicle() instanceof Vehicle) || !isACar((Vehicle) event.getVehicle())){
 			return;
 		}
 	}
@@ -514,7 +514,7 @@ public class uCarsListener implements Listener {
 	public void tickCalcsAndLegacy(VehicleUpdateEvent event) {
 		// start vehicleupdate mechs
 		Vehicle vehicle = event.getVehicle();
-		if(!(vehicle instanceof Minecart)){
+		if(!(vehicle instanceof Vehicle)){
 			return;
 		}
 		Entity passenger = getDrivingPassengerOfCar(vehicle); //Gets the entity highest in the passenger 'stack' (Allows for pigucart, etc...)
@@ -555,7 +555,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 
-		Minecart car = (Minecart) vehicle;
+		Vehicle car = (Vehicle) vehicle;
 		if (!isACar(car)) {
 			return;
 		}
@@ -703,7 +703,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		
-		if(!(vehicle instanceof Minecart)){
+		if(!(vehicle instanceof Vehicle)){
 			return;
 		}
 		
@@ -721,7 +721,7 @@ public class uCarsListener implements Listener {
 		} catch (Exception e1) {
 		}
 		
-		Minecart car = (Minecart) vehicle;
+		Vehicle car = (Vehicle) vehicle;
 		
 		if(!isACar(car)){
 			return;
@@ -751,8 +751,10 @@ public class uCarsListener implements Listener {
 			}
 			UEntityMeta.removeMetadata(car, "car.jumping");
 		}
-		car.setMaxSpeed(5); // Don't allow game breaking speed - but faster
-							// than default
+		if(car instanceof Minecart) {
+			((Minecart)car).setMaxSpeed(5); // Don't allow game breaking speed - but faster
+			// than default
+		}
 		
 		// Calculate road blocks
 		if (roadBlocksEnabled) {
@@ -1069,7 +1071,7 @@ public class uCarsListener implements Listener {
 						
 						car.remove();
 						
-						final Minecart ca = car;
+						final Vehicle ca = car;
 						Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 
 							@Override
@@ -1113,9 +1115,9 @@ public class uCarsListener implements Listener {
 							if (ch.isLoaded()) {
 								ch.load(true);
 							}
-							car = (Minecart) s.getWorld().spawnEntity(
+							car = (Vehicle) s.getWorld().spawnEntity(
 									toTele, EntityType.MINECART);
-							final Minecart v = car;
+							final Vehicle v = car;
 							UEntityMeta.setMetadata(car, "carhealth", health);
 							if (raceCar) {
 								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
@@ -1130,7 +1132,7 @@ public class uCarsListener implements Listener {
 								player.sendMessage(ucars.colors.getTp()
 										+ "Teleporting...");
 								car.setPassenger(player);
-								final Minecart ucar = car;
+								final Vehicle ucar = car;
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 
 									@Override
@@ -1284,10 +1286,10 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Vehicle veh = event.getVehicle();
-		if (!(veh instanceof Minecart)) {
+		if (!(veh instanceof Vehicle)) {
 			return;
 		}
-		final Minecart cart = (Minecart) veh;
+		final Vehicle cart = (Vehicle) veh;
 		if (!isACar(cart)) {
 			return;
 		}
@@ -1479,7 +1481,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		if (event.getPlayer().getItemInHand().getType() == Material.MINECART) {
+		if (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART) {
 			// Its a minecart!
 			Material iar = block.getType();
 			if (ucars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
@@ -1671,14 +1673,14 @@ public class uCarsListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	void minecartBreak(VehicleDamageEvent event) {
-		if (!(event.getVehicle() instanceof Minecart)
+		if (!(event.getVehicle() instanceof Vehicle)
 				|| !(event.getAttacker() instanceof Player)) {
 			return;
 		}
 		if (event.isCancelled()) {
 			return;
 		}
-		final Minecart car = (Minecart) event.getVehicle();
+		final Vehicle car = (Vehicle) event.getVehicle();
 		Player player = (Player) event.getAttacker();
 		if (!isACar(car)) {
 			return;
@@ -1719,7 +1721,7 @@ public class uCarsListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		Minecart cart = event.getCar();
+		Entity cart = event.getCar();
 		if(cart.hasMetadata("car.destroyed") || UEntityMeta.hasMetadata(cart, "car.destroyed")){
 			return;
 		}
@@ -1900,7 +1902,7 @@ public class uCarsListener implements Listener {
 		}
 	}
 	
-	public Boolean atTrafficLight(Minecart car, Block underblock, Block underunderblock, Location loc){
+	public Boolean atTrafficLight(Entity car, Block underblock, Block underunderblock, Location loc){
 		if (trafficLightsEnabled) {
 			if (plugin.isBlockEqualToConfigIds(
 					trafficLightRawIds, underblock)
@@ -1966,12 +1968,12 @@ public class uCarsListener implements Listener {
 		};
 	}
 	
-	public void updateCarHealthHandler(Minecart car, CarHealthData handler){
+	public void updateCarHealthHandler(Entity car, CarHealthData handler){
 		UEntityMeta.removeMetadata(car, "carhealth");
 		UEntityMeta.setMetadata(car, "carhealth", new StatValue(handler, ucars.plugin));
 	}
 	
-	public CarHealthData getCarHealthHandler(final Minecart car){
+	public CarHealthData getCarHealthHandler(final Entity car){
 		CarHealthData health = null;
 		if (UEntityMeta.hasMetadata(car, "carhealth")) {
 			try {

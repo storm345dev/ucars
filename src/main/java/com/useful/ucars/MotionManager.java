@@ -1,16 +1,15 @@
 package com.useful.ucars;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlScheme;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.util.Vector;
 
 public class MotionManager {
 	
@@ -38,15 +37,15 @@ public class MotionManager {
 		if (ent == null) {
 			return;
 		}
-		while (!(ent instanceof Minecart) && ent.getVehicle() != null) {
+		while (!(ent instanceof Vehicle) && ent.getVehicle() != null) {
 			ent = ent.getVehicle();
 		}
 		if(!ucars.listener.inACar(player)){
 		}
-		if (!ucars.listener.inACar(player) || !(ent instanceof Minecart)) {
+		if (!ucars.listener.inACar(player) || !(ent instanceof Vehicle)) {
 			return;
 		}
-		final Minecart car = (Minecart) ent;
+		final Vehicle car = (Vehicle) ent;
 		// Location loc = car.getLocation();
 		// Vector carD = loc.getDirection();
 		Vector plaD = player.getEyeLocation().getDirection();

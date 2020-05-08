@@ -1,6 +1,6 @@
 package com.useful.uCarsAPI;
 
-import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 /**
@@ -19,6 +19,6 @@ public interface CarSpeedModifier {
 	 * @param currentMultiplier The rough speed of the car
 	 * @return A manipulated vector of the Car's travel
 	 */
-	public Vector getModifiedSpeed(Minecart car, Vector travelVector, double currentMultiplier);
+	public Vector getModifiedSpeed(Entity car, Vector travelVector, double currentMultiplier);
 
 }

@@ -11,10 +11,7 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
@@ -132,8 +129,8 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				List<Entity> ents = world.getEntities();
 				int removed = 0;
 				for (Entity ent : ents) {
-					if (ent instanceof Minecart) {
-						Minecart cart = (Minecart) ent;
+					if (ent instanceof Vehicle) {
+						Vehicle cart = (Vehicle) ent;
 						if (new uCarsListener(ucars.plugin).isACar(cart)) {
 							ent.eject();
 							if (ent.getPassenger() != null) {
@@ -239,7 +236,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 				} catch (Exception e) {
 					mat = null;
 				}
-				if(mat != null){
+				if(mat != null && cart instanceof Minecart){
 					((Minecart)cart).setDisplayBlock(new MaterialData(mat));
 				}
 			}

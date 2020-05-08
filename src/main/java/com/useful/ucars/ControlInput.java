@@ -1,5 +1,6 @@
 package com.useful.ucars;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -217,7 +218,7 @@ public class ControlInput {
 		return smooth.getFactor(dir); //Get the acceleration factor
 	}
 	
-	public static void input(Minecart car, Vector travel, ucarUpdateEvent event){ //Take our inputted
+	public static void input(Entity car, Vector travel, ucarUpdateEvent event){ //Take our inputted
 		/*if(ucars.smoothDrive){
 			float a = getAccel(event.getPlayer());
 			travel.setX(travel.getX() * a);

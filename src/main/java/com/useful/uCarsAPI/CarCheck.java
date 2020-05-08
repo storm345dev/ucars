@@ -1,6 +1,6 @@
 package com.useful.uCarsAPI;
 
-import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Entity;
 
 /**
  * Provides an interfact to add custom checking to cars
@@ -17,5 +17,5 @@ public interface CarCheck {
 	 *            The uCars-valid car
 	 * @return True if it is a car
 	 */
-	public Boolean isACar(Minecart car);
+	public Boolean isACar(Entity car);
 }

@@ -1,5 +1,6 @@
 package com.useful.ucars;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -9,14 +10,14 @@ import org.bukkit.event.HandlerList;
 public class ucarDeathEvent extends Event implements Cancellable {
 	public Boolean cancelled = false;
 	private static final HandlerList handlers = new HandlerList();
-	private Minecart car = null;
+	private Entity car = null;
 	private Player player = null;
 	
-	public ucarDeathEvent(Minecart vehicle) {
+	public ucarDeathEvent(Entity vehicle) {
 		this.car = vehicle;
 	}
 	
-	public ucarDeathEvent(Minecart vehicle, Player whoKilled) {
+	public ucarDeathEvent(Entity vehicle, Player whoKilled) {
 		this.car = vehicle;
 		this.player = whoKilled;
 	}
@@ -37,7 +38,7 @@ public class ucarDeathEvent extends Event implements Cancellable {
 		this.cancelled = arg0;
 	}
 
-	public Minecart getCar() {
+	public Entity getCar() {
 		return car;
 	}
 

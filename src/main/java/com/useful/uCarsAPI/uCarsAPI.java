@@ -1,21 +1,20 @@
 package com.useful.uCarsAPI;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import com.useful.ucars.ucars;
+import com.useful.ucarsCommon.StatValue;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import com.useful.ucars.ucars;
-import com.useful.ucarsCommon.StatValue;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Some basic API tools that allow plugins to manipulate uCars for their use
@@ -36,6 +35,10 @@ public class uCarsAPI {
 
 	public uCarsAPI() {
 		this.plugin = ucars.plugin;
+	}
+
+	public boolean hasItemCarCheckCriteria(){
+		return this.itemCarChecks.size() > 0;
 	}
 
 	/**
@@ -169,7 +172,7 @@ public class uCarsAPI {
 		return true;
 	}
 
-	public synchronized Boolean runCarChecks(Minecart car) {
+	public synchronized Boolean runCarChecks(Entity car) {
 		for (CarCheck c : carChecks.values()) {
 			if (!c.isACar(car)) {
 				return false;
@@ -341,7 +344,7 @@ public class uCarsAPI {
 		return currentMult;
 	}
 	
-	public synchronized double getMaxCarTurnAmountDegrees(Minecart car, double normalAmount){
+	public synchronized double getMaxCarTurnAmountDegrees(Entity car, double normalAmount){
 		double m = normalAmount;
 		for (CarTurningModifier mod : carRotMods.values()) {
 			m = mod.getModifiedTurningSpeed(car, m);
@@ -349,7 +352,7 @@ public class uCarsAPI {
 		return m;
 	}
 
-	public synchronized Vector getTravelVector(Minecart car, Vector travelVector, double currentMult) {
+	public synchronized Vector getTravelVector(Entity car, Vector travelVector, double currentMult) {
 		for (CarSpeedModifier m : carSpeedMods.values()) {
 			travelVector = m.getModifiedSpeed(car, travelVector, currentMult);
 		}
@@ -529,7 +532,7 @@ public class uCarsAPI {
 	 *            The Minecart to check if it's a car
 	 * @return True if it's a car
 	 */
-	public Boolean checkIfCar(Minecart car) {
+	public Boolean checkIfCar(Entity car) {
 		return ucars.listener.isACar(car);
 	}
 
@@ -572,7 +575,7 @@ public class uCarsAPI {
 	 * 
 	 * @since v17
 	 */
-	public Boolean atTrafficLight(Minecart car){
+	public Boolean atTrafficLight(Entity car){
 		Location loc = car.getLocation();
 		Block under = loc.getBlock().getRelative(BlockFace.DOWN);
 		Block underunder = under.getRelative(BlockFace.DOWN);
