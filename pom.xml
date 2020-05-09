@@ -127,5 +127,5 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <version>22</version>
+    <version>23</version>
 </project>
