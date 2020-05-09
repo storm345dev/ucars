@@ -32,6 +32,7 @@ public class uCarsAPI {
 	private Map<Plugin, CarAccelerationModifier> carAccelMods = new HashMap<Plugin, CarAccelerationModifier>();
 	private Map<Plugin, CarDecelerationModifier> carDecelMods = new HashMap<Plugin, CarDecelerationModifier>();
 	private Map<UUID, Map<String, StatValue>> ucarsMeta = new HashMap<UUID, Map<String, StatValue>>();
+	private boolean uCarsHandlesPlacingCars = true;
 
 	public uCarsAPI() {
 		this.plugin = ucars.plugin;
@@ -582,4 +583,11 @@ public class uCarsAPI {
 		return ucars.listener.atTrafficLight(car, under, underunder, loc);
 	}
 
+	public boolean isuCarsHandlingPlacingCars() {
+		return uCarsHandlesPlacingCars;
+	}
+
+	public void setuCarsHandlesPlacingCars(boolean uCarsHandlesPlacingCars) {
+		this.uCarsHandlesPlacingCars = uCarsHandlesPlacingCars;
+	}
 }

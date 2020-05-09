@@ -1481,7 +1481,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		if (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART) {
+		if (uCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART)) {
 			// Its a minecart!
 			Material iar = block.getType();
 			if (ucars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
