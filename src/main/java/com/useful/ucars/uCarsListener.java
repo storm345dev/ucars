@@ -1,33 +1,17 @@
 package com.useful.ucars;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import com.useful.uCarsAPI.CarRespawnReason;
+import com.useful.uCarsAPI.uCarCrashEvent;
+import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.controls.ControlSchemeManager;
+import com.useful.ucars.util.UEntityMeta;
+import com.useful.ucarsCommon.StatValue;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,24 +25,19 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.VehicleDamageEvent;
-import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.event.vehicle.VehicleUpdateEvent;
+import org.bukkit.event.vehicle.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
-import com.useful.uCarsAPI.CarRespawnReason;
-import com.useful.uCarsAPI.uCarCrashEvent;
-import com.useful.uCarsAPI.uCarRespawnEvent;
-import com.useful.uCarsAPI.uCarsAPI;
-import com.useful.ucars.controls.ControlSchemeManager;
-import com.useful.ucars.util.UEntityMeta;
-import com.useful.ucarsCommon.StatValue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 public class uCarsListener implements Listener {
 	private ucars plugin;
@@ -522,7 +501,13 @@ public class uCarsListener implements Listener {
 		if(!driven){
 			return; //Forget extra car physics if minecart isn't manned, takes too much strain with extra entities
 		}
-		
+
+		Vector travel = vehicle.getVelocity();
+
+		if(event instanceof ucarUpdateEvent){
+			travel = ((ucarUpdateEvent) event).getTravelVector().clone();
+		}
+
 		if(!(event instanceof ucarUpdateEvent)){ //If it's just the standard every tick vehicle update event...
 			if(UEntityMeta.hasMetadata(vehicle, "car.vec")){ //If it has the 'car.vec' meta, we need to use RACE CONTROLS on this vehicle
 				ucarUpdateEvent evt = (ucarUpdateEvent) UEntityMeta.getMetadata(vehicle, "car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with a better connection fire more control events and move marginally faster)
@@ -661,6 +646,41 @@ public class uCarsListener implements Listener {
 		}
 		if (recalculateHealth) {
 			updateCarHealthHandler(car, health);
+		}
+
+		float a = 1;
+		if(event instanceof ucarUpdateEvent && ucars.smoothDrive){ //If acceleration is enabled
+			a = ControlInput.getAccel(((ucarUpdateEvent)event).getPlayer(), ((ucarUpdateEvent)event).getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+			travel.setX(travel.getX() * a); //Multiple only x
+			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
+		}
+		Vector dirVec = travel.clone().setY(0).normalize();
+
+		if(dirVec.lengthSquared() > 0.01 /*dirVec.lengthSquared() > 0.1 && Math.abs(a) > 0.2 && *//*event.getDir() != null && !event.getDir().equals(CarDirection.NONE)*/){
+			Location dirLoc = new Location(car.getWorld(), 0, 0, 0); //Make sure car always faces the RIGHT "forwards"
+			if(event instanceof ucarUpdateEvent && ((ucarUpdateEvent) event).getDir().equals(CarDirection.BACKWARDS)){
+				dirVec = dirVec.multiply(-1);
+			}
+			dirLoc.setDirection(dirVec);
+			float yaw = dirLoc.getYaw()+90;
+			/*if(event.getDir().equals(CarDirection.BACKWARDS)){
+				yaw += 180;
+			}*/
+			if(a < 0){
+				yaw -= 180;
+			}
+			while(yaw < 0){
+				yaw = 360 + yaw;
+			}
+			while(yaw >= 360){
+				yaw = yaw - 360;
+			}
+			CartOrientationUtil.setYaw(car, yaw);
+			/*WrapperPlayServerEntityLook p = new WrapperPlayServerEntityLook();
+			p.setEntityID(car.getEntityId());
+			p.setYaw(yaw);
+			p.setPitch(car.getLocation().getPitch());
+			p.sendPacket(player);*/
 		}
 		// End health calculations
 
@@ -815,32 +835,7 @@ public class uCarsListener implements Listener {
 		} catch (Exception e2) {
 			dirVec = travel.clone().normalize();
 		}*/
-		if(dirVec.lengthSquared() > 0.01 && /*dirVec.lengthSquared() > 0.1 && Math.abs(a) > 0.2 && */event.getDir() != null && !event.getDir().equals(CarDirection.NONE)){
-			Location dirLoc = new Location(car.getWorld(), 0, 0, 0); //Make sure car always faces the RIGHT "forwards"
-			if(event.getDir().equals(CarDirection.BACKWARDS)){
-				dirVec = dirVec.multiply(-1);
-			}
-			dirLoc.setDirection(dirVec);
-			float yaw = dirLoc.getYaw()+90;
-			/*if(event.getDir().equals(CarDirection.BACKWARDS)){
-				yaw += 180;
-			}*/
-			if(a < 0){
-				yaw -= 180;
-			}
-			while(yaw < 0){
-				yaw = 360 + yaw;
-			}
-			while(yaw >= 360){
-				yaw = yaw - 360;
-			}
-			CartOrientationUtil.setYaw(car, yaw);
-			/*WrapperPlayServerEntityLook p = new WrapperPlayServerEntityLook();
-			p.setEntityID(car.getEntityId());
-			p.setYaw(yaw);
-			p.setPitch(car.getLocation().getPitch());
-			p.sendPacket(player);*/
-		}
+
 		
 		double multiplier = defaultSpeed;
 		try {
@@ -1316,7 +1311,7 @@ public class uCarsListener implements Listener {
 		while (passenger.getPassenger() != null) {
 			passenger = passenger.getPassenger();
 		}
-		if(passenger.equals(ent)){
+		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
 			return; //Player being hit is in the car
 		}
 		

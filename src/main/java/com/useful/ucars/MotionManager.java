@@ -46,6 +46,9 @@ public class MotionManager {
 			return;
 		}
 		final Vehicle car = (Vehicle) ent;
+		if(!player.equals(car.getPassenger())){
+			return; //Only allow 1 driver
+		}
 		// Location loc = car.getLocation();
 		// Vector carD = loc.getDirection();
 		Vector plaD = player.getEyeLocation().getDirection();
