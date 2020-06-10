@@ -369,6 +369,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.effectBlocks.enable")) {
 				config.set("general.cars.effectBlocks.enable", true);
 			}
+			if (!config.contains("general.cars.boostsEnable")) {
+				config.set("general.cars.boostsEnable", true);
+			}
 			if (!config.contains("general.cars.lowBoost")) {
 				config.set("general.cars.lowBoost", new String[]{"COAL"});
 			}

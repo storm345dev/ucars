@@ -1469,7 +1469,7 @@ public class uCarsListener implements Listener {
 		if(event.getHand() == null){
 			return;
 		}
-		if(event.getHand().equals(EquipmentSlot.OFF_HAND) && !Bukkit.getServerName().toLowerCase().contains("mta")){
+		if(event.getHand().equals(EquipmentSlot.OFF_HAND)){
 			return;
 		}
 		if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -1544,6 +1544,9 @@ public class uCarsListener implements Listener {
 					event.getPlayer().performCommand("ufuel view");
 				}
 			}
+		}
+		if(ucars.config.getBoolean("general.cars.boostsEnable")){
+			return;
 		}
 		List<String> LowBoostRaw = ucars.config.getStringList("general.cars.lowBoost");
 		List<String> MedBoostRaw = ucars.config.getStringList("general.cars.medBoost");
