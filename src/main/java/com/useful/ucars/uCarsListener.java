@@ -930,13 +930,13 @@ public class uCarsListener implements Listener {
 		Block block = before.getBlock(); //Block we're driving into
 		Block above = block.getRelative(BlockFace.UP);
 		
-		if((!(block.isEmpty() || block.isLiquid())
+		/*if((!(block.isEmpty() || block.isLiquid())
 				&& !(above.isEmpty() || above.isLiquid())
 				&& !(block.getType().name().toLowerCase().contains("step"))
-				/*&& !(above.getType().name().toLowerCase().contains("step"))*/)
+				*//*&& !(above.getType().name().toLowerCase().contains("step"))*//*)
 		){
-			ControlInput.setAccel(player, 0); //They hit a wall head on
-		}
+			*//*ControlInput.setAccel(player, 0); //They hit a wall head on*//*
+		}*/
 		
 		// Calculate collision health
 		if (block.getType().equals(Material.CACTUS)) {
