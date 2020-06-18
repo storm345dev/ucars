@@ -11,6 +11,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -552,7 +554,7 @@ public class uCarsListener implements Listener {
 				&& !UEntityMeta.hasMetadata(car, "car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping a block)
 														// in most occasions
 			if (UEntityMeta.hasMetadata(car, "car.jumping")) {
-				vel.setY(2.5);
+				/*vel.setY(2.5);*/
 				UEntityMeta.removeMetadata(car, "car.jumping");
 			} else if (UEntityMeta.hasMetadata(car, "car.jumpFull")) {
 				// Jumping a full block
@@ -887,26 +889,51 @@ public class uCarsListener implements Listener {
 		}*/
 		
 		Location before = car.getLocation();
-		float dir = player.getLocation().getYaw();
+		//float dir = player.getLocation().getYaw();
+		float dir = car.getLocation().clone().setDirection(travel).getYaw();
 		BlockFace faceDir = ClosestFace.getClosestFace(dir);
 		// before.add(faceDir.getModX(), faceDir.getModY(),
 		// faceDir.getModZ());
-		double fx = travel.getX();
+
+		//Read the vehicle length if it exists
+		double length = 0;
+		Object carNMSHandle = Reflect.getHandle(car);
+		Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"length");
+		if(!lenField.isAccessible()){
+			lenField.setAccessible(true);
+		}
+		try {
+			length = lenField.getDouble(carNMSHandle);
+		} catch (Exception e) {
+			e.printStackTrace();
+			length = 0;
+		}
+
+		double fx = travel.getX()*1;
 		if (Math.abs(fx) > 1) {
 			fx = faceDir.getModX();
 		}
-		double fz = travel.getZ();
+		double fz = travel.getZ()*1;
 		if (Math.abs(fz) > 1) {
 			fz = faceDir.getModZ();
 		}
-		before.add(new Vector(fx, faceDir.getModY(), fz));
+
+		//Compute unit vector in car direction of travel
+		Vector unitVec = new Vector(faceDir.getModX(),0,faceDir.getModZ());
+		if(unitVec.lengthSquared() > 1){
+			unitVec.multiply(1/(double)Math.sqrt(2));
+		}
+
+		before=before.add(new Vector(fx, faceDir.getModY(), fz));
+		//Add the length of the car in so that we are able to climb up blocks with an entity that has length
+		before=before.add(unitVec.clone().multiply(length*0.5));
 		Block block = before.getBlock(); //Block we're driving into
 		Block above = block.getRelative(BlockFace.UP);
 		
 		if((!(block.isEmpty() || block.isLiquid())
 				&& !(above.isEmpty() || above.isLiquid())
 				&& !(block.getType().name().toLowerCase().contains("step"))
-				&& !(above.getType().name().toLowerCase().contains("step")))
+				/*&& !(above.getType().name().toLowerCase().contains("step"))*/)
 		){
 			ControlInput.setAccel(player, 0); //They hit a wall head on
 		}
@@ -1167,14 +1194,15 @@ public class uCarsListener implements Listener {
 		if (UEntityMeta.hasMetadata(car, "car.ascending")) {
 			UEntityMeta.removeMetadata(car, "car.ascending");
 		}
+		//player.sendMessage(bType+" "+faceDir+" "+fx+" "+fz);
 		// Make cars jump if needed
 		if (inStairs ||
 				 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
 			if (bidU == Material.AIR || bidU == Material.LAVA 
 					|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
-					|| bidU == Material.STATIONARY_WATER || bidU == Material.STEP 
+					|| bidU == Material.STATIONARY_WATER /*|| bidU == Material.STEP */
 					|| bidU == Material.CARPET
-					|| bidU == Material.DOUBLE_STEP || inStairs) { //Clear air above
+					/*|| bidU == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
 				double y = 1.1;
@@ -1211,7 +1239,7 @@ public class uCarsListener implements Listener {
 				}
 				if (!ignore) {
 					// Do ascent
-					travel.setY(y);
+					travel.setY(block.getY()+y-car.getLocation().getY());
 					if (calculated) {
 						UEntityMeta.setMetadata(car, "car.jumping", new StatValue(null,
 								plugin));
