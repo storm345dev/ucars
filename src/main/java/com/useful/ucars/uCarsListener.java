@@ -1842,11 +1842,13 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void quit(PlayerQuitEvent event){
 		final Player pl = event.getPlayer();
-		Bukkit.getScheduler().runTaskLater(ucars.plugin, new Runnable(){
+		Bukkit.getScheduler().runTaskLaterAsynchronously(ucars.plugin, new Runnable(){
 
 			@Override
 			public void run() {
-				UEntityMeta.removeAllMeta(pl);
+				if(!pl.isOnline()) {
+					UEntityMeta.removeAllMeta(pl);
+				}
 				return;
 			}}, 100l);
 	}
