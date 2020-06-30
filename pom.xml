@@ -114,7 +114,13 @@
            <artifactId>VaultAPI</artifactId>
            <version>1.7</version>
            <scope>provided</scope>
-        </dependency>
+           <exclusions>
+               <exclusion>  <!-- declare the exclusion here -->
+                   <groupId>org.bukkit</groupId>
+                   <artifactId>bukkit</artifactId>
+               </exclusion>
+           </exclusions>
+       </dependency>
 
     <!--Bukkit API-->
     </dependencies>
