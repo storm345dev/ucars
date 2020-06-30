@@ -898,7 +898,7 @@ public class uCarsListener implements Listener {
 		//Read the vehicle length if it exists
 		double length = 0;
 		Object carNMSHandle = Reflect.getHandle(car);
-		Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"length");
+		Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"width");
 		if(!lenField.isAccessible()){
 			lenField.setAccessible(true);
 		}
@@ -924,10 +924,25 @@ public class uCarsListener implements Listener {
 			unitVec.multiply(1/(double)Math.sqrt(2));
 		}
 
-		before=before.add(new Vector(fx, faceDir.getModY(), fz));
+		Vector faceDirVec = new Vector(fx, faceDir.getModY(), fz);
+		before=before.add(faceDirVec);
 		//Add the length of the car in so that we are able to climb up blocks with an entity that has length
+		Vector toRightOfFaceDir = unitVec.clone().crossProduct(new Vector(0,1,0));
 		before=before.add(unitVec.clone().multiply(length*0.5));
+		Location frontRight = before.clone().add(unitVec.clone().multiply(length*0.5));
+		Location frontLeft = before.clone().add(unitVec.clone().multiply(length*-0.5));
 		Block block = before.getBlock(); //Block we're driving into
+		Block frontRightInFront = frontRight.getBlock();
+		Block frontLeftInFront = frontLeft.getBlock();
+		//Hackish way to make this able to jump for wider vehicles
+		if(ignoreJump.contains(block.getType().name())){
+			if(!ignoreJump.contains(frontRightInFront.getType().name())){
+				block = frontRightInFront;
+			}
+			else if(!ignoreJump.contains(frontLeftInFront.getType().name())){
+				block = frontLeftInFront;
+			}
+		}
 		Block above = block.getRelative(BlockFace.UP);
 		
 		/*if((!(block.isEmpty() || block.isLiquid())
@@ -1184,7 +1199,7 @@ public class uCarsListener implements Listener {
 		Material bidU = bidUpLoc.getBlock().getType();
 		Boolean cont = true;
 		// check it's not a barrier
-		cont = !plugin.isBlockEqualToConfigIds(barriers, block);
+		cont = !plugin.isBlockEqualToConfigIds(barriers, block) && !plugin.isBlockEqualToConfigIds(barriers, frontLeftInFront) && !plugin.isBlockEqualToConfigIds(barriers, frontRightInFront);
 		
 		Boolean inStairs = false;
 		Material carBlock = car.getLocation().getBlock().getType();
@@ -1198,6 +1213,8 @@ public class uCarsListener implements Listener {
 		// Make cars jump if needed
 		if (inStairs ||
 				 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
+/*			player.sendMessage("Obstruction ahead");
+			player.sendMessage("above: "+bidU);*/
 			if (bidU == Material.AIR || bidU == Material.LAVA 
 					|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
 					|| bidU == Material.STATIONARY_WATER /*|| bidU == Material.STEP */
