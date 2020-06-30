@@ -653,6 +653,10 @@ public class uCarsListener implements Listener {
 		float a = 1;
 		if(event instanceof ucarUpdateEvent && ucars.smoothDrive){ //If acceleration is enabled
 			a = ControlInput.getAccel(((ucarUpdateEvent)event).getPlayer(), ((ucarUpdateEvent)event).getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+			CarDirection driveDir = ControlInput.getCurrentDriveDir(player);
+			if(driveDir.equals(CarDirection.BACKWARDS)){
+				a *= 0.2; //0.2 speed backwards
+			}
 			travel.setX(travel.getX() * a); //Multiple only x
 			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
 		}
@@ -661,6 +665,10 @@ public class uCarsListener implements Listener {
 		if(dirVec.lengthSquared() > 0.01 /*dirVec.lengthSquared() > 0.1 && Math.abs(a) > 0.2 && *//*event.getDir() != null && !event.getDir().equals(CarDirection.NONE)*/){
 			Location dirLoc = new Location(car.getWorld(), 0, 0, 0); //Make sure car always faces the RIGHT "forwards"
 			if(event instanceof ucarUpdateEvent && ((ucarUpdateEvent) event).getDir().equals(CarDirection.BACKWARDS)){
+				dirVec = dirVec.multiply(-1);
+			}
+			CarDirection driveDir = ControlInput.getCurrentDriveDir(player);
+			if(driveDir.equals(CarDirection.BACKWARDS)){
 				dirVec = dirVec.multiply(-1);
 			}
 			dirLoc.setDirection(dirVec);
@@ -827,6 +835,10 @@ public class uCarsListener implements Listener {
 		float a = 1;
 		if(ucars.smoothDrive){ //If acceleration is enabled
 			a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
+			CarDirection driveDir = ControlInput.getCurrentDriveDir(event.getPlayer());
+			if(driveDir.equals(CarDirection.BACKWARDS)){
+				a *= 0.2; //0.2 speed backwards
+			}
 			travel.setX(travel.getX() * a); //Multiple only x
 			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
 		}

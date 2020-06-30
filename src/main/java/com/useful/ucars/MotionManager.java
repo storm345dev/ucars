@@ -87,7 +87,8 @@ public class MotionManager {
 			carDirection = null;
 		}
 		if(carDirection == null){
-			carDirection = plaD.clone().setY(0).normalize();
+			carDirection = car.getLocation().getDirection();
+			//carDirection = plaD.clone().setY(0).normalize();
 		}
 		if(keyboardSteering || ucars.turningCircles){
 			try {
@@ -98,7 +99,8 @@ public class MotionManager {
 				carDirection = null;
 			}
 			if(carDirection == null){
-				carDirection = plaD.clone().setY(0).normalize();
+				carDirection = car.getLocation().getDirection();
+				//carDirection = plaD.clone().setY(0).normalize();
 			}
 		}
 		
@@ -136,6 +138,8 @@ public class MotionManager {
 			side = 1;
 			turning = true;
 		}
+
+		//player.sendMessage(""+ControlInput.getCurrentAccel(player)+" "+ControlInput.getCurrentDriveDir(player));
 		
 		long timeSinceOnGround = System.currentTimeMillis() - ControlInput.getFirstAirTime(player);
 		
@@ -171,9 +175,9 @@ public class MotionManager {
 			//Rotate 'carDirection' vector according to where they're looking; max of rotMod degrees
 			float pYaw = (float) Math.toDegrees(Math.atan2(plaD.getX() , -plaD.getZ())); //Calculate yaw from 'player direction' vector
 			float cYaw = (float) Math.toDegrees(Math.atan2(carDirection.getX() , -carDirection.getZ())); //Calculate yaw from 'carDirection' vector
-			if(ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) && ControlInput.getCurrentAccel(player) > 0){
+			/*if(ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS)*//* && ControlInput.getCurrentAccel(player) > 0*//*){
 				pYaw += 180;
-			}
+			}*/
 			float yawDiff = pYaw - cYaw;
 			if(yawDiff <= -180){
 				yawDiff += 360;
@@ -188,7 +192,7 @@ public class MotionManager {
 			else if(yawDiff > rotMod){
 				yawDiff = (float) rotMod;
 			}
-			carDirection = rotateXZVector3dDegrees(carDirection, ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -yawDiff : yawDiff);
+			carDirection = rotateXZVector3dDegrees(carDirection, yawDiff/*ControlInput.getCurrentDriveDir(player).equals(CarDirection.BACKWARDS) ? -yawDiff : yawDiff*/);
 		}
 		if(keyboardSteering || ucars.turningCircles){
 			UEntityMeta.removeMetadata(car, "ucarsSteeringDir");
