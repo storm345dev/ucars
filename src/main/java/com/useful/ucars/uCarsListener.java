@@ -11,7 +11,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -1346,10 +1345,15 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Entity ent = event.getEntity(); //copCar
-		if(((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npc"))
-				|| UEntityMeta.hasMetadata(cart, "trade.npc") && UEntityMeta.hasMetadata(ent, "trade.npc"))
+		if(((cart.hasMetadata("trade.npc") && ent.hasMetadata("trade.npcvillager"))
+				|| UEntityMeta.hasMetadata(cart, "trade.npc") && UEntityMeta.hasMetadata(ent, "trade.npcvillager"))
 				|| ((cart.hasMetadata("trade.npc") && ent.getVehicle() != null && ent.getVehicle().hasMetadata("trade.npc"))
 						&& UEntityMeta.hasMetadata(cart, "trade.npc") && ent.getVehicle() != null && UEntityMeta.hasMetadata(ent.getVehicle(), "trade.npc"))){
+			event.setCancelled(true);
+			event.setCollisionCancelled(false);
+			return;
+		}
+		if(UEntityMeta.hasMetadata(ent, "IGNORE_COLLISIONS")){
 			event.setCancelled(true);
 			event.setCollisionCancelled(false);
 			return;
