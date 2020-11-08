@@ -11,6 +11,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -1177,7 +1177,6 @@ public class uCarsListener implements Listener {
 							}
 							car = (Vehicle) s.getWorld().spawnEntity(
 									toTele, EntityType.MINECART);
-							final Vehicle v = car;
 							UEntityMeta.setMetadata(car, "carhealth", health);
 							if (raceCar) {
 								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
@@ -1191,13 +1190,13 @@ public class uCarsListener implements Listener {
 							else{
 								player.sendMessage(ucars.colors.getTp()
 										+ "Teleporting...");
-								car.setPassenger(player);
+								car.addPassenger(player);
 								final Vehicle ucar = car;
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 
 									@Override
 									public void run() {
-										ucar.setPassenger(player); //For the sake of uCarsTrade
+										ucar.addPassenger(player); //For the sake of uCarsTrade
 										return;
 									}}, 2l);
 								car.setVelocity(travel);
@@ -1376,13 +1375,13 @@ public class uCarsListener implements Listener {
 			event.setCollisionCancelled(false);
 			return;
 		}*/
-		if (cart.getPassenger() == null) { //Don't both to calculate with PiguCarts, etc...
+		if (cart.getPassengers().get(0) == null) { //Don't both to calculate with PiguCarts, etc...
 			return;
 		}
 		
-		Entity passenger = cart.getPassenger();
-		while (passenger.getPassenger() != null) {
-			passenger = passenger.getPassenger();
+		Entity passenger = cart.getPassengers().get(0);
+		while (passenger.getPassengers().get(0) != null) {
+			passenger = passenger.getPassengers().get(0);
 		}
 		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
 			return; //Player being hit is in the car
@@ -1444,7 +1443,7 @@ public class uCarsListener implements Listener {
 			CarHealthData health = getCarHealthHandler(cart);
 			double dmg = crash_damage;
 			if (dmg > 0) {
-				if (cart.getPassenger() instanceof Player) {
+				if (cart.getPassengers().get(0) instanceof Player) {
 					double max = defaultHealth;
 					double left = health.getHealth() - dmg;
 					ChatColor color = ChatColor.YELLOW;
@@ -1454,7 +1453,7 @@ public class uCarsListener implements Listener {
 					if (left < (max * 0.33)) {
 						color = ChatColor.RED;
 					}
-					((Player) cart.getPassenger())
+					((Player) cart.getPassengers().get(0))
 							.sendMessage(ChatColor.RED + "-" + ((int)dmg) + "[crash]"
 									+ color + " (" + ((int)left) + ")");
 				}
@@ -1579,7 +1578,7 @@ public class uCarsListener implements Listener {
 								+ Lang.get("lang.messages.noPlaceHere"));
 				return;
 			}
-			if(!plugin.API.runCarChecks(event.getPlayer().getItemInHand())){
+			if(!plugin.API.runCarChecks(event.getPlayer().getInventory().getItemInMainHand())){
 				return;
 			}
 			Location loc = block.getLocation().add(0, 1.5, 0);
@@ -1605,15 +1604,15 @@ public class uCarsListener implements Listener {
 					ucars.colors.getInfo() + Lang.get("lang.messages.place"));
 			event.getPlayer().sendMessage(ucars.colors.getInfo()+"You can also use 'jump' to change driving mode!");
 			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-				ItemStack placed = event.getPlayer().getItemInHand();
+				ItemStack placed = event.getPlayer().getInventory().getItemInMainHand();
 				placed.setAmount(placed.getAmount() - 1);
-				event.getPlayer().getInventory().setItemInHand(placed);
+				event.getPlayer().getInventory().setItemInMainHand(placed);
 			}
 		}
 		if (inACar(event.getPlayer())) {
 			if (ucars.config.getBoolean("general.cars.fuel.enable")) {
 				if (plugin.isItemEqualToConfigIds(ucars.config.getStringList(
-						"general.cars.fuel.check"), event.getPlayer().getItemInHand())) {
+						"general.cars.fuel.check"), event.getPlayer().getInventory().getItemInMainHand())) {
 					event.getPlayer().performCommand("ufuel view");
 				}
 			}
@@ -1627,7 +1626,7 @@ public class uCarsListener implements Listener {
 		// int LowBoostId = ucars.config.getInt("general.cars.lowBoost");
 		// int MedBoostId = ucars.config.getInt("general.cars.medBoost");
 		// int HighBoostId = ucars.config.getInt("general.cars.highBoost");
-		ItemStack inHand = event.getPlayer().getItemInHand();
+		ItemStack inHand = event.getPlayer().getInventory().getItemInMainHand();
 		String bid = inHand.getType().name().toUpperCase(); // booster material name
 		int bdata = inHand.getDurability();
 		ItemStack remove = inHand.clone();
@@ -1809,7 +1808,7 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void wirelessRedstone(BlockRedstoneEvent event){
 		Block block = event.getBlock();
-		if(!block.getType().equals(Material.LEGACY_REDSTONE_LAMP_ON) && !block.getType().equals(Material.LEGACY_REDSTONE_LAMP_OFF)){
+		if(!block.getType().equals(Material.REDSTONE_LAMP)){
 			return;
 		}
 		boolean on = block.isBlockPowered();
@@ -1913,7 +1912,7 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void trafficIndicators(BlockRedstoneEvent event){
 		Block block = event.getBlock();
-		if(!block.getType().equals(Material.LEGACY_REDSTONE_LAMP_ON) && !block.getType().equals(Material.LEGACY_REDSTONE_LAMP_OFF)){
+		if(!block.getType().equals(Material.REDSTONE_LAMP)){
 			return;
 		}
 		boolean on = block.isBlockPowered();
@@ -2003,12 +2002,14 @@ public class uCarsListener implements Listener {
 									.getY() + 4) && !found; y++) {
 								Location light = new Location(
 										loc.getWorld(), locX, y, locZ);
-								if (light.getBlock().getType() == Material.LEGACY_REDSTONE_LAMP_OFF) {
+								Block lightBlock = light.getBlock();
+								Lightable lightData = (Lightable) lightBlock.getBlockData();
+								if (lightBlock.getType() == Material.REDSTONE_TORCH && !lightData.isLit()) {
 									if (trafficlightSignOn(light.getBlock())) {
 										found = true;
 										on = false;
 									}
-								} else if (light.getBlock().getType() == Material.LEGACY_REDSTONE_TORCH_ON) {
+								} else if (lightBlock.getType() == Material.REDSTONE_TORCH && lightData.isLit()) {
 									if (trafficlightSignOn(light.getBlock())) {
 										found = true;
 										on = true;
