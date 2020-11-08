@@ -54,7 +54,7 @@ public abstract class IdMaterialConverter {
                 retmap.put(32, Material.DEAD_BUSH);
                 retmap.put(33, Material.PISTON_BASE);
                 retmap.put(34, Material.PISTON_EXTENSION);
-                retmap.put(35, Material.WOOL);
+                retmap.put(35, Material.LEGACY_WOOL);
                 retmap.put(36, Material.PISTON_MOVING_PIECE);
                 retmap.put(37, Material.YELLOW_FLOWER);
                 retmap.put(38, Material.RED_ROSE);

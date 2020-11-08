@@ -31,7 +31,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("ucars")) {
 			sender.sendMessage(ucars.colors.getInfo() + "Ucars v"
 					+ plugin.getDescription().getVersion()
-					+ " -by storm345- is working!");
+					+ " -by storm345 (Bugfixes by Jakllp33)- is working!");
 			sender.sendMessage(ucars.colors.getTitle() + "[Low Boost:]"
 					+ ucars.colors.getInfo()
 					+ Lang.get("lang.messages.rightClickWith")

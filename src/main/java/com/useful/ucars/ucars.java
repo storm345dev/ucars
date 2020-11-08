@@ -440,7 +440,7 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.roadBlocks.ids")) {
 				config.set("general.cars.roadBlocks.ids", new String[]{
-						"WOOL:15","WOOL:8","WOOL:0","WOOL:7"});
+						"black_wool","white_wool","gray_wool","light_gray_wool"});
 			}
 			if (!config.contains("general.cars.licenses.enable")) {
 				config.set("general.cars.licenses.enable", false);
@@ -688,16 +688,25 @@ public class ucars extends JavaPlugin {
 					return true;
 				}
 			} else {
-				final String mat = parts[0];
-				final int data = Integer.parseInt(parts[1]);
-				final int bdata = block.getData(); //TODO Alternative to .getData()
-				if (mat.equalsIgnoreCase(block.getType().name()) && bdata == data) {
+				//TODO Alternative to .getData()
+				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData())) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+	public final Boolean isBlockEqualToConfigIds(List<String> rawIds, String blockName) {
+		// This is just for road check (so one can use "e.g. black_wool" instead of "WOOL:15"
+		for (String raw : rawIds) {
+			if (raw.toUpperCase().equals(blockName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	public final Boolean isItemEqualToConfigIds(List<String> rawIds, ItemStack item) {
 		// split by : then compare!
 		for (String raw : rawIds) {

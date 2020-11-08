@@ -151,7 +151,7 @@ public class uCarsListener implements Listener {
 			ids.addAll(ucars.config.getStringList("general.cars.HighblockBoost"));
 			ids.addAll(ucars.config.getStringList("general.cars.ResetblockBoost"));
 			ids.addAll(ucars.config.getStringList("general.cars.jumpBlock"));
-			ids.add("AIR");
+			//ids.add("AIR");
 			ids.add("LAVA");
 			ids.add("STATIONARY_LAVA");
 			ids.add("WATER");
@@ -260,23 +260,45 @@ public class uCarsListener implements Listener {
 	/*
 	 * Checks if a minecart is a car (Public for traincarts support)
 	 */
+	private String getBehindBlock(Entity cart) {
+		Location loc = cart.getLocation();
+		double direc = 0.5;
+		double vx = cart.getVelocity().getX();
+		double vz = cart.getVelocity().getZ();
+		if(vx < 2.5 && vx > -2.5 && vx != 0) {
+			if(vx > 0) {
+				direc = -0.5;
+			}
+			loc.setX(loc.getX() + direc);
+			return loc.getBlock().getType().name().toUpperCase();
+		} else if(vz < 2.5 && vz > -2.5 && vz != 0) {
+			if(vz > 0) {
+				direc = -0.5;
+			}
+			loc.setZ(loc.getZ() + direc);
+			return loc.getBlock().getType().name().toUpperCase();
+		}
+		return("null");
+	}
+	
 	public boolean isACar(Entity cart) {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
-		}
+		}		
 		Location loc = cart.getLocation();
 		Block b = loc.getBlock();
 		String mat = b.getType().name().toUpperCase();
+		String behindmat = getBehindBlock(cart);		
 		String underMat = b.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
 		String underUnderMat = b.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
 		List<String> checks = new ArrayList<String>();
 		if(ucars.ignoreRails){
 			checks.add("POWERED_RAIL");
-			checks.add("RAILS");
+			checks.add("RAIL");
 			checks.add("DETECTOR_RAIL");
 			checks.add("ACTIVATOR_RAIL");
 		}
-		if(checks.contains(mat) 
+		if(checks.contains(mat) || checks.contains(behindmat)
 				|| checks.contains(underMat) 
 				|| checks.contains(underUnderMat)){
 			return false;
@@ -548,7 +570,7 @@ public class uCarsListener implements Listener {
 		
 		Vector vel = car.getVelocity();
 		
-		if (car.getVelocity().getY() > 0.1
+		if (vel.getY() > 0.1
 				&& !UEntityMeta.hasMetadata(car, "car.falling")
 				&& !UEntityMeta.hasMetadata(car, "car.ascending")) { // Fix jumping bug (Where car just flies up infinitely high when clipping a block)
 														// in most occasions
@@ -557,7 +579,7 @@ public class uCarsListener implements Listener {
 				UEntityMeta.removeMetadata(car, "car.jumping");
 			} else if (UEntityMeta.hasMetadata(car, "car.jumpFull")) {
 				// Jumping a full block
-				if (car.getVelocity().getY() > 10) {
+				if (vel.getY() > 10) {
 					vel.setY(5);
 				}
 				UEntityMeta.removeMetadata(car, "car.jumpFull");
@@ -602,7 +624,7 @@ public class uCarsListener implements Listener {
 		Boolean recalculateHealth = false;
 		// Calculate health based on location
 		if (normalblock.getType().equals(Material.WATER)
-				|| normalblock.getType().equals(Material.STATIONARY_WATER)) {
+				|| normalblock.getType().equals(Material.LEGACY_STATIONARY_WATER)) {
 			double damage = damage_water;
 			if (damage > 0) {
 				if (driven) {
@@ -624,7 +646,7 @@ public class uCarsListener implements Listener {
 			}
 		}
 		if (normalblock.getType().equals(Material.LAVA)
-				|| normalblock.getType().equals(Material.STATIONARY_LAVA)) {
+				|| normalblock.getType().equals(Material.LEGACY_STATIONARY_LAVA)) {
 			double damage = damage_lava;
 			if (damage > 0) {
 				if (driven) {
@@ -789,7 +811,8 @@ public class uCarsListener implements Listener {
 		if (roadBlocksEnabled) {
 			/*Location loc = car.getLocation().getBlock()
 					.getRelative(BlockFace.DOWN).getLocation();*/
-			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underblock)){
+			
+			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underblock.getType().name().toUpperCase())){
 				//Not a road block being driven on, so don't move
 				return;
 			}
@@ -908,17 +931,6 @@ public class uCarsListener implements Listener {
 
 		//Read the vehicle length if it exists
 		double length = 0;
-		Object carNMSHandle = Reflect.getHandle(car);
-		Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"width");
-		if(!lenField.isAccessible()){
-			lenField.setAccessible(true);
-		}
-		try {
-			length = lenField.getDouble(carNMSHandle);
-		} catch (Exception e) {
-			e.printStackTrace();
-			length = 0;
-		}
 
 		double fx = travel.getX()*1;
 		if (Math.abs(fx) > 1) {
@@ -1073,7 +1085,7 @@ public class uCarsListener implements Listener {
 		Material bType = block.getType();
 		int bData = block.getData();
 		Boolean fly = false; // Fly is the 'easter egg' slab elevator
-		if (normalblock.getRelative(faceDir).getType() == Material.STEP) {
+		if (normalblock.getRelative(faceDir).getType() == Material.LEGACY_STEP) {
 			// If looking at slabs
 			fly = true;
 		}
@@ -1227,9 +1239,9 @@ public class uCarsListener implements Listener {
 /*			player.sendMessage("Obstruction ahead");
 			player.sendMessage("above: "+bidU);*/
 			if (bidU == Material.AIR || bidU == Material.LAVA 
-					|| bidU == Material.STATIONARY_LAVA || bidU == Material.WATER
-					|| bidU == Material.STATIONARY_WATER /*|| bidU == Material.STEP */
-					|| bidU == Material.CARPET
+					|| bidU == Material.LEGACY_STATIONARY_LAVA || bidU == Material.WATER
+					|| bidU == Material.LEGACY_STATIONARY_WATER /*|| bidU == Material.STEP */
+					|| bidU == Material.LEGACY_CARPET
 					/*|| bidU == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
@@ -1540,7 +1552,7 @@ public class uCarsListener implements Listener {
 		if (uCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART)) {
 			// Its a minecart!
 			Material iar = block.getType();
-			if (ucars.ignoreRails && (iar == Material.RAILS || iar == Material.ACTIVATOR_RAIL 
+			if (ucars.ignoreRails && (iar == Material.RAIL || iar == Material.ACTIVATOR_RAIL 
 					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
@@ -1733,7 +1745,7 @@ public class uCarsListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	void minecartBreak(VehicleDamageEvent event) {
 		if (!(event.getVehicle() instanceof Vehicle)
-				|| !(event.getAttacker() instanceof Player)) {
+				|| !(event.getAttacker() instanceof Player) || !event.getVehicle().getType().toString().toUpperCase().equals("MINECART")) {
 			return;
 		}
 		if (event.isCancelled()) {
@@ -1797,7 +1809,7 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void wirelessRedstone(BlockRedstoneEvent event){
 		Block block = event.getBlock();
-		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
+		if(!block.getType().equals(Material.LEGACY_REDSTONE_LAMP_ON) && !block.getType().equals(Material.LEGACY_REDSTONE_LAMP_OFF)){
 			return;
 		}
 		boolean on = block.isBlockPowered();
@@ -1901,7 +1913,7 @@ public class uCarsListener implements Listener {
 	@EventHandler
 	void trafficIndicators(BlockRedstoneEvent event){
 		Block block = event.getBlock();
-		if(!block.getType().equals(Material.REDSTONE_LAMP_ON) && !block.getType().equals(Material.REDSTONE_LAMP_OFF)){
+		if(!block.getType().equals(Material.LEGACY_REDSTONE_LAMP_ON) && !block.getType().equals(Material.LEGACY_REDSTONE_LAMP_OFF)){
 			return;
 		}
 		boolean on = block.isBlockPowered();
@@ -1991,12 +2003,12 @@ public class uCarsListener implements Listener {
 									.getY() + 4) && !found; y++) {
 								Location light = new Location(
 										loc.getWorld(), locX, y, locZ);
-								if (light.getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
+								if (light.getBlock().getType() == Material.LEGACY_REDSTONE_LAMP_OFF) {
 									if (trafficlightSignOn(light.getBlock())) {
 										found = true;
 										on = false;
 									}
-								} else if (light.getBlock().getType() == Material.REDSTONE_TORCH_ON) {
+								} else if (light.getBlock().getType() == Material.LEGACY_REDSTONE_TORCH_ON) {
 									if (trafficlightSignOn(light.getBlock())) {
 										found = true;
 										on = true;
