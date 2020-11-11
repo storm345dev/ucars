@@ -1,18 +1,35 @@
 package com.useful.ucars;
 
-import com.useful.uCarsAPI.CarRespawnReason;
-import com.useful.uCarsAPI.uCarCrashEvent;
-import com.useful.uCarsAPI.uCarRespawnEvent;
-import com.useful.uCarsAPI.uCarsAPI;
-import com.useful.ucars.controls.ControlSchemeManager;
-import com.useful.ucars.util.UEntityMeta;
-import com.useful.ucarsCommon.StatValue;
-import org.bukkit.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Lightable;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,19 +43,24 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.*;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.vehicle.VehicleUpdateEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
+import com.useful.uCarsAPI.CarRespawnReason;
+import com.useful.uCarsAPI.uCarCrashEvent;
+import com.useful.uCarsAPI.uCarRespawnEvent;
+import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.controls.ControlSchemeManager;
+import com.useful.ucars.util.UEntityMeta;
+import com.useful.ucarsCommon.StatValue;
 
 public class uCarsListener implements Listener {
 	private ucars plugin;
@@ -151,7 +173,7 @@ public class uCarsListener implements Listener {
 			ids.addAll(ucars.config.getStringList("general.cars.HighblockBoost"));
 			ids.addAll(ucars.config.getStringList("general.cars.ResetblockBoost"));
 			ids.addAll(ucars.config.getStringList("general.cars.jumpBlock"));
-			//ids.add("AIR");
+			ids.add("AIR");
 			ids.add("LAVA");
 			ids.add("STATIONARY_LAVA");
 			ids.add("WATER");
@@ -256,51 +278,52 @@ public class uCarsListener implements Listener {
 			return false;
 		}
 	}
-
+	
 	/*
 	 * Checks if a minecart is a car (Public for traincarts support)
 	 */
-	private String getBehindBlock(Entity cart) {
-		Location loc = cart.getLocation();
-		double direc = 0.5;
-		double vx = cart.getVelocity().getX();
-		double vz = cart.getVelocity().getZ();
-		if(vx < 2.5 && vx > -2.5 && vx != 0) {
-			if(vx > 0) {
-				direc = -0.5;
-			}
-			loc.setX(loc.getX() + direc);
-			return loc.getBlock().getType().name().toUpperCase();
-		} else if(vz < 2.5 && vz > -2.5 && vz != 0) {
-			if(vz > 0) {
-				direc = -0.5;
-			}
-			loc.setZ(loc.getZ() + direc);
-			return loc.getBlock().getType().name().toUpperCase();
-		}
-		return("null");
-	}
+
 	
 	public boolean isACar(Entity cart) {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
-		}		
+		}
+		if((cart.getType().toString().toUpperCase().contains("MINECART") && cart.getType().toString().length() > 8) || cart.getType().toString().toUpperCase().contains("BOAT")) {
+			return false; //Not a car but a Minecart_Something (only useful when derailed)
+		}
+		
 		Location loc = cart.getLocation();
 		Block b = loc.getBlock();
+		loc.setY(loc.getY() - 1);
+		Block underblock = loc.getBlock();
 		String mat = b.getType().name().toUpperCase();
-		String behindmat = getBehindBlock(cart);		
 		String underMat = b.getRelative(BlockFace.DOWN).getType().name().toUpperCase();
 		String underUnderMat = b.getRelative(BlockFace.DOWN, 2).getType().name().toUpperCase();
+		
 		List<String> checks = new ArrayList<String>();
 		if(ucars.ignoreRails){
 			checks.add("POWERED_RAIL");
 			checks.add("RAIL");
+			checks.add("RAILS");
 			checks.add("DETECTOR_RAIL");
 			checks.add("ACTIVATOR_RAIL");
+			
+			List<String> newRoadBlocks = new ArrayList<>(roadBlocks);
+			newRoadBlocks.remove("AIR");								//Keeping the metadata when falling off a cliff after rails
+			if(UEntityMeta.hasMetadata(cart,"car.wasOnRails") && cart.getVelocity().getY() == 0 && plugin.isBlockEqualToConfigIds(newRoadBlocks, underblock) && !checks.contains(mat)) {
+				UEntityMeta.removeMetadata(cart,"car.wasOnRails");
+			}
+			if(UEntityMeta.hasMetadata(cart, "car.wasOnRails")) {
+				return false;
+			}
 		}
-		if(checks.contains(mat) || checks.contains(behindmat)
+		if(checks.contains(mat)
 				|| checks.contains(underMat) 
 				|| checks.contains(underUnderMat)){
+			UEntityMeta.setMetadata(cart, "car.wasOnRails", new StatValue(true, ucars.plugin));
+			if(((Minecart)cart).getMaxSpeed() != 0.4 || ((Minecart)cart).getMaxSpeed() == 2.4) {
+				((Minecart)cart).setMaxSpeed(0.4);
+			}
 			return false;
 		}
 		if (!plugin.getAPI().runCarChecks(cart)) {
@@ -552,7 +575,6 @@ public class uCarsListener implements Listener {
 			}
 		}	
 		//Everything below this (in this method) is executed EVERY MC vehicle update (every tick) and every ucar update
-	
 		Block normalblock = vehicle.getLocation().getBlock();
 
 		Player player = null;
@@ -564,6 +586,7 @@ public class uCarsListener implements Listener {
 		}
 
 		Vehicle car = (Vehicle) vehicle;
+		
 		if (!isACar(car)) {
 			return;
 		}
@@ -742,7 +765,7 @@ public class uCarsListener implements Listener {
 			UEntityMeta.removeMetadata(vehicle, "car.vec");
 			vehicle.removeMetadata("car.vec", ucars.plugin);
 		}
-		
+				
 		Location under = vehicle.getLocation();
 		under.setY(vehicle.getLocation().getY() - 1);
 		Block underblock = under.getBlock();
@@ -773,7 +796,7 @@ public class uCarsListener implements Listener {
 		}
 		
 		Vehicle car = (Vehicle) vehicle;
-		
+
 		if(!isACar(car)){
 			return;
 		}
@@ -812,7 +835,7 @@ public class uCarsListener implements Listener {
 			/*Location loc = car.getLocation().getBlock()
 					.getRelative(BlockFace.DOWN).getLocation();*/
 			
-			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underblock.getType().name().toUpperCase())){
+			if(!plugin.isBlockEqualToConfigIds(roadBlocks, underblock)){
 				//Not a road block being driven on, so don't move
 				return;
 			}
@@ -865,7 +888,7 @@ public class uCarsListener implements Listener {
 			travel.setZ(travel.getZ() * a); //and z with it (No y acceleration)
 		}
 		
-		Vector dirVec = travel.clone().setY(0).normalize();
+		//Vector dirVec = travel.clone().setY(0).normalize();
 		/*try {
 			dirVec = (Vector) (car.hasMetadata("ucarsSteeringDir") ? car.getMetadata("ucarsSteeringDir").get(0).value() : travel.clone().normalize());
 		} catch (Exception e2) {
@@ -931,6 +954,17 @@ public class uCarsListener implements Listener {
 
 		//Read the vehicle length if it exists
 		double length = 0;
+		//Object carNMSHandle = Reflect.getHandle(car);
+		//Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"size");
+		//if(!lenField.isAccessible()){
+		//	lenField.setAccessible(true);
+		//}
+		//try {
+		//	length = lenField.getDouble(carNMSHandle);
+		//} catch (Exception e) {
+		//	e.printStackTrace();
+		//	length = 0;
+		//}
 
 		double fx = travel.getX()*1;
 		if (Math.abs(fx) > 1) {
@@ -1103,6 +1137,7 @@ public class uCarsListener implements Listener {
 				travel.setY(y);
 				car.setVelocity(travel);
 			}
+
 			if (plugin.isBlockEqualToConfigIds(
 					teleportBlock, underblock)
 					|| plugin.isBlockEqualToConfigIds(
@@ -1147,11 +1182,19 @@ public class uCarsListener implements Listener {
 						String zs = lines[3];
 						Boolean valid = true;
 						double x = 0, y = 0, z = 0;
+						
 						try {
-							x = Double.parseDouble(xs);
-							y = Double.parseDouble(ys);
+							if(xs.contains("~")) {
+								x = loc.getX() + Double.parseDouble(xs.replace("~", "") + 0)/10;
+							} else {x = Double.parseDouble(xs);};
+							if(ys.contains("~")) {
+								y = loc.getY() + Double.parseDouble(ys.replace("~", "") + 0)/10;
+							} else {y = Double.parseDouble(ys);};
+							if(zs.contains("~")) {
+								z = loc.getZ() + Double.parseDouble(zs.replace("~", "") + 0)/10;
+							} else {z = Double.parseDouble(zs);};
+							
 							y = y + 0.5;
-							z = Double.parseDouble(zs);
 						} catch (NumberFormatException e) {
 							valid = false;
 						}
@@ -1190,10 +1233,8 @@ public class uCarsListener implements Listener {
 							else{
 								player.sendMessage(ucars.colors.getTp()
 										+ "Teleporting...");
-								car.addPassenger(player);
 								final Vehicle ucar = car;
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
-
 									@Override
 									public void run() {
 										ucar.addPassenger(player); //For the sake of uCarsTrade
@@ -1375,7 +1416,7 @@ public class uCarsListener implements Listener {
 			event.setCollisionCancelled(false);
 			return;
 		}*/
-		if (cart.getPassengers().get(0) == null) { //Don't both to calculate with PiguCarts, etc...
+		if (cart.getPassengers().size() == 0) { //Don't bother to calculate with PiguCarts, etc...
 			return;
 		}
 		
@@ -1555,7 +1596,7 @@ public class uCarsListener implements Listener {
 					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
-			if (!PlaceManager.placeableOn(iar.name().toUpperCase(), block.getData())) {
+			if (!plugin.isBlockEqualToConfigIds(roadBlocks, block)) { //replaces placableOn()
 				return;
 			}
 			if (!ucars.config.getBoolean("general.cars.enable")) {
@@ -1744,7 +1785,7 @@ public class uCarsListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	void minecartBreak(VehicleDamageEvent event) {
 		if (!(event.getVehicle() instanceof Vehicle)
-				|| !(event.getAttacker() instanceof Player) || !event.getVehicle().getType().toString().toUpperCase().equals("MINECART")) {
+				|| !(event.getAttacker() instanceof Player)) {
 			return;
 		}
 		if (event.isCancelled()) {

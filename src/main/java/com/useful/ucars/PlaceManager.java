@@ -14,6 +14,7 @@ public class PlaceManager {
 		String materialName = IdMaterialConverter.getMaterialById(id).name().toUpperCase();
 		return placeableOn(materialName, data);
 	}
+	@Deprecated
 	public static Boolean placeableOn(String materialName, byte data) {
 		Boolean placeable = false;
 		if (!ucars.config.getBoolean("general.cars.roadBlocks.enable")) {

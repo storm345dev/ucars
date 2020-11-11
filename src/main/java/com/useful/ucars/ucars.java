@@ -683,29 +683,21 @@ public class ucars extends JavaPlugin {
 		for (String raw : rawIds) {
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
-			} else if (parts.length < 2) {
-				if (parts[0].equalsIgnoreCase(block.getType().name())) {
-					return true;
-				}
-			} else {
-				//TODO Alternative to .getData()
+			} else if (parts.length < 2) { //New configs and blocknames
 				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData())) {
 					return true;
 				}
+			} else { //old configs and block names
+				final String mat = parts[0];
+				final int data = Integer.parseInt(parts[1]);
+				final int bdata = block.getData(); //TODO Alternative to .getData()
+				if (mat.equalsIgnoreCase(block.getType().name().substring(block.getType().name().indexOf("_")+1)) && bdata == data) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
-	public final Boolean isBlockEqualToConfigIds(List<String> rawIds, String blockName) {
-		// This is just for road check (so one can use "e.g. black_wool" instead of "WOOL:15"
-		for (String raw : rawIds) {
-			if (raw.toUpperCase().equals(blockName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	
 	public final Boolean isItemEqualToConfigIds(List<String> rawIds, ItemStack item) {
 		// split by : then compare!
