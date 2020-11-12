@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -37,6 +35,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucars.util.UMeta;
+
+import net.milkbowl.vault.economy.Economy;
 
 public class ucars extends JavaPlugin {
 	// The main file
@@ -684,7 +684,7 @@ public class ucars extends JavaPlugin {
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
 			} else if (parts.length < 2) { //New configs and blocknames
-				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData())) {
+				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData()) || block.getType().name().toUpperCase().contains(raw)) {
 					return true;
 				}
 			} else { //old configs and block names

@@ -310,7 +310,7 @@ public class uCarsListener implements Listener {
 			
 			List<String> newRoadBlocks = new ArrayList<>(roadBlocks);
 			newRoadBlocks.remove("AIR");								//Keeping the metadata when falling off a cliff after rails
-			if(UEntityMeta.hasMetadata(cart,"car.wasOnRails") && cart.getVelocity().getY() == 0 && plugin.isBlockEqualToConfigIds(newRoadBlocks, underblock) && !checks.contains(mat)) {
+			if(UEntityMeta.hasMetadata(cart,"car.wasOnRails") && cart.getVelocity().getY() == 0 && (plugin.isBlockEqualToConfigIds(newRoadBlocks, underblock) || !ucars.config.getBoolean("general.cars.roadBlocks.enable")) && !checks.contains(mat)) {
 				UEntityMeta.removeMetadata(cart,"car.wasOnRails");
 			}
 			if(UEntityMeta.hasMetadata(cart, "car.wasOnRails")) {
@@ -953,18 +953,7 @@ public class uCarsListener implements Listener {
 		// faceDir.getModZ());
 
 		//Read the vehicle length if it exists
-		double length = 0;
-		//Object carNMSHandle = Reflect.getHandle(car);
-		//Field lenField = Reflect.getField(Reflect.getNMSClass("Entity"),"size");
-		//if(!lenField.isAccessible()){
-		//	lenField.setAccessible(true);
-		//}
-		//try {
-		//	length = lenField.getDouble(carNMSHandle);
-		//} catch (Exception e) {
-		//	e.printStackTrace();
-		//	length = 0;
-		//}
+		double length = car.getWidth();
 
 		double fx = travel.getX()*1;
 		if (Math.abs(fx) > 1) {
@@ -1421,7 +1410,7 @@ public class uCarsListener implements Listener {
 		}
 		
 		Entity passenger = cart.getPassengers().get(0);
-		while (passenger.getPassengers().get(0) != null) {
+		while (passenger.getPassengers().size() != 0) {
 			passenger = passenger.getPassengers().get(0);
 		}
 		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
@@ -1596,7 +1585,7 @@ public class uCarsListener implements Listener {
 					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
-			if (!plugin.isBlockEqualToConfigIds(roadBlocks, block)) { //replaces placableOn()
+			if (!PlaceManager.placeableOn(block)) {
 				return;
 			}
 			if (!ucars.config.getBoolean("general.cars.enable")) {
