@@ -32,29 +32,13 @@ public class PlaceManager {
 		return placeable;
 	}
 	
-	public static Boolean placeableOn(Block block) {
-		Boolean placeable = false;
+	public static Boolean placeableOn(Block block, ucars plugin) {
 		if (!ucars.config.getBoolean("general.cars.roadBlocks.enable")) {
 			return true;
 		}
 		List<String> rBlocks = ucars.config
 				.getStringList("general.cars.roadBlocks.ids");
-		for (String raw : rBlocks) {
-			final String[] parts = raw.split(":");
-			if (parts.length < 1) {
-			} else if (parts.length < 2) { //New configs and blocknames
-				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData()) || block.getType().name().toUpperCase().contains(raw)) {
-					return true;
-				}
-			} else { //old configs and block names
-				final String mat = parts[0];
-				final int data = Integer.parseInt(parts[1]);
-				final int bdata = block.getData(); //TODO Alternative to .getData()
-				if (mat.equalsIgnoreCase(block.getType().name().substring(block.getType().name().indexOf("_")+1)) && bdata == data) {
-					return true;
-				}
-			}
-		}
-		return placeable;
+		
+		return plugin.isBlockEqualToConfigIds(rBlocks,block);
 	}
 }

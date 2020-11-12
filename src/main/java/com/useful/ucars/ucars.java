@@ -684,7 +684,7 @@ public class ucars extends JavaPlugin {
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
 			} else if (parts.length < 2) { //New configs and blocknames
-				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData()) || block.getType().name().toUpperCase().contains(raw)) {
+				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData())) {
 					return true;
 				}
 			} else { //old configs and block names

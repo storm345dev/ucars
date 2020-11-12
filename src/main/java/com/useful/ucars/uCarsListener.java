@@ -1585,7 +1585,7 @@ public class uCarsListener implements Listener {
 					|| iar == Material.POWERED_RAIL || iar == Material.DETECTOR_RAIL)) {
 				return;
 			}
-			if (!PlaceManager.placeableOn(block)) {
+			if (!PlaceManager.placeableOn(block, plugin)) {
 				return;
 			}
 			if (!ucars.config.getBoolean("general.cars.enable")) {
