@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -37,6 +35,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucars.util.UMeta;
+
+import net.milkbowl.vault.economy.Economy;
 
 public class ucars extends JavaPlugin {
 	// The main file
@@ -440,7 +440,7 @@ public class ucars extends JavaPlugin {
 			}
 			if (!config.contains("general.cars.roadBlocks.ids")) {
 				config.set("general.cars.roadBlocks.ids", new String[]{
-						"WOOL:15","WOOL:8","WOOL:0","WOOL:7"});
+						"black_wool","white_wool","gray_wool","light_gray_wool"});
 			}
 			if (!config.contains("general.cars.licenses.enable")) {
 				config.set("general.cars.licenses.enable", false);
@@ -683,21 +683,22 @@ public class ucars extends JavaPlugin {
 		for (String raw : rawIds) {
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
-			} else if (parts.length < 2) {
-				if (parts[0].equalsIgnoreCase(block.getType().name())) {
+			} else if (parts.length < 2) { //New configs and blocknames
+				if (ItemStackFromId.equals(raw,block.getType().name().toUpperCase(),block.getData())) {
 					return true;
 				}
-			} else {
+			} else { //old configs and block names
 				final String mat = parts[0];
 				final int data = Integer.parseInt(parts[1]);
 				final int bdata = block.getData(); //TODO Alternative to .getData()
-				if (mat.equalsIgnoreCase(block.getType().name()) && bdata == data) {
+				if (mat.equalsIgnoreCase(block.getType().name().substring(block.getType().name().indexOf("_")+1)) && bdata == data) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+	
 	public final Boolean isItemEqualToConfigIds(List<String> rawIds, ItemStack item) {
 		// split by : then compare!
 		for (String raw : rawIds) {

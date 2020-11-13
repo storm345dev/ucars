@@ -3,7 +3,7 @@ package com.useful.uCarsAPI;
 import org.bukkit.entity.Entity;
 
 /**
- * Provides an interfact to add custom checking to cars
+ * Provides an interface to add custom checking to cars
  * 
  * @author storm345
  * 
