@@ -3,7 +3,7 @@ language: java
 
 deploy:
   provider: releases
-  api_key: "cKfJ9KJVbxTLPgHo9uNvQw"
+  api_key: "47696cede7a089064979c232b8df6e0e05df8327"
   file: "target/uCars.jar"
   skip_cleanup: true
   on:
