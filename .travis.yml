@@ -1,1 +1,10 @@
 language: java
+
+
+deploy:
+  provider: releases
+  api_key: "cKfJ9KJVbxTLPgHo9uNvQw"
+  file: "target/uCars.jar"
+  skip_cleanup: true
+  on:
+    tags: true
