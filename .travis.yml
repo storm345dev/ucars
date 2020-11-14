@@ -1,9 +1,0 @@
-language: java
-
-
-deploy:
-  provider: releases
-  file: "target/uCars.jar"
-  skip_cleanup: true
-  on:
-    tags: false
