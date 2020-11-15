@@ -310,7 +310,10 @@ public class uCarsListener implements Listener {
 			
 			List<String> newRoadBlocks = new ArrayList<>(roadBlocks);
 			newRoadBlocks.remove("AIR");								//Keeping the metadata when falling off a cliff after rails
-			if(UEntityMeta.hasMetadata(cart,"car.wasOnRails") && cart.getVelocity().getY() == 0 && (plugin.isBlockEqualToConfigIds(newRoadBlocks, underblock) || !ucars.config.getBoolean("general.cars.roadBlocks.enable")) && !checks.contains(mat)) {
+			if(UEntityMeta.hasMetadata(cart,"car.wasOnRails") && cart.getVelocity().getY() == 0 
+					&& (plugin.isBlockEqualToConfigIds(newRoadBlocks, underblock) || 
+							!ucars.config.getBoolean("general.cars.roadBlocks.enable") && cart.getVelocity().getX() == 0 && cart.getVelocity().getZ() == 0) 
+					&& !checks.contains(mat) ) {
 				UEntityMeta.removeMetadata(cart,"car.wasOnRails");
 			}
 			if(UEntityMeta.hasMetadata(cart, "car.wasOnRails")) {
@@ -553,22 +556,23 @@ public class uCarsListener implements Listener {
 		if(event instanceof ucarUpdateEvent){
 			travel = ((ucarUpdateEvent) event).getTravelVector().clone();
 		}
-
 		if(!(event instanceof ucarUpdateEvent)){ //If it's just the standard every tick vehicle update event...
 			if(UEntityMeta.hasMetadata(vehicle, "car.vec")){ //If it has the 'car.vec' meta, we need to use RACE CONTROLS on this vehicle
 				ucarUpdateEvent evt = (ucarUpdateEvent) UEntityMeta.getMetadata(vehicle, "car.vec").get(0).value(); //Handle the update event (Called here not directly because otherwise ppl with a better connection fire more control events and move marginally faster)
 				evt.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
 				evt.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
 				UEntityMeta.removeMetadata(vehicle, "car.vec"); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
-				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
+				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), evt.getPlayer(), evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
+				if(vehicle.hasMetadata("car.frozen")) {
+					return;
+				}
 				UEntityMeta.setMetadata(vehicle, "car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
 				/*ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
 */
 				if(!ucars.fireUpdateEvent){
 					onUcarUpdate(evt);
-				}
-				else {
+				} else {
 					ucars.plugin.getServer().getPluginManager().callEvent(evt);
 				}
 				/*return;*/
@@ -1405,12 +1409,12 @@ public class uCarsListener implements Listener {
 			event.setCollisionCancelled(false);
 			return;
 		}*/
-		if (cart.getPassengers().size() == 0) { //Don't bother to calculate with PiguCarts, etc...
+		if (cart.isEmpty()) { //Don't bother to calculate with PiguCarts, etc...
 			return;
 		}
 		
 		Entity passenger = cart.getPassengers().get(0);
-		while (passenger.getPassengers().size() != 0) {
+		while (!passenger.isEmpty()) {
 			passenger = passenger.getPassengers().get(0);
 		}
 		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
