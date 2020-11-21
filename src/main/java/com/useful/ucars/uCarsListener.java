@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Lightable;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -214,7 +215,7 @@ public class uCarsListener implements Listener {
 	public Vector calculateCarStats(Entity car, Player player,
 			Vector velocity, double currentMult) {
 		if (UEntityMeta.hasMetadata(car, "car.frozen")) {
-			velocity = new Vector(0, 0, 0);
+			velocity = new Vector(0, velocity.getY(), 0);
 			return velocity;
 		}
 		velocity = plugin.getAPI().getTravelVector(car, velocity, currentMult);
@@ -290,6 +291,9 @@ public class uCarsListener implements Listener {
 		}
 		if((cart.getType().toString().toUpperCase().contains("MINECART") && cart.getType().toString().length() > 8) || cart.getType().toString().toUpperCase().contains("BOAT")) {
 			return false; //Not a car but a Minecart_Something (only useful when derailed)
+		}
+		if(cart instanceof Animals) {
+			return false;	//Animals are not cars...
 		}
 		
 		Location loc = cart.getLocation();
@@ -762,6 +766,7 @@ public class uCarsListener implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
+		
 		Boolean modY = true;
 		Vehicle vehicle = event.getVehicle();
 		
@@ -808,7 +813,7 @@ public class uCarsListener implements Listener {
 		if (!(player.isInsideVehicle())) {
 			return;
 		}
-		
+				
 		//Valid vehicle!
 		
 		/*Block next = car.getLocation().clone().add(event.getTravelVector().clone().setY(0)).getBlock();
@@ -912,9 +917,9 @@ public class uCarsListener implements Listener {
 		}
 		
 		String underMat = under.getBlock().getType().name().toUpperCase();
-		int underdata = under.getBlock().getData();
+		String underunderMat = underunderblock.getType().name().toUpperCase();
 		// calculate speedmods
-		String key = underMat+":"+underdata;
+		String key = underMat;
 		if(speedMods.containsKey(key)){
 			if(!ucars.carBoosts.containsKey(player.getName())){
 				multiplier = speedMods.get(key);
@@ -923,6 +928,16 @@ public class uCarsListener implements Listener {
 				multiplier = (speedMods.get(key)+multiplier)*0.5; //Mean Average of both
 			}
 		}
+		key = underunderMat;
+		if(speedMods.containsKey(key)){
+			if(!ucars.carBoosts.containsKey(player.getName())){
+				multiplier = speedMods.get(key);
+			}
+			else{
+				multiplier = (speedMods.get(key)+multiplier)*0.5; //Mean Average of both
+			}
+		}
+		
 		if (event.getDoDivider()) { // Braking or going slower
 			multiplier = multiplier * event.getDivider();
 		}
@@ -993,9 +1008,9 @@ public class uCarsListener implements Listener {
 				block = frontLeftInFront;
 			}
 		}
-		Block above = block.getRelative(BlockFace.UP);
+		/*Block above = block.getRelative(BlockFace.UP);
 		
-		/*if((!(block.isEmpty() || block.isLiquid())
+		if((!(block.isEmpty() || block.isLiquid())
 				&& !(above.isEmpty() || above.isLiquid())
 				&& !(block.getType().name().toLowerCase().contains("step"))
 				*//*&& !(above.getType().name().toLowerCase().contains("step"))*//*)
@@ -1110,9 +1125,8 @@ public class uCarsListener implements Listener {
 		}*/
 		
 		Material bType = block.getType();
-		int bData = block.getData();
 		Boolean fly = false; // Fly is the 'easter egg' slab elevator
-		if (normalblock.getRelative(faceDir).getType() == Material.LEGACY_STEP) {
+		if (normalblock.getRelative(faceDir).getType().name().toLowerCase().contains("slab")) {
 			// If looking at slabs
 			fly = true;
 		}
@@ -1265,7 +1279,7 @@ public class uCarsListener implements Listener {
 		if (UEntityMeta.hasMetadata(car, "car.ascending")) {
 			UEntityMeta.removeMetadata(car, "car.ascending");
 		}
-		//player.sendMessage(bType+" "+faceDir+" "+fx+" "+fz);
+		//player.sendMessage(block.getType().name()+" "+faceDir+" "+fx+" "+fz);
 		// Make cars jump if needed
 		if (inStairs ||
 				 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
@@ -1279,20 +1293,13 @@ public class uCarsListener implements Listener {
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
 				double y = 1.1;
-				if (block.getType().name().toLowerCase().contains("step")) {
+				if (block.getType().name().toLowerCase().contains("slab")) {
 					calculated = true;
 					y = 1.2;
 				}
-				if (carBlock.name().toLowerCase().contains("step")) { // In
-																		// a
-																		// step
-																		// block
-																		// and
-																		// trying
-																		// to
-																		// jump
+				if (carBlock.name().toLowerCase().contains("slab")) { // In a slab block
 					calculated = true;
-					y = 0.6;
+					y = 1.5;
 				}
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
