@@ -111,6 +111,12 @@ public class MotionManager {
 		}
 		
 		boolean inAir = car.getLocation().clone().add(0, -1, 0).getBlock().isEmpty();
+		if(!car.getLocation().clone().add(0.5, -1, 0).getBlock().isEmpty() || !car.getLocation().clone().add(-0.5, -1, 0).getBlock().isEmpty() ||
+				!car.getLocation().clone().add(0, -1, 0.5).getBlock().isEmpty() || !car.getLocation().clone().add(0, -1, -0.5).getBlock().isEmpty() ||
+				!car.getLocation().clone().add(0.5, -1, 0.5).getBlock().isEmpty() || !car.getLocation().clone().add(0.5, -1, -0.5).getBlock().isEmpty() ||
+				!car.getLocation().clone().add(-0.5, -1, 0.5).getBlock().isEmpty() || !car.getLocation().clone().add(-0.5, -1, -0.5).getBlock().isEmpty()) { //Check area under car
+			inAir = false;
+		}
 		if(ucars.smoothDrive && inAir){
 			f = 0;
 			s = 0;

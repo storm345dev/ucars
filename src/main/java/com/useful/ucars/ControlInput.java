@@ -1,11 +1,13 @@
 package com.useful.ucars;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.useful.uCarsAPI.uCarsAPI;
+import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
 
 public class ControlInput {
@@ -241,7 +243,9 @@ public class ControlInput {
 			//Use race oriented control scheme
 			event.player = null; //Remove memory leak
 			car.removeMetadata("car.vec", ucars.plugin); //Clear previous vector
+			UEntityMeta.removeMetadata(car, "car.vec");
 			car.setMetadata("car.vec", new StatValue(event, ucars.plugin));
+			UEntityMeta.setMetadata(car, "car.vec", new StatValue(event, ucars.plugin));
 			return;
 		}
 	}
