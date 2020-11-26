@@ -566,7 +566,7 @@ public class uCarsListener implements Listener {
 				evt.player = ((Player)passenger); //Set the player (in the car) onto the event so it can be handled by uCarUpdate handlers
 				evt.incrementRead(); //Register that the control input update has been executed (So if no new control input event within 2 ticks; we know to stop the car)
 				UEntityMeta.removeMetadata(vehicle, "car.vec"); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
-				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), evt.getPlayer(), evt.getDir()); //Clone of the other event, except no player object attached
+				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
 				if(vehicle.hasMetadata("car.frozen")) {
 					return;
@@ -1299,7 +1299,7 @@ public class uCarsListener implements Listener {
 				}
 				if (carBlock.name().toLowerCase().contains("slab")) { // In a slab block
 					calculated = true;
-					y = 1.5;
+					y = 1.2;
 				}
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
