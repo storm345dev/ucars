@@ -39,7 +39,11 @@ public class ucarUpdateEvent extends VehicleUpdateEvent implements Cancellable {
 	public Player getPlayer() {
 		return player;
 	}
-
+	
+	public void setTravelVector(Vector travel) {
+		this.toTravel = travel;
+	}
+	
 	public Vector getTravelVector() {
 		return this.toTravel;
 	}
