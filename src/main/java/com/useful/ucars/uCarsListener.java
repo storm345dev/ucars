@@ -214,7 +214,7 @@ public class uCarsListener implements Listener {
 	 */
 	public Vector calculateCarStats(Entity car, Player player,
 			Vector velocity, double currentMult) {
-		if (UEntityMeta.hasMetadata(car, "car.frozen")) {
+		if (UEntityMeta.hasMetadata(car, "car.frozen") || car.hasMetadata("car.frozen")) {
 			velocity = new Vector(0, velocity.getY(), 0);
 			return velocity;
 		}
@@ -568,9 +568,6 @@ public class uCarsListener implements Listener {
 				UEntityMeta.removeMetadata(vehicle, "car.vec"); //Update the 'car.vec' metadata with an otherwise identical event; but without the player object attached
 				ucarUpdateEvent et = new ucarUpdateEvent(vehicle, evt.getTravelVector().clone(), null, evt.getDir()); //Clone of the other event, except no player object attached
 				et.setRead(evt.getReadCount()); //Make sure it IS a clone (With correct variable values)
-				if(vehicle.hasMetadata("car.frozen")) {
-					return;
-				}
 				UEntityMeta.setMetadata(vehicle, "car.vec", new StatValue(et, ucars.plugin)); //Update the meta on the car
 				/*ucars.plugin.getServer().getPluginManager().callEvent(evt); //Actually handle the uCarUpdateEvent
 */
@@ -1297,9 +1294,9 @@ public class uCarsListener implements Listener {
 					calculated = true;
 					y = 1.2;
 				}
-				if (carBlock.name().toLowerCase().contains("slab")) { // In a slab block
+				if (carBlock.name().toLowerCase().contains("slab") && block.getType().name().toLowerCase().contains("slab")) { // In a slab block
 					calculated = true;
-					y = 1.2;
+					y = 0.6;
 				}
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
@@ -1329,7 +1326,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
-			if (fly && cont) {
+			if (fly && cont && (bidUpLoc.getBlock().getType().name().toLowerCase().contains("slab") || underblock.isEmpty() )) {
 				// Make the car ascend (easter egg, slab elevator)
 				travel.setY(0.1); // Make a little easier
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
