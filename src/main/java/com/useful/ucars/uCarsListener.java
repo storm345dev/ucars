@@ -611,8 +611,10 @@ public class uCarsListener implements Listener {
 					vel.setY(5);
 				}
 				UEntityMeta.removeMetadata(car, "car.jumpFull");
+			} else if(UEntityMeta.hasMetadata(car, "car.frozen") || car.hasMetadata("car.frozen") && car.hasMetadata("kart.immune")) {
+				//Do nothing
 			} else {
-				vel.setY(0);
+				vel.setY(0); 
 			}
 			car.setVelocity(vel);
 		}
@@ -879,7 +881,7 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		Vector travel = event.getTravelVector(); // Travel Vector,
+		Vector travel = event.getTravelVector().setY(event.getVehicle().getVelocity().getY()); // Travel Vector,
 															// fixes
 															// controls for
 															// 1.6
