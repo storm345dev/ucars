@@ -611,7 +611,7 @@ public class uCarsListener implements Listener {
 					vel.setY(5);
 				}
 				UEntityMeta.removeMetadata(car, "car.jumpFull");
-			} else if(UEntityMeta.hasMetadata(car, "car.frozen") || car.hasMetadata("car.frozen") && car.hasMetadata("kart.immune")) {
+			} else if(car.hasMetadata("car.inertialYAxis")) {
 				//Do nothing
 			} else {
 				vel.setY(0); 
@@ -881,10 +881,15 @@ public class uCarsListener implements Listener {
 			}
 		}
 		
-		Vector travel = event.getTravelVector().setY(event.getVehicle().getVelocity().getY()); // Travel Vector,
+		Vector travel = event.getTravelVector(); // Travel Vector,
 															// fixes
 															// controls for
 															// 1.6
+		
+		if(car.hasMetadata("car.inertialYAxis")) {
+			travel.setY(event.getVehicle().getVelocity().getY());
+		}
+			
 		float a = 1;
 		if(ucars.smoothDrive){ //If acceleration is enabled
 			a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
