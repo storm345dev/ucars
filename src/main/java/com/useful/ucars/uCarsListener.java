@@ -611,8 +611,10 @@ public class uCarsListener implements Listener {
 					vel.setY(5);
 				}
 				UEntityMeta.removeMetadata(car, "car.jumpFull");
+			} else if(car.hasMetadata("car.inertialYAxis")) {
+				//Do nothing
 			} else {
-				vel.setY(0);
+				vel.setY(0); 
 			}
 			car.setVelocity(vel);
 		}
@@ -883,6 +885,11 @@ public class uCarsListener implements Listener {
 															// fixes
 															// controls for
 															// 1.6
+		
+		if(car.hasMetadata("car.inertialYAxis")) {
+			travel.setY(event.getVehicle().getVelocity().getY());
+		}
+			
 		float a = 1;
 		if(ucars.smoothDrive){ //If acceleration is enabled
 			a = ControlInput.getAccel(event.getPlayer(), event.getDir()); //Find out the multiplier to use for accelerating the car 'naturally'
