@@ -667,7 +667,7 @@ public class uCarsListener implements Listener {
 					if (left < (max * 0.33)) {
 						color = ChatColor.RED;
 					}
-					player.sendMessage(ChatColor.RED + "-" + damage + "["
+					player.sendMessage(ChatColor.RED + "-" + damage + " ["
 							+ Material.WATER.name().toLowerCase() + "]"
 							+ color + " (" + left + ")");
 				}
@@ -689,7 +689,7 @@ public class uCarsListener implements Listener {
 					if (left < (max * 0.33)) {
 						color = ChatColor.RED;
 					}
-					player.sendMessage(ChatColor.RED + "-" + damage + "["
+					player.sendMessage(ChatColor.RED + "-" + damage + " ["
 							+ Material.LAVA.name().toLowerCase() + "]"
 							+ color + " (" + left + ")");
 				}
@@ -1035,7 +1035,7 @@ public class uCarsListener implements Listener {
 				if (left < (max * 0.33)) {
 					color = ChatColor.RED;
 				}
-				player.sendMessage(ChatColor.RED + "-" + damage + "["
+				player.sendMessage(ChatColor.RED + "-" + damage + " ["
 						+ Material.CACTUS.name().toLowerCase() + "]"
 						+ color + " (" + left + ")");
 				health.damage(damage, car);
@@ -1300,11 +1300,18 @@ public class uCarsListener implements Listener {
 				if (block.getType().name().toLowerCase().contains("slab")) {
 					calculated = true;
 					y = 1.2;
+				} else if(block.getType().name().toLowerCase().contains("carpet")) {
+					calculated = true;
+					y = 0.2;
 				}
 				if (carBlock.name().toLowerCase().contains("slab") && block.getType().name().toLowerCase().contains("slab")) { // In a slab block
 					calculated = true;
 					y = 0.6;
+				} else if(carBlock.name().toLowerCase().contains("carpet") && block.getType().name().toLowerCase().contains("carpet")) {
+					calculated = true;
+					y = 0.06;
 				}
+				
 				if (carBlock.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
 						// ||
@@ -1820,7 +1827,7 @@ public class uCarsListener implements Listener {
 				left = 0;
 			}
 			player.sendMessage(ChatColor.RED + "-" + damage + ChatColor.YELLOW
-					+ "[" + player.getName() + "]" + color + " (" + left + ")");
+					+ " [" + player.getName() + "]" + color + " (" + left + ")");
 			health.damage(damage, car, player);
 			updateCarHealthHandler(car, health);
 			event.setCancelled(true);
@@ -2125,7 +2132,7 @@ public class uCarsListener implements Listener {
 		if (remainingHealth < (max * 0.33)) {
 			color = ChatColor.RED;
 		}
-		player.sendMessage(ChatColor.RED + "-" + damage + "["
+		player.sendMessage(ChatColor.RED + "-" + damage + " ["
 				+ cause + "]"
 				+ color + " (" + ((int)remainingHealth) + ")");
 	}
@@ -2139,7 +2146,7 @@ public class uCarsListener implements Listener {
 		if (remainingHealth < (max * 0.33)) {
 			color = ChatColor.RED;
 		}
-		player.sendMessage(ChatColor.RED + "-" + damage + "["
+		player.sendMessage(ChatColor.RED + "-" + damage + " ["
 				+ "Car Health" + "]"
 				+ color + " (" + ((int)remainingHealth) + ")");
 	}
