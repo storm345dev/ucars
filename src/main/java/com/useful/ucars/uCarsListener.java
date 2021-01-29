@@ -122,6 +122,7 @@ public class uCarsListener implements Listener {
 		ignoreJump.add("REDSTONE_COMPARATOR_ON"); // comparator on
 		ignoreJump.add("VINE"); // vines
 		ignoreJump.add("LONG_GRASS"); // Tall grass
+		ignoreJump.add("GRASS"); //Grass
 		ignoreJump.add("STONE_BUTTON"); // stone button
 		ignoreJump.add("WOOD_BUTTON"); // wood button
 		ignoreJump.add("FENCE_GATE"); // fence gate
@@ -1143,8 +1144,18 @@ public class uCarsListener implements Listener {
 					underblock)
 					|| plugin.isBlockEqualToConfigIds(
 							jumpBlock, underunderblock)) {
-				double y = uCar_jump_amount;
-				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(uCar_jump_amount, plugin));
+				double y = 0;
+				for(String bl : jumpBlock) {
+					if(bl.contains(underblock.getType().name()) || bl.contains(underunderblock.getType().name())) {
+						if(bl.contains("-")) {
+							y = Double.valueOf(bl.split("-")[1]);
+						} else {
+							y = uCar_jump_amount;
+						}
+					}
+					
+				}
+				UEntityMeta.setMetadata(car, "car.jumpUp", new StatValue(y, plugin));
 				travel.setY(y);
 				car.setVelocity(travel);
 			}
@@ -2160,5 +2171,115 @@ public class uCarsListener implements Listener {
 			}
 		};
 	}*/
-
+	
+	public void reloadListener() {
+		ignoreJump = new ArrayList<String>();
+		ignoreJump.add("AIR"); //Air
+		ignoreJump.add("LAVA"); //Lava
+        ignoreJump.add("STATIONARY_LAVA"); //Lava
+        ignoreJump.add("WATER"); //Water
+        ignoreJump.add("STATIONARY_WATER"); //Water
+        ignoreJump.add("COBBLE_WALL"); //Cobble wall
+        ignoreJump.add("FENCE"); //fence
+        ignoreJump.add("NETHER_FENCE"); //Nether fence
+        ignoreJump.add("STONE_PLATE"); //Stone pressurepad
+        ignoreJump.add("WOOD_PLATE"); //Wood pressurepad
+		ignoreJump.add("TRIPWIRE"); // tripwires
+		ignoreJump.add("TRIPWIRE_HOOK"); // tripwires
+		ignoreJump.add("TORCH"); // torches
+		ignoreJump.add("REDSTONE_TORCH_ON"); // redstone torches
+		ignoreJump.add("REDSTONE_TORCH_OFF"); // redstone off torches
+		ignoreJump.add("DIODE_BLOCK_OFF"); // repeater off
+		ignoreJump.add("DIODE_BLOCK_ON"); // repeater on
+		ignoreJump.add("REDSTONE_COMPARATOR_OFF"); // comparator off
+		ignoreJump.add("REDSTONE_COMPARATOR_ON"); // comparator on
+		ignoreJump.add("VINE"); // vines
+		ignoreJump.add("LONG_GRASS"); // Tall grass
+		ignoreJump.add("GRASS");
+		ignoreJump.add("STONE_BUTTON"); // stone button
+		ignoreJump.add("WOOD_BUTTON"); // wood button
+		ignoreJump.add("FENCE_GATE"); // fence gate
+		ignoreJump.add("LEVER"); // lever
+		ignoreJump.add("SNOW"); // snow
+		ignoreJump.add("DAYLIGHT_DETECTOR"); // daylight detector
+		ignoreJump.add("SIGN_POST"); // sign
+		ignoreJump.add("WALL_SIGN"); // sign on the side of a block
+		ignoreJump.add(Material.ACACIA_FENCE.name());
+		ignoreJump.add(Material.ACACIA_FENCE_GATE.name());
+		ignoreJump.add(Material.BIRCH_FENCE.name());
+		ignoreJump.add(Material.BIRCH_FENCE_GATE.name());
+		ignoreJump.add(Material.JUNGLE_FENCE.name());
+		ignoreJump.add(Material.JUNGLE_FENCE_GATE.name());
+		/*ignoreJump.add("CARPET"); // carpet
+*/		
+		usePerms = ucars.config.getBoolean("general.permissions.enable");
+		carsEnabled = ucars.config.getBoolean("general.cars.enable");
+		defaultHealth = ucars.config.getDouble("general.cars.health.default");
+		
+		damage_water = ucars.config
+				.getDouble("general.cars.health.underwaterDamage");
+		damage_lava = ucars.config
+				.getDouble("general.cars.health.lavaDamage");
+		damage_cactus = ucars.config
+				.getDouble("general.cars.health.cactusDamage");
+		defaultSpeed = ucars.config
+				.getDouble("general.cars.defSpeed");
+		fuelBypassPerm = ucars.config
+				.getString("general.cars.fuel.bypassPerm");
+		uCar_jump_amount = ucars.config
+				.getDouble("general.cars.jumpAmount");
+		crash_damage = ucars.config
+				.getDouble("general.cars.health.crashDamage");
+		
+		hitby_crash_damage = ucars.config
+				.getDouble("general.cars.hitBy.damage");
+		
+		licenseEnabled = ucars.config.getBoolean("general.cars.licenses.enable");
+		roadBlocksEnabled = ucars.config.getBoolean("general.cars.roadBlocks.enable");
+		trafficLightsEnabled = ucars.config.getBoolean("general.cars.trafficLights.enable");
+		effectBlocksEnabled = ucars.config.getBoolean("general.cars.effectBlocks.enable");
+		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
+		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
+		
+		if(roadBlocksEnabled){
+		    List<String> ids = ucars.config
+					.getStringList("general.cars.roadBlocks.ids");
+			ids.addAll(ucars.config.getStringList("general.cars.blockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.HighblockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.ResetblockBoost"));
+			ids.addAll(ucars.config.getStringList("general.cars.jumpBlock"));
+			ids.add("AIR");
+			ids.add("LAVA");
+			ids.add("STATIONARY_LAVA");
+			ids.add("WATER");
+			ids.add("STATIONARY_WATER");
+			roadBlocks = ids;
+		}
+		if(trafficLightsEnabled){
+			trafficLightRawIds = ucars.config.getStringList("general.cars.trafficLights.waitingBlock");
+		}
+		if(effectBlocksEnabled){
+			blockBoost = ucars.config.getStringList("general.cars.blockBoost");
+			highBlockBoost = ucars.config.getStringList("general.cars.HighblockBoost");
+			resetBlockBoost = ucars.config.getStringList("general.cars.ResetblockBoost");
+			jumpBlock = ucars.config.getStringList("general.cars.jumpBlock");
+			teleportBlock = ucars.config.getStringList("general.cars.teleportBlock");
+		}
+		
+		barriers = ucars.config.getStringList("general.cars.barriers"); //Load specified barriers
+		
+		//SpeedMods
+		List<String> units = ucars.config.getStringList("general.cars.speedMods");
+		for (String unit : units) {
+			String[] sections = unit.split("-");
+			try {
+				String rawMat = sections[0];
+				double mult = Double.parseDouble(sections[1]);
+				speedMods.put(rawMat, mult);
+			} catch (NumberFormatException e) {
+				//Invalid speed mod
+			}
+		}
+		//No longer speedmods
+	}
 }
