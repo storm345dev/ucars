@@ -2,6 +2,7 @@ package com.useful.ucars;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.bukkit.Location;
@@ -106,6 +107,13 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			// plugin.onDisable();
 			ucars.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder()
 						+ File.separator + "config.yml"));
+			try {
+				ucars.lang.load(new File(plugin.getDataFolder() + File.separator + "lang.yml"));
+			} catch (Exception e1) {
+				ucars.plugin.getLogger().log(Level.WARNING,
+						"Error creating/loading lang file! Regenerating..");
+			}
+			
 			ucars.listener.reloadListener();
 			/*try {
 				ucars.config.load(new File(plugin.getDataFolder()

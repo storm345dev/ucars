@@ -1,6 +1,5 @@
 package com.useful.ucars;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.core.config.yaml.YamlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Lightable;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -1308,19 +1309,18 @@ public class uCarsListener implements Listener {
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
 				double y = 1.1;
-				if (block.getType().name().toLowerCase().contains("slab")) {
+				
+				if(block.getType().name().toLowerCase().contains("slab")) {
 					calculated = true;
-					y = 1.2;
+					
+					if(((Slab) block.getBlockData()).getType() == Slab.Type.BOTTOM) {
+						y = 0.6;
+					} else {
+						y = 1.2;
+					}
 				} else if(block.getType().name().toLowerCase().contains("carpet")) {
 					calculated = true;
 					y = 0.2;
-				}
-				if (carBlock.name().toLowerCase().contains("slab") && block.getType().name().toLowerCase().contains("slab")) { // In a slab block
-					calculated = true;
-					y = 0.6;
-				} else if(carBlock.name().toLowerCase().contains("carpet") && block.getType().name().toLowerCase().contains("carpet")) {
-					calculated = true;
-					y = 0.06;
 				}
 				
 				if (carBlock.name().toLowerCase()
@@ -1331,12 +1331,12 @@ public class uCarsListener implements Listener {
 								.contains(Pattern.quote("stairs"))
 						|| inStairs) {
 					calculated = true;
-					y = 0.6;
+					y = 1.2;
 					// ascend stairs
 				}
 				Boolean ignore = false;
 				if (car.getVelocity().getY() > 4) {
-					// if car is going up already then dont do ascent
+					// if car is going up already then don't do ascent
 					ignore = true;
 				}
 				if (!ignore) {
@@ -1351,7 +1351,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
-			if (fly && cont && (bidUpLoc.getBlock().getType().name().toLowerCase().contains("slab") || underblock.isEmpty() )) {
+			if (fly && cont && (bidUpLoc.getBlock().getType().name().toLowerCase().contains("slab") || underblock.isEmpty() && !carBlock.name().toLowerCase().contains("slab"))) {
 				// Make the car ascend (easter egg, slab elevator)
 				travel.setY(0.1); // Make a little easier
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
@@ -1644,7 +1644,7 @@ public class uCarsListener implements Listener {
 			if(!plugin.API.runCarChecks(event.getPlayer().getInventory().getItemInMainHand())){
 				return;
 			}
-			Location loc = block.getLocation().add(0, 1.5, 0);
+			Location loc = block.getLocation().add(0.5, 1.5, 0.5);
 			loc.setYaw(event.getPlayer().getLocation().getYaw() + 270);
 			final Minecart car = (Minecart) event.getPlayer().getWorld()
 					.spawnEntity(loc, EntityType.MINECART);

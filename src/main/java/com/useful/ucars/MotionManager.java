@@ -1,15 +1,17 @@
 package com.useful.ucars;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.util.Vector;
+
 import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucars.controls.ControlScheme;
 import com.useful.ucars.controls.ControlSchemeManager;
 import com.useful.ucars.util.UEntityMeta;
 import com.useful.ucarsCommon.StatValue;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.util.Vector;
 
 public class MotionManager {
 	
@@ -110,7 +112,12 @@ public class MotionManager {
 			return;
 		}
 		
-		boolean inAir = car.getLocation().clone().add(0, -1, 0).getBlock().isEmpty();
+		Location carLoc = car.getLocation().clone();
+		boolean inAir = false;
+		if(carLoc.getBlock().isEmpty() && carLoc.subtract(0, 1, 0).getBlock().isEmpty()) {
+			inAir = true;
+		}
+		
 		double len = car.getWidth() / 2;
 		if(!car.getLocation().clone().add(len, -1, 0).getBlock().isEmpty() || !car.getLocation().clone().add(-len, -1, 0).getBlock().isEmpty() ||
 				!car.getLocation().clone().add(0, -1, len).getBlock().isEmpty() || !car.getLocation().clone().add(0, -1, -len).getBlock().isEmpty() ||
