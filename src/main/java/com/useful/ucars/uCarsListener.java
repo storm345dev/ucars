@@ -1308,15 +1308,15 @@ public class uCarsListener implements Listener {
 					/*|| bidU == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
 				theNewLoc.add(0, 1.5d, 0);
 				Boolean calculated = false;
-				double y = 1.1;
+				double y = 1.05;
 				
 				if(block.getType().name().toLowerCase().contains("slab")) {
 					calculated = true;
 					
 					if(((Slab) block.getBlockData()).getType() == Slab.Type.BOTTOM) {
-						y = 0.6;
+						y = 0.5;
 					} else {
-						y = 1.2;
+						y = 1.002;
 					}
 				} else if(block.getType().name().toLowerCase().contains("carpet")) {
 					calculated = true;
@@ -1331,7 +1331,7 @@ public class uCarsListener implements Listener {
 								.contains(Pattern.quote("stairs"))
 						|| inStairs) {
 					calculated = true;
-					y = 1.2;
+					y = 1.05;
 					// ascend stairs
 				}
 				Boolean ignore = false;
@@ -1357,6 +1357,9 @@ public class uCarsListener implements Listener {
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
+			if(car.getLocation().getY() != car.getLocation().getBlockY()) {
+				travel.multiply(new Vector(0.65,1,0.65));
+			}
 			car.setVelocity(calculateCarStats(car, player, travel,
 					multiplier));
 		} else {
@@ -1366,6 +1369,10 @@ public class uCarsListener implements Listener {
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Move the car and adjust vector to fit car stats
+			if(car.getLocation().getY() != car.getLocation().getBlockY()) {
+				travel.multiply(new Vector(0.65,1,0.65));
+			}
+			
 			car.setVelocity(calculateCarStats(car, player, travel,
 					multiplier));
 		}
