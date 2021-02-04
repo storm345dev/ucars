@@ -114,7 +114,7 @@ public class uCarsCommandExecutor implements CommandExecutor {
 						"Error creating/loading lang file! Regenerating..");
 			}
 			
-			ucars.listener.reloadListener();
+			ucars.listener.init();
 			/*try {
 				ucars.config.load(new File(plugin.getDataFolder()
 						+ File.separator + "config.yml"));
