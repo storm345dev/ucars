@@ -66,6 +66,9 @@ public class uCarsListener implements Listener {
 	private ucars plugin;
 	private List<String> ignoreJump = null;
 	
+	private static double GRAVITY_Y_VELOCITY_MAGNITUDE = 0.04;
+	private static double SIMULATED_FRICTION_SPEED_MULTIPLIER = 0.55;
+	
 	private Boolean carsEnabled = true;
 	private Boolean licenseEnabled = false;
 	private Boolean roadBlocksEnabled = false;
@@ -111,7 +114,7 @@ public class uCarsListener implements Listener {
 			if(car.hasMetadata("inertialYAxis")) {
 				velocity = new Vector(0, velocity.getY(), 0); // Don't freeze Y-velocity
 			}
-			velocity = new Vector(0, 0.04, 0); // Y=0.04 to account for Minecraft's downward force on Minecart
+			velocity = new Vector(0, GRAVITY_Y_VELOCITY_MAGNITUDE, 0);
 			return velocity;
 		}
 		velocity = plugin.getAPI().getTravelVector(car, velocity, currentMult);		
@@ -1243,7 +1246,7 @@ public class uCarsListener implements Listener {
 			}
 			// Account for speed increase when climbing
 			if(calculated) {
-				travel.multiply(new Vector(0.55,1,0.55));
+				travel.multiply(new Vector(SIMULATED_FRICTION_SPEED_MULTIPLIER,1,SIMULATED_FRICTION_SPEED_MULTIPLIER));
 			}
 			// Move the car and adjust vector to fit car stats
 			car.setVelocity(calculateCarStats(car, player, travel,
@@ -1256,7 +1259,7 @@ public class uCarsListener implements Listener {
 			}
 			// Account for speed increase when going down
 			if(car.getFallDistance() > 0.0) {
-				travel.multiply(new Vector(0.55,1,0.55));
+				travel.multiply(new Vector(SIMULATED_FRICTION_SPEED_MULTIPLIER,1,SIMULATED_FRICTION_SPEED_MULTIPLIER));
 			}
 			// Move the car and adjust vector to fit car stats
 			car.setVelocity(calculateCarStats(car, player, travel,
