@@ -1245,7 +1245,7 @@ public class uCarsListener implements Listener {
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Account for speed increase when climbing
-			if(calculated) {
+			if(calculated && car.getType() == EntityType.MINECART) {
 				travel.multiply(new Vector(SIMULATED_FRICTION_SPEED_MULTIPLIER,1,SIMULATED_FRICTION_SPEED_MULTIPLIER));
 			}
 			// Move the car and adjust vector to fit car stats
@@ -1258,7 +1258,7 @@ public class uCarsListener implements Listener {
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
 			}
 			// Account for speed increase when going down
-			if(car.getFallDistance() > 0.0) {
+			if(car.getFallDistance() > 0.0 && car.getType() == EntityType.MINECART) {
 				travel.multiply(new Vector(SIMULATED_FRICTION_SPEED_MULTIPLIER,1,SIMULATED_FRICTION_SPEED_MULTIPLIER));
 			}
 			// Move the car and adjust vector to fit car stats
