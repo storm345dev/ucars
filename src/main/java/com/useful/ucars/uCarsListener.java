@@ -114,7 +114,11 @@ public class uCarsListener implements Listener {
 			if(car.hasMetadata("inertialYAxis")) {
 				velocity = new Vector(0, velocity.getY(), 0); // Don't freeze Y-velocity
 			}
-			velocity = new Vector(0, GRAVITY_Y_VELOCITY_MAGNITUDE, 0);
+			if(car.getType() == EntityType.MINECART) {
+				velocity = new Vector(0, GRAVITY_Y_VELOCITY_MAGNITUDE, 0);
+			} else {
+				velocity = new Vector(0, 0, 0);
+			}
 			return velocity;
 		}
 		velocity = plugin.getAPI().getTravelVector(car, velocity, currentMult);		
