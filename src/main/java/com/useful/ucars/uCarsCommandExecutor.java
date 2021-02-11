@@ -2,20 +2,24 @@ package com.useful.ucars;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.*;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
-import com.useful.uCarsAPI.uCarsAPI;
 import com.useful.ucarsCommon.StatValue;
 
 public class uCarsCommandExecutor implements CommandExecutor {
@@ -101,13 +105,23 @@ public class uCarsCommandExecutor implements CommandExecutor {
 			return ufuel(sender, args);
 		} else if (cmd.getName().equalsIgnoreCase("reloaducars")) {
 			// plugin.onDisable();
+			ucars.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder()
+						+ File.separator + "config.yml"));
 			try {
+				ucars.lang.load(new File(plugin.getDataFolder() + File.separator + "lang.yml"));
+			} catch (Exception e1) {
+				ucars.plugin.getLogger().log(Level.WARNING,
+						"Error creating/loading lang file! Regenerating..");
+			}
+			
+			ucars.listener.init();
+			/*try {
 				ucars.config.load(new File(plugin.getDataFolder()
 						+ File.separator + "config.yml"));
 			} catch (Exception e) {
 				// Load config
 				e.printStackTrace();
-			}
+			} */
 			// plugin.onEnable();
 			// plugin.onLoad();
 			sender.sendMessage(ucars.colors.getInfo()

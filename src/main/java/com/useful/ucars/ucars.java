@@ -681,6 +681,9 @@ public class ucars extends JavaPlugin {
 	public final Boolean isBlockEqualToConfigIds(List<String> rawIds, Block block) {
 		// split by : then compare!
 		for (String raw : rawIds) {
+			if(raw.contains("-")) {
+				raw = raw.split("-")[0];
+			}
 			final String[] parts = raw.split(":");
 			if (parts.length < 1) {
 			} else if (parts.length < 2) { //New configs and blocknames
