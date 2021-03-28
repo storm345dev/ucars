@@ -72,6 +72,7 @@ public class uCarsListener implements Listener {
 	private Boolean carsEnabled = true;
 	private Boolean licenseEnabled = false;
 	private Boolean roadBlocksEnabled = false;
+	private Boolean multiverseEnabled = false;
 	private Boolean trafficLightsEnabled = true;
 	private Boolean effectBlocksEnabled = true;
 	private Boolean usePerms = false;
@@ -97,6 +98,7 @@ public class uCarsListener implements Listener {
     private List<String> jumpBlock = new ArrayList<String>(); //Jump blocks (Iron)
     private List<String> teleportBlock = new ArrayList<String>(); //Teleport blocks (purple clay)
     private List<String> barriers = new ArrayList<String>();
+    private List<String> ucarworlds = new ArrayList<String>();
     
     private ConcurrentHashMap<String, Double> speedMods = new ConcurrentHashMap<String, Double>();
 
@@ -194,12 +196,16 @@ public class uCarsListener implements Listener {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
 		}
+		if(multiverseEnabled && !ucarworlds.contains(cart.getWorld().getName())) {
+			return false;
+		}
 		if((cart.getType().toString().toUpperCase().contains("MINECART") && cart.getType().toString().length() > 8) || cart.getType().toString().toUpperCase().contains("BOAT")) {
 			return false; //Not a car but a Minecart_Something (only useful when derailed)
 		}
 		if(cart instanceof Animals) {
 			return false;	//Animals are not cars...
 		}
+		
 		
 		Location loc = cart.getLocation();
 		Block b = loc.getBlock();
@@ -2129,6 +2135,7 @@ public class uCarsListener implements Listener {
 		
 		licenseEnabled = ucars.config.getBoolean("general.cars.licenses.enable");
 		roadBlocksEnabled = ucars.config.getBoolean("general.cars.roadBlocks.enable");
+		multiverseEnabled = ucars.config.getBoolean("general.cars.worlds.enable");
 		trafficLightsEnabled = ucars.config.getBoolean("general.cars.trafficLights.enable");
 		effectBlocksEnabled = ucars.config.getBoolean("general.cars.effectBlocks.enable");
 		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
@@ -2147,6 +2154,10 @@ public class uCarsListener implements Listener {
 			ids.add("WATER");
 			ids.add("STATIONARY_WATER");
 			roadBlocks = ids;
+		}
+		if(multiverseEnabled) {
+			ucarworlds.clear();
+			ucarworlds.addAll(ucars.config.getStringList("general.cars.worlds.ids"));
 		}
 		if(trafficLightsEnabled){
 			trafficLightRawIds = ucars.config.getStringList("general.cars.trafficLights.waitingBlock");
@@ -2174,5 +2185,9 @@ public class uCarsListener implements Listener {
 			}
 		}
 		//No longer speedmods
+	}
+	
+	public List<String> getWorldList() {
+		return ucarworlds;
 	}
 }

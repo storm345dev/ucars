@@ -1,6 +1,6 @@
 name: uCars
 main: com.useful.ucars.ucars
-version: 24.2
+version: 25
 api-version: 1.13
 softdepend: [Vault]
 depend: [ProtocolLib]

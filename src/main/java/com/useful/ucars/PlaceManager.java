@@ -33,6 +33,7 @@ public class PlaceManager {
 	}
 	
 	public static Boolean placeableOn(Block block, ucars plugin) {
+		if (ucars.listener.getWorldList().contains(block.getWorld().getName()))
 		if (!ucars.config.getBoolean("general.cars.roadBlocks.enable")) {
 			return true;
 		}
