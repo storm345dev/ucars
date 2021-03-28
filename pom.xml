@@ -121,7 +121,13 @@
                </exclusion>
            </exclusions>
        </dependency>
-
+    <distributionManagement>
+   <repository>
+     <id>github</id>
+     <name>GitHub stormdev Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/storm345dev/ucars</url>
+   </repository>
+</distributionManagement>
     <!--Bukkit API-->
     </dependencies>
     <properties>
