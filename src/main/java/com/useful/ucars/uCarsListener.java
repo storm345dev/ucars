@@ -1086,11 +1086,6 @@ public class uCarsListener implements Listener {
 				if (s != null) {
 					String[] lines = s.getLines();
 					if (lines[0].equalsIgnoreCase("[Teleport]")) {
-						Boolean raceCar = false;
-						if (car.hasMetadata("kart.racing")
-								|| UEntityMeta.hasMetadata(car, "kart.racing")) {
-							raceCar = true;
-						}
 						UEntityMeta.setMetadata(car, "safeExit.ignore", new StatValue(null, plugin));
 						
 						String xs = lines[1];
@@ -1133,17 +1128,13 @@ public class uCarsListener implements Listener {
 							
 							UUID carId = car.getUniqueId();
 							
-							Location toTele = new Location(s.getWorld(), x,
+							final Location toTele = new Location(s.getWorld(), x,
 									y, z);
 							Chunk ch = toTele.getChunk();
-							if (ch.isLoaded()) {
+							if (!ch.isLoaded()) {
 								ch.load(true);
 							}
-							car.teleport(toTele);
-							UEntityMeta.setMetadata(car, "carhealth", health);
-							if (raceCar) {
-								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
-							}
+							player.teleport(toTele.clone().add(0,2,0));
 							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
 							plugin.getServer().getPluginManager().callEvent(evnt);
@@ -1156,6 +1147,7 @@ public class uCarsListener implements Listener {
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 									@Override
 									public void run() {
+										ucar.teleport(toTele);
 										ucar.addPassenger(player); //For the sake of uCarsTrade
 										return;
 									}}, 2l);
@@ -1286,10 +1278,10 @@ public class uCarsListener implements Listener {
 		}
 		Player p = (Player) event.getEntity();
 		if (inACar(p.getName())) {
-			Vector vel = p.getVehicle().getVelocity();
+			event.setCancelled(true);
+			/*Vector vel = p.getVehicle().getVelocity();
 			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
-				event.setCancelled(true);
-			} /*else {
+			} else {
 				try {
 					p.damage(event.getDamage());
 				} catch (Exception e) {
