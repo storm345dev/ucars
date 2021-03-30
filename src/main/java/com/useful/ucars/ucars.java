@@ -435,6 +435,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.cars.hitBy.damage")) {
 				config.set("general.cars.hitBy.damage", 1.5);
 			}
+			if (!config.contains("general.cars.fallDamageDisabled")) {
+				config.set("general.cars.fallDamageDisabled", false);
+			}
 			if (!config.contains("general.cars.worlds.enable")) {
 				config.set("general.cars.worlds.enable", false);
 			}

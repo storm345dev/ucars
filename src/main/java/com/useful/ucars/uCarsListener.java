@@ -78,6 +78,7 @@ public class uCarsListener implements Listener {
 	private Boolean usePerms = false;
 	private Boolean fuelEnabled = false;
 	private Boolean fuelUseItems = false;
+	private Boolean disableFallDamage = false;
 	
 	private double defaultSpeed = 30;
 	private static double defaultHealth = 10;
@@ -1134,7 +1135,7 @@ public class uCarsListener implements Listener {
 							if (!ch.isLoaded()) {
 								ch.load(true);
 							}
-							player.teleport(toTele.clone().add(0,2,0));
+							player.teleport(toTele.clone().add(0,1,0));
 							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
 							plugin.getServer().getPluginManager().callEvent(evnt);
@@ -1217,6 +1218,9 @@ public class uCarsListener implements Listener {
 					y = 1.05;
 					// ascend stairs
 				}
+				if (car.getFallDistance() > 1.5) { //Prevents Fall Distance stacking up causing fall-damage when climbing longer slopes
+					y = y*0.95;
+				}
 				Boolean ignore = false;
 				if (car.getVelocity().getY() > 4) {
 					// if car is going up already then don't do ascent
@@ -1269,7 +1273,7 @@ public class uCarsListener implements Listener {
 	}
 
 	/*
-	 * This disables fall damage whilst driving a car
+	 * This disables minor fall damage whilst driving a car
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	void safeFly(EntityDamageEvent event) {
@@ -1277,18 +1281,17 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Player p = (Player) event.getEntity();
-		if (inACar(p.getName())) {
-			event.setCancelled(true);
-			/*Vector vel = p.getVehicle().getVelocity();
-			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
-			} else {
+		if (inACar(p.getName()) && !disableFallDamage) {
+			Vector vel = p.getVehicle().getVelocity();
+			if (vel.getY() > -0.1 && vel.getY() < 0.1) {
+				event.setCancelled(true);
+			}/*else {
 				try {
 					p.damage(event.getDamage());
 				} catch (Exception e) {
 					// Damaging failed
 				}
 			}*/
-
 		}
 		return;
 	}
@@ -2132,6 +2135,7 @@ public class uCarsListener implements Listener {
 		effectBlocksEnabled = ucars.config.getBoolean("general.cars.effectBlocks.enable");
 		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
 		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
+		disableFallDamage = ucars.config.getBoolean("general.cars.fallDamageDisabled");
 		
 		if(roadBlocksEnabled){
 		    List<String> ids = ucars.config
