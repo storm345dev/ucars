@@ -9,7 +9,7 @@
         <url>https://github.com/storm345dev/ucars/issues</url>
     </issueManagement>
     <build>
-        <finalName>uCars</finalName>
+        <!--<finalName>uCars</finalName>-->
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
             <resource>
