@@ -9,4 +9,4 @@ Master branch: Minecraft 1.12 and below.
 
 1.13plus branch: Minecraft 1.13 and above, targeting 1.16
 
-Dev builds available from github and also from https://stormdev.org/jenkins/job/uCars/
+Dev builds available from github and absolute latest builds from https://stormdev.org/jenkins/job/uCars/
