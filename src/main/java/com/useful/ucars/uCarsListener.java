@@ -72,11 +72,13 @@ public class uCarsListener implements Listener {
 	private Boolean carsEnabled = true;
 	private Boolean licenseEnabled = false;
 	private Boolean roadBlocksEnabled = false;
+	private Boolean multiverseEnabled = false;
 	private Boolean trafficLightsEnabled = true;
 	private Boolean effectBlocksEnabled = true;
 	private Boolean usePerms = false;
 	private Boolean fuelEnabled = false;
 	private Boolean fuelUseItems = false;
+	private Boolean disableFallDamage = false;
 	
 	private double defaultSpeed = 30;
 	private static double defaultHealth = 10;
@@ -97,6 +99,7 @@ public class uCarsListener implements Listener {
     private List<String> jumpBlock = new ArrayList<String>(); //Jump blocks (Iron)
     private List<String> teleportBlock = new ArrayList<String>(); //Teleport blocks (purple clay)
     private List<String> barriers = new ArrayList<String>();
+    private List<String> ucarworlds = new ArrayList<String>();
     
     private ConcurrentHashMap<String, Double> speedMods = new ConcurrentHashMap<String, Double>();
 
@@ -194,12 +197,16 @@ public class uCarsListener implements Listener {
 		if(cart.hasMetadata("ucars.ignore") || UEntityMeta.hasMetadata(cart, "ucars.ignore")){
 			return false; //Not a car
 		}
+		if(multiverseEnabled && !ucarworlds.contains(cart.getWorld().getName())) {
+			return false;
+		}
 		if((cart.getType().toString().toUpperCase().contains("MINECART") && cart.getType().toString().length() > 8) || cart.getType().toString().toUpperCase().contains("BOAT")) {
 			return false; //Not a car but a Minecart_Something (only useful when derailed)
 		}
 		if(cart instanceof Animals) {
 			return false;	//Animals are not cars...
 		}
+		
 		
 		Location loc = cart.getLocation();
 		Block b = loc.getBlock();
@@ -1080,28 +1087,7 @@ public class uCarsListener implements Listener {
 				if (s != null) {
 					String[] lines = s.getLines();
 					if (lines[0].equalsIgnoreCase("[Teleport]")) {
-						Boolean raceCar = false;
-						if (car.hasMetadata("kart.racing")
-								|| UEntityMeta.hasMetadata(car, "kart.racing")) {
-							raceCar = true;
-						}
 						UEntityMeta.setMetadata(car, "safeExit.ignore", new StatValue(null, plugin));
-						car.eject();
-						
-						UUID carId = car.getUniqueId();
-						
-						car.remove();
-						
-						final Vehicle ca = car;
-						Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
-
-							@Override
-							public void run() {
-								if(ca != null){
-									ca.remove(); //For uCarsTrade
-								}
-								return;
-							}}, 2l);
 						
 						String xs = lines[1];
 						String ys = lines[2];
@@ -1125,52 +1111,56 @@ public class uCarsListener implements Listener {
 							valid = false;
 						}
 						if (valid) {
-							List<MetadataValue> metas = null;
+							List<MetadataValue> normalMeta = null;
+							List<MetadataValue> otherMeta = null;
 							if (player.hasMetadata("car.stayIn") || UEntityMeta.hasMetadata(player, "car.stayIn")) {
-								metas = player.getMetadata("car.stayIn");
-								List<MetadataValue> others = UEntityMeta.getMetadata(player, "car.stayIn");
-								if(others != null){
-									metas.addAll(others);
+								normalMeta = player.getMetadata("car.stayIn");
+								otherMeta = UEntityMeta.getMetadata(player, "car.stayIn");
+								for (MetadataValue val : normalMeta) {
+									player.removeMetadata("car.stayIn", val.getOwningPlugin());
 								}
-								for (MetadataValue val : metas) {
-									player.removeMetadata("car.stayIn",
-											val.getOwningPlugin());
-									UEntityMeta.removeMetadata(player, "car.stayIn");
+								if(otherMeta != null) {
+									for (MetadataValue val : otherMeta) {
+										UEntityMeta.removeMetadata(player, "car.stayIn");
+									}
 								}
 							}
-							Location toTele = new Location(s.getWorld(), x,
+							car.eject();
+							
+							UUID carId = car.getUniqueId();
+							
+							final Location toTele = new Location(s.getWorld(), x,
 									y, z);
 							Chunk ch = toTele.getChunk();
-							if (ch.isLoaded()) {
+							if (!ch.isLoaded()) {
 								ch.load(true);
 							}
-							car = (Vehicle) s.getWorld().spawnEntity(
-									toTele, EntityType.MINECART);
-							UEntityMeta.setMetadata(car, "carhealth", health);
-							if (raceCar) {
-								UEntityMeta.setMetadata(car, "kart.racing", new StatValue(null, plugin));
-							}
+							player.teleport(toTele.clone().add(0,1,0));
 							uCarRespawnEvent evnt = new uCarRespawnEvent(car, carId, car.getUniqueId(),
 									CarRespawnReason.TELEPORT);
 							plugin.getServer().getPluginManager().callEvent(evnt);
 							if(evnt.isCancelled()){
 								car.remove();
-							}
-							else{
+							} else{
 								player.sendMessage(ucars.colors.getTp()
 										+ "Teleporting...");
 								final Vehicle ucar = car;
 								Bukkit.getScheduler().runTaskLater(plugin, new Runnable(){
 									@Override
 									public void run() {
+										ucar.teleport(toTele);
 										ucar.addPassenger(player); //For the sake of uCarsTrade
 										return;
 									}}, 2l);
 								car.setVelocity(travel);
-								if (metas != null) {
-									for (MetadataValue val : metas) {
-										UEntityMeta.setMetadata(player, "car.stayIn", val);
+								if (normalMeta != null) {
+									for (MetadataValue val : normalMeta) {
 										player.setMetadata("car.stayIn", val);
+									}
+								}
+								if (otherMeta != null) {
+									for (MetadataValue val : otherMeta) {
+										UEntityMeta.setMetadata(player, "car.stayIn", val);
 									}
 								}
 								plugin.getAPI().updateUcarMeta(carId,
@@ -1228,6 +1218,9 @@ public class uCarsListener implements Listener {
 					y = 1.05;
 					// ascend stairs
 				}
+				if (car.getFallDistance() > 1.5) { //Prevents Fall Distance stacking up causing fall-damage when climbing longer slopes
+					y = y*0.95;
+				}
 				Boolean ignore = false;
 				if (car.getVelocity().getY() > 4) {
 					// if car is going up already then don't do ascent
@@ -1280,7 +1273,7 @@ public class uCarsListener implements Listener {
 	}
 
 	/*
-	 * This disables fall damage whilst driving a car
+	 * This disables minor fall damage whilst driving a car
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	void safeFly(EntityDamageEvent event) {
@@ -1289,17 +1282,20 @@ public class uCarsListener implements Listener {
 		}
 		Player p = (Player) event.getEntity();
 		if (inACar(p.getName())) {
-			Vector vel = p.getVehicle().getVelocity();
-			if (!(vel.getY() > -0.1 && vel.getY() < 0.1)) {
+			if(!disableFallDamage) {
+				Vector vel = p.getVehicle().getVelocity();
+				if (vel.getY() > -0.1 && vel.getY() < 0.1) {
+					event.setCancelled(true);
+				}/*else {
+					try {
+						p.damage(event.getDamage());
+					} catch (Exception e) {
+						// Damaging failed
+					}
+				}*/
+			} else {
 				event.setCancelled(true);
-			} /*else {
-				try {
-					p.damage(event.getDamage());
-				} catch (Exception e) {
-					// Damaging failed
-				}
-			}*/
-
+			}
 		}
 		return;
 	}
@@ -2138,10 +2134,12 @@ public class uCarsListener implements Listener {
 		
 		licenseEnabled = ucars.config.getBoolean("general.cars.licenses.enable");
 		roadBlocksEnabled = ucars.config.getBoolean("general.cars.roadBlocks.enable");
+		multiverseEnabled = ucars.config.getBoolean("general.cars.worlds.enable");
 		trafficLightsEnabled = ucars.config.getBoolean("general.cars.trafficLights.enable");
 		effectBlocksEnabled = ucars.config.getBoolean("general.cars.effectBlocks.enable");
 		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
 		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
+		disableFallDamage = ucars.config.getBoolean("general.cars.fallDamageDisabled");
 		
 		if(roadBlocksEnabled){
 		    List<String> ids = ucars.config
@@ -2156,6 +2154,10 @@ public class uCarsListener implements Listener {
 			ids.add("WATER");
 			ids.add("STATIONARY_WATER");
 			roadBlocks = ids;
+		}
+		if(multiverseEnabled) {
+			ucarworlds.clear();
+			ucarworlds.addAll(ucars.config.getStringList("general.cars.worlds.ids"));
 		}
 		if(trafficLightsEnabled){
 			trafficLightRawIds = ucars.config.getStringList("general.cars.trafficLights.waitingBlock");
@@ -2183,5 +2185,9 @@ public class uCarsListener implements Listener {
 			}
 		}
 		//No longer speedmods
+	}
+	
+	public List<String> getWorldList() {
+		return ucarworlds;
 	}
 }
