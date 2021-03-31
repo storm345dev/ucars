@@ -1281,17 +1281,21 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Player p = (Player) event.getEntity();
-		if (inACar(p.getName()) && !disableFallDamage) {
-			Vector vel = p.getVehicle().getVelocity();
-			if (vel.getY() > -0.1 && vel.getY() < 0.1) {
+		if (inACar(p.getName())) {
+			if(!disableFallDamage) {
+				Vector vel = p.getVehicle().getVelocity();
+				if (vel.getY() > -0.1 && vel.getY() < 0.1) {
+					event.setCancelled(true);
+				}/*else {
+					try {
+						p.damage(event.getDamage());
+					} catch (Exception e) {
+						// Damaging failed
+					}
+				}*/
+			} else {
 				event.setCancelled(true);
-			}/*else {
-				try {
-					p.damage(event.getDamage());
-				} catch (Exception e) {
-					// Damaging failed
-				}
-			}*/
+			}
 		}
 		return;
 	}
