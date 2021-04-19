@@ -2190,7 +2190,7 @@ public class uCarsListener implements Listener {
 		return ucarworlds;
 	}
 	
-	public boolean getMultiverse() {
+	public boolean isMultiverse() {
 		return multiverseEnabled;
 	}
 }

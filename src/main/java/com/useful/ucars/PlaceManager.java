@@ -33,7 +33,7 @@ public class PlaceManager {
 	}
 	
 	public static Boolean placeableOn(Block block, ucars plugin) {
-		if(ucars.listener.getMultiverse() && !ucars.listener.getWorldList().contains(block.getWorld().getName())) {
+		if(ucars.listener.isMultiverse() && !ucars.listener.getWorldList().contains(block.getWorld().getName())) {
 			return false;
 		}
 		
