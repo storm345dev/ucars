@@ -745,9 +745,8 @@ public class uCarsListener implements Listener {
 			}
 			UEntityMeta.removeMetadata(car, "car.jumping");
 		}
-		if(car instanceof Minecart) {
-			((Minecart)car).setMaxSpeed(5); // Don't allow game breaking speed - but faster
-			// than default
+		if(car instanceof Minecart && ((Minecart) car).getMaxSpeed() != 5) {
+			((Minecart)car).setMaxSpeed(5); // Don't allow game breaking speed - but faster than default
 		}
 		
 		// Calculate road blocks
@@ -2189,5 +2188,9 @@ public class uCarsListener implements Listener {
 	
 	public List<String> getWorldList() {
 		return ucarworlds;
+	}
+	
+	public boolean isMultiverse() {
+		return multiverseEnabled;
 	}
 }
