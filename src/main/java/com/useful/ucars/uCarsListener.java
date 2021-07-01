@@ -65,6 +65,7 @@ import com.useful.ucarsCommon.StatValue;
 public class uCarsListener implements Listener {
 	private ucars plugin;
 	private List<String> ignoreJump = null;
+	private List<String> softBlocks = null;
 	
 	private static double GRAVITY_Y_VELOCITY_MAGNITUDE = 0.04;
 	private static double SIMULATED_FRICTION_SPEED_MULTIPLIER = 0.55;
@@ -342,14 +343,14 @@ public class uCarsListener implements Listener {
 	}
 	
 	public Entity getDrivingPassengerOfCar(Vehicle vehicle){ //Get the PLAYER passenger of the car
-		Entity passenger = vehicle.getPassenger(); //The vehicle's lowest passenger; may be a pig, etc... if pigucarting
-		if (passenger == null || !(vehicle instanceof Entity)) { //If it has nobody riding it, ignore it
+		if (vehicle.getPassengers().isEmpty() || !(vehicle instanceof Entity)) { //If it has nobody riding it, ignore it
 			return null;
 		}
+		Entity passenger = vehicle.getPassengers().get(0); //The vehicle's lowest passenger; may be a pig, etc... if pigucarting
 		if (!(passenger instanceof Player)) { //If not a player riding it; then keep looking until we find a player
 			while (!(passenger instanceof Player)
-					&& passenger.getPassenger() != null) { //While there's more entities above this in the 'stack'
-				passenger = passenger.getPassenger(); //Keep iterating
+					&& !passenger.getPassengers().isEmpty()) { //While there's more entities above this in the 'stack'
+				passenger = passenger.getPassengers().get(0); //Keep iterating
 			}
 		}
 		return passenger;
@@ -565,8 +566,7 @@ public class uCarsListener implements Listener {
 		CarHealthData health = getCarHealthHandler(car);
 		Boolean recalculateHealth = false;
 		// Calculate health based on location
-		if (normalblock.getType().equals(Material.WATER)
-				|| normalblock.getType().equals(Material.LEGACY_STATIONARY_WATER)) {
+		if (normalblock.getType().equals(Material.WATER)) {
 			double damage = damage_water;
 			if (damage > 0) {
 				if (driven) {
@@ -587,8 +587,7 @@ public class uCarsListener implements Listener {
 				recalculateHealth = true;
 			}
 		}
-		if (normalblock.getType().equals(Material.LAVA)
-				|| normalblock.getType().equals(Material.LEGACY_STATIONARY_LAVA)) {
+		if (normalblock.getType().equals(Material.LAVA)) {
 			double damage = damage_lava;
 			if (damage > 0) {
 				if (driven) {
@@ -907,7 +906,6 @@ public class uCarsListener implements Listener {
 		Vector faceDirVec = new Vector(fx, faceDir.getModY(), fz);
 		before=before.add(faceDirVec);
 		//Add the length of the car in so that we are able to climb up blocks with an entity that has length
-		Vector toRightOfFaceDir = unitVec.clone().crossProduct(new Vector(0,1,0));
 		before=before.add(unitVec.clone().multiply(length*0.5));
 		Location frontRight = before.clone().add(unitVec.clone().multiply(length*0.5));
 		Location frontLeft = before.clone().add(unitVec.clone().multiply(length*-0.5));
@@ -915,11 +913,12 @@ public class uCarsListener implements Listener {
 		Block frontRightInFront = frontRight.getBlock();
 		Block frontLeftInFront = frontLeft.getBlock();
 		//Hackish way to make this able to jump for wider vehicles
-		if(ignoreJump.contains(block.getType().name())){
-			if(!ignoreJump.contains(frontRightInFront.getType().name())){
+		boolean blockNoJump = noJump(block.getType().name());
+		if(blockNoJump){
+			if(!noJump(frontRightInFront.getType().name())){
 				block = frontRightInFront;
 			}
-			else if(!ignoreJump.contains(frontLeftInFront.getType().name())){
+			else if(!noJump(frontLeftInFront.getType().name())){
 				block = frontLeftInFront;
 			}
 		}
@@ -1039,7 +1038,6 @@ public class uCarsListener implements Listener {
 			travel.setY(newy);
 		}*/
 		
-		Material bType = block.getType();
 		Boolean fly = false; // Fly is the 'easter egg' slab elevator
 		if (normalblock.getRelative(faceDir).getType().name().toLowerCase().contains("slab")) {
 			// If looking at slabs
@@ -1180,8 +1178,9 @@ public class uCarsListener implements Listener {
 		cont = !plugin.isBlockEqualToConfigIds(barriers, block) && !plugin.isBlockEqualToConfigIds(barriers, frontLeftInFront) && !plugin.isBlockEqualToConfigIds(barriers, frontRightInFront);
 		
 		Boolean inStairs = false;
-		Material carBlock = car.getLocation().getBlock().getType();
-		if (carBlock.name().toLowerCase().contains("stairs")) {
+		Block carBlock = car.getLocation().getBlock();
+		Material carBlockType = carBlock.getType();
+		if (carBlockType.name().toLowerCase().contains("stairs")) {
 			inStairs = true;
 		}
 		if (UEntityMeta.hasMetadata(car, "car.ascending")) {
@@ -1190,23 +1189,21 @@ public class uCarsListener implements Listener {
 		//player.sendMessage(block.getType().name()+" "+faceDir+" "+fx+" "+fz);
 		// Make cars jump if needed
 		if (inStairs ||
-				 (!ignoreJump.contains(bType.name().toUpperCase()) && cont && modY)) { //Should jump
-/*			player.sendMessage("Obstruction ahead");
-			player.sendMessage("above: "+bidU);*/
+				 (!blockNoJump && !block.isPassable() && cont && modY &&
+				 !(softBlocks.contains(block.getType().name()) && softBlocks.contains(carBlockType.name()) ) )) { //Softblocks floating problem
+			//Should jump
+			
 			boolean calculated = false;
-			if (bidU == Material.AIR || bidU == Material.LAVA 
-					|| bidU == Material.LEGACY_STATIONARY_LAVA || bidU == Material.WATER
-					|| bidU == Material.LEGACY_STATIONARY_WATER /*|| bidU == Material.STEP */
-					|| bidU == Material.LEGACY_CARPET
-					/*|| bidU == Material.DOUBLE_STEP*/ || inStairs) { //Clear air above
+			if (bidU == Material.AIR || bidU == Material.LAVA || bidU == Material.WATER || bidUpLoc.getBlock().isPassable() || noJump(bidU.name()) || inStairs) { //Clear air above
 				theNewLoc.add(0, 1.5d, 0);
 				double y = 0.0;
-				if(block.getBoundingBox().getMaxY() != car.getLocation().getBlock().getBoundingBox().getMaxY()) { //Check if we're staying on the same level (slabs, carpet etc -> no need to climb if not)
+				if(block.getBoundingBox().getMaxY() != car.getLocation().getBlock().getBoundingBox().getMaxY() ||
+						(car.getBoundingBox().getMinY() < car.getLocation().getBlock().getBoundingBox().getMaxY() && !inStairs)) { //Check if we're staying on the same level (slabs, carpet etc -> no need to climb if not)
 					calculated = true;
 					y = block.getBoundingBox().getMaxY()-block.getLocation().getBlockY() + 0.2;
 				}
 				
-				if (carBlock.name().toLowerCase()
+				if (carBlockType.name().toLowerCase()
 						.contains(Pattern.quote("stairs"))
 						// ||
 						// underblock.getType().name().toLowerCase().contains(Pattern.quote("stairs"))
@@ -1237,7 +1234,7 @@ public class uCarsListener implements Listener {
 					}
 				}
 			}
-			if (fly && cont && (bidUpLoc.getBlock().getType().name().toLowerCase().contains("slab") || underblock.isEmpty() && !carBlock.name().toLowerCase().contains("slab"))) {
+			if (fly && cont && (bidUpLoc.getBlock().getType().name().toLowerCase().contains("slab") || underblock.isEmpty() && !carBlockType.name().toLowerCase().contains("slab"))) {
 				// Make the car ascend (easter egg, slab elevator)
 				travel.setY(0.1); // Make a little easier
 				UEntityMeta.setMetadata(car, "car.ascending", new StatValue(null, plugin));
@@ -1339,10 +1336,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		
-		Entity passenger = cart.getPassengers().get(0);
-		while (!passenger.isEmpty()) {
-			passenger = passenger.getPassengers().get(0);
-		}
+		Entity passenger = getDrivingPassengerOfCar(cart);
 		if(passenger.equals(ent) || cart.getPassengers().contains(ent)){
 			return; //Player being hit is in the car
 		}
@@ -1508,7 +1502,7 @@ public class uCarsListener implements Listener {
 			return;
 		}
 		Block block = event.getClickedBlock();
-		if (uCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getItemInHand().getType() == Material.MINECART)) {
+		if (uCarsAPI.getAPI().isuCarsHandlingPlacingCars() && (plugin.API.hasItemCarCheckCriteria() || event.getPlayer().getInventory().getItemInMainHand().getType() == Material.MINECART)) {
 			// Its a minecart!
 			Material iar = block.getType();
 			if (ucars.ignoreRails && (iar == Material.RAIL || iar == Material.ACTIVATOR_RAIL 
@@ -2069,46 +2063,24 @@ public class uCarsListener implements Listener {
 		};
 	}*/
 	
+	public boolean noJump(String bName) {
+		for(String str:ignoreJump) {
+			if(bName.contains(str)) {return true;}
+		}
+		return false;
+	}
+	
 	public void init() {
 		ignoreJump = new ArrayList<String>();
-		ignoreJump.add("AIR"); //Air
-		ignoreJump.add("LAVA"); //Lava
-        ignoreJump.add("STATIONARY_LAVA"); //Lava
-        ignoreJump.add("WATER"); //Water
-        ignoreJump.add("STATIONARY_WATER"); //Water
-        ignoreJump.add("COBBLE_WALL"); //Cobble wall
-        ignoreJump.add("FENCE"); //fence
-        ignoreJump.add("NETHER_FENCE"); //Nether fence
-        ignoreJump.add("STONE_PLATE"); //Stone pressurepad
-        ignoreJump.add("WOOD_PLATE"); //Wood pressurepad
-		ignoreJump.add("TRIPWIRE"); // tripwires
-		ignoreJump.add("TRIPWIRE_HOOK"); // tripwires
-		ignoreJump.add("TORCH"); // torches
-		ignoreJump.add("REDSTONE_TORCH_ON"); // redstone torches
-		ignoreJump.add("REDSTONE_TORCH_OFF"); // redstone off torches
-		ignoreJump.add("DIODE_BLOCK_OFF"); // repeater off
-		ignoreJump.add("DIODE_BLOCK_ON"); // repeater on
-		ignoreJump.add("REDSTONE_COMPARATOR_OFF"); // comparator off
-		ignoreJump.add("REDSTONE_COMPARATOR_ON"); // comparator on
-		ignoreJump.add("VINE"); // vines
-		ignoreJump.add("LONG_GRASS"); // Tall grass
-		ignoreJump.add("GRASS");
-		ignoreJump.add("STONE_BUTTON"); // stone button
-		ignoreJump.add("WOOD_BUTTON"); // wood button
-		ignoreJump.add("FENCE_GATE"); // fence gate
-		ignoreJump.add("LEVER"); // lever
-		ignoreJump.add("SNOW"); // snow
-		ignoreJump.add("DAYLIGHT_DETECTOR"); // daylight detector
-		ignoreJump.add("SIGN_POST"); // sign
-		ignoreJump.add("WALL_SIGN"); // sign on the side of a block
-		ignoreJump.add(Material.ACACIA_FENCE.name());
-		ignoreJump.add(Material.ACACIA_FENCE_GATE.name());
-		ignoreJump.add(Material.BIRCH_FENCE.name());
-		ignoreJump.add(Material.BIRCH_FENCE_GATE.name());
-		ignoreJump.add(Material.JUNGLE_FENCE.name());
-		ignoreJump.add(Material.JUNGLE_FENCE_GATE.name());
-		/*ignoreJump.add("CARPET"); // carpet
-*/		
+		ignoreJump.add("WALL");
+		ignoreJump.add("FENCE");
+		ignoreJump.add("GATE");
+		
+		softBlocks = new ArrayList<String>();
+		softBlocks.add("SNOW");
+		softBlocks.add("SOUL_SAND");
+		softBlocks.add("HONEY_BLOCK");
+		
 		usePerms = ucars.config.getBoolean("general.permissions.enable");
 		carsEnabled = ucars.config.getBoolean("general.cars.enable");
 		defaultHealth = ucars.config.getDouble("general.cars.health.default");
