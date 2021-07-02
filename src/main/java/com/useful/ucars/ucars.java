@@ -63,6 +63,7 @@ public class ucars extends JavaPlugin {
 	public static boolean playersIgnoreTrafficLights = false;
 	public static boolean turningCircles = true;
 	public static boolean fireUpdateEvent = false;
+	public static Float version = null;
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -170,6 +171,9 @@ public class ucars extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
+		
+		version = Float.valueOf(Bukkit.getVersion().replace(")","").split("MC: 1.")[1]);
+		
 		File langFile = new File(getDataFolder().getAbsolutePath()
 				+ File.separator + "lang.yml");
 		if (langFile.exists() == false || langFile.length() < 1) {
