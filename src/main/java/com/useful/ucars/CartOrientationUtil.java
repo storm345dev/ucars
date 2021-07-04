@@ -44,10 +44,12 @@ public class CartOrientationUtil {
 				p = ema.getField("pitch");
 				p.setAccessible(true);
 				p.set(ema.cast(nmsCart), -pitch);
+				p.setAccessible(false);
 			} else {
-				p = ema.getField("p");
+				/*p = ema.getField("y");
 				p.setAccessible(true);
-				p.set(ema.cast(nmsCart), -pitch);	//TODO Fix this for 1.17 - just... not being updated?
+				p.set(ema.cast(nmsCart), -pitch);	/TODO Fix this for 1.17 - WHAT FIELD IS IT?
+				p.setAccessible(false); */
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -72,10 +74,12 @@ public class CartOrientationUtil {
 				p = ema.getField("yaw");
 				p.setAccessible(true);
 				p.set(ema.cast(nmsCart), yaw);
+				p.setAccessible(false);
 			} else {
-				p = ema.getField("y");
+				p = ema.getField("ay");				//For other entities this seems to be y (according to some forum threads) but... it's ay here.
 				p.setAccessible(true);
-				p.set(ema.cast(nmsCart), yaw);		//TODO Fix this for 1.17 - just... not being updated?
+				p.set(ema.cast(nmsCart), yaw);
+				p.setAccessible(false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
