@@ -40,7 +40,7 @@ public class CartOrientationUtil {
 			Method getHandle = cmr.getMethod("getHandle");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
-			if(ucars.version < 17) {
+			if(ucars.MCVersion < 17) {
 				Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 				p = ema.getField("pitch");
 				p.setAccessible(true);
@@ -71,7 +71,7 @@ public class CartOrientationUtil {
 			Method getHandle = cmr.getMethod("getHandle");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
-			if(ucars.version < 17) {
+			if(ucars.MCVersion < 17) {
 				Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 				p = ema.getField("yaw");
 				p.setAccessible(true);
