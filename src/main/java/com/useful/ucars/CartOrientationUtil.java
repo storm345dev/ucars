@@ -3,6 +3,7 @@ package com.useful.ucars;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
@@ -68,18 +69,19 @@ public class CartOrientationUtil {
 		try {
 			Class<?> cmr = cart.getClass();
 			Method getHandle = cmr.getMethod("getHandle");
-			Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
 			if(ucars.version < 17) {
+				Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 				p = ema.getField("yaw");
 				p.setAccessible(true);
 				p.set(ema.cast(nmsCart), yaw);
 				p.setAccessible(false);
 			} else {
-				p = ema.getField("ay");				//This is now the yaw-field
+				Class<?> e = Reflect.getNMSClass("world.entity.","Entity");
+				p = e.getDeclaredField("ay");			//Yaw field is now ay and in the Entity-Class
 				p.setAccessible(true);
-				p.set(ema.cast(nmsCart), yaw);
+				p.set(e.cast(nmsCart), yaw);
 				p.setAccessible(false);
 			}
 		} catch (Exception e) {
