@@ -40,18 +40,20 @@ public class CartOrientationUtil {
 			Method getHandle = cmr.getMethod("getHandle");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
-			if(ucars.MCVersion < 17) {
-				Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
-				p = ema.getField("pitch");
-				p.setAccessible(true);
-				p.set(ema.cast(nmsCart), -pitch);
-				p.setAccessible(false);
-			} else {
-				Class<?> e = Reflect.getNMSClass("world.entity.","Entity");
-				p = e.getDeclaredField("az");		//Pitch field is now az and in the Entity-Class
-				p.setAccessible(true);
-				p.set(e.cast(nmsCart), -pitch);
-				p.setAccessible(false);
+			if(ucars.MCVersion.get(0) == 1) {
+				if(ucars.MCVersion.get(1) < 17) {
+					Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
+					p = ema.getField("pitch");
+					p.setAccessible(true);
+					p.set(ema.cast(nmsCart), -pitch);
+					p.setAccessible(false);
+				} else {
+					Class<?> e = Reflect.getNMSClass("world.entity.","Entity");
+					p = e.getDeclaredField("az");		//Pitch field is now az and in the Entity-Class
+					p.setAccessible(true);
+					p.set(e.cast(nmsCart), -pitch);
+					p.setAccessible(false);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,18 +73,20 @@ public class CartOrientationUtil {
 			Method getHandle = cmr.getMethod("getHandle");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
-			if(ucars.MCVersion < 17) {
-				Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
-				p = ema.getField("yaw");
-				p.setAccessible(true);
-				p.set(ema.cast(nmsCart), yaw);
-				p.setAccessible(false);
-			} else {
-				Class<?> e = Reflect.getNMSClass("world.entity.","Entity");
-				p = e.getDeclaredField("ay");			//Yaw field is now ay and in the Entity-Class
-				p.setAccessible(true);
-				p.set(e.cast(nmsCart), yaw);
-				p.setAccessible(false);
+			if(ucars.MCVersion.get(0) == 1) {
+				if(ucars.MCVersion.get(1) < 17) {
+					Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
+					p = ema.getField("yaw");
+					p.setAccessible(true);
+					p.set(ema.cast(nmsCart), yaw);
+					p.setAccessible(false);
+				} else {
+					Class<?> e = Reflect.getNMSClass("world.entity.","Entity");
+					p = e.getDeclaredField("ay");			//Yaw field is now ay and in the Entity-Class
+					p.setAccessible(true);
+					p.set(e.cast(nmsCart), yaw);
+					p.setAccessible(false);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
