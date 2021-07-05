@@ -47,8 +47,16 @@ public class Reflect {
 			}
 	}
 	
-	public static Class<?> getNMSClass(String ClassName) {
-		String className = "net.minecraft.server." + version + ClassName;
+	public static Class<?> getNMSClass(String newPackage, String ClassName) {
+		String className = "net.minecraft.";
+		if(ucars.MCVersion.get(0) == 1) {
+			if(ucars.MCVersion.get(1) < 17) {
+				className += "server."+ version + ClassName;
+			} else {
+				className += newPackage+ClassName;
+			}
+		}
+		
 		Class<?> c = null;
 		try {
 			c = Class.forName(className);

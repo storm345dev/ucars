@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -63,6 +65,7 @@ public class ucars extends JavaPlugin {
 	public static boolean playersIgnoreTrafficLights = false;
 	public static boolean turningCircles = true;
 	public static boolean fireUpdateEvent = false;
+	public static ArrayList<Integer> MCVersion = new ArrayList<Integer>();
 
 	public static String colorise(String prefix) {
 		return ChatColor.translateAlternateColorCodes('&', prefix);
@@ -170,6 +173,16 @@ public class ucars extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
+
+		Pattern pattern = Pattern.compile(".v(.*?)_R");		//Get MC-Version
+		Matcher matcher = pattern.matcher(Bukkit.getServer().getClass().getPackage().getName());
+		if(matcher.find()) {
+			String[] MCVersionStr = matcher.group(1).split("_");
+			for(String s:MCVersionStr) {
+				MCVersion.add(Integer.parseInt(s));
+			}
+		}
+		
 		File langFile = new File(getDataFolder().getAbsolutePath()
 				+ File.separator + "lang.yml");
 		if (langFile.exists() == false || langFile.length() < 1) {
