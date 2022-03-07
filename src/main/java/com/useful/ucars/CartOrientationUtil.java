@@ -3,6 +3,7 @@ package com.useful.ucars;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 
@@ -39,15 +40,13 @@ public class CartOrientationUtil {
 			Method getHandle = cmr.getMethod("getHandle");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
-			Class <?> ema;
+			Class <?> ema = Reflect.getNMSClass("world.entity.","Entity");
 
 			if(ucars.MCVersion.get(0) == 1) {
 				if(ucars.MCVersion.get(1) >= 18) {
-					ema = Reflect.getNMSClass("world.entity.","Entity");
-					p = ema.getField("aB");
+					p = ema.getDeclaredField("aB");
 				} else if(ucars.MCVersion.get(1) == 17) {
-					ema = Reflect.getNMSClass("world.entity.","Entity");
-					p = ema.getField("az");
+					p = ema.getDeclaredField("az");
 				} else {
 					ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 					p = ema.getField("pitch");
@@ -72,16 +71,17 @@ public class CartOrientationUtil {
 		try {
 			Class<?> cmr = cart.getClass();
 			Method getHandle = cmr.getMethod("getHandle");
-			Class<?> ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
+			Class<?> ema = Reflect.getNMSClass("world.entity.","Entity");
 			Object nmsCart = getHandle.invoke(cmr.cast(cart));
 			Field p = null;
 			
 			if(ucars.MCVersion.get(0) == 1) {
 				if(ucars.MCVersion.get(1) >= 18) {
-					p = ema.getField("aA");
+					p = ema.getDeclaredField("aA");
 				} else if(ucars.MCVersion.get(1) == 17) {
-					p = ema.getField("ay");
+					p = ema.getDeclaredField("ay");
 				} else {
+					ema = Reflect.getNMSClass("world.entity.vehicle.","EntityMinecartAbstract");
 					p = ema.getField("yaw");	
 				}
 			}

@@ -80,6 +80,7 @@ public class uCarsListener implements Listener {
 	private Boolean fuelEnabled = false;
 	private Boolean fuelUseItems = false;
 	private Boolean disableFallDamage = false;
+	private Boolean pitchEnabled = true;
 	
 	private double defaultSpeed = 30;
 	private static double defaultHealth = 10;
@@ -1260,7 +1261,18 @@ public class uCarsListener implements Listener {
 			car.setVelocity(calculateCarStats(car, player, travel,
 					multiplier));
 		}
-		
+
+		//Pitch the car
+		if(travel.getY()!=0 && pitchEnabled) {
+			if(travel.getY()<0) {
+				CartOrientationUtil.setPitch(car, (float) (-35*travel.getY()));
+			} else {
+				CartOrientationUtil.setPitch(car, (float) (-20*travel.getY()));
+			}
+		} else {
+			CartOrientationUtil.setPitch(car, 0);
+		}
+
 		// Recalculate car health
 		if (recalculateHealth) {
 			updateCarHealthHandler(car, health);
@@ -2111,6 +2123,7 @@ public class uCarsListener implements Listener {
 		fuelEnabled = ucars.config.getBoolean("general.cars.fuel.enable");
 		fuelUseItems = ucars.config.getBoolean("general.cars.fuel.items.enable");
 		disableFallDamage = ucars.config.getBoolean("general.cars.fallDamageDisabled");
+		pitchEnabled = ucars.config.getBoolean("general.cars.enablePitch");
 		
 		if(roadBlocksEnabled){
 		    List<String> ids = ucars.config
