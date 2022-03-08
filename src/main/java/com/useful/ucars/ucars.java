@@ -369,6 +369,9 @@ public class ucars extends JavaPlugin {
 			if (!config.contains("general.permissions.enable")) {
 				config.set("general.permissions.enable", true);
 			}
+			if (!config.contains("general.cars.enablePitch")) {
+				config.set("general.cars.enablePitch", true);
+			}
 			if (!config.contains("general.cars.defSpeed")) {
 				config.set("general.cars.defSpeed", (double) 30);
 			}
